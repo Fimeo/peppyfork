@@ -75,4 +75,6 @@ Calculées sur **toutes les séances, tous abonnements confondus** :
 | L'API n'autorise que ses propres domaines et `localhost` (CORS). | Impossible d'héberger l'interface seule sur GitHub Pages. | Le relais `server.mjs` reste nécessaire. |
 | Le logo de la salle est blanc sur fond transparent. | Invisible sur le fond blanc prévu. | Fond sombre derrière le logo. |
 | Un abonnement « expiré » de 3 minutes, sans séance (erreur de saisie de la salle). | Bruit dans la liste des abonnements. | Les abonnements expirés de moins d'un jour sans séance sont masqués. |
-| Les classements (`getMyRankingStats`) et les coachs des cours sont vides pour cette salle. | Pas de stats de performance ni de coach préféré. | Non exploités. |
+| Les coachs ne sont pas renseignés sur les cours de cette salle. | Pas de stat « coach préféré ». | Non exploité. |
+| Les records ne se lisent qu'exercice par exercice (`getMyPerformances` exige un `exerciseId`, sur 95 exercices) et `getMyPRsOnExercise` renvoie une liste vide. | Pas de vue « tous mes records » en une requête. 10 requêtes simultanées font renvoyer une page HTML d'erreur par l'API. | À traiter : parcourir les exercices 3 par 3 (environ 4 s) et calculer les records côté client. |
+| `getMyRankingStats` renvoie des compteurs à zéro alors que des scores existent (`getRankings` avec `user`). | Stats de WOD trompeuses. | Utiliser `getRankings` directement. |
