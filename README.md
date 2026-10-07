@@ -1,6 +1,6 @@
 # Peppy+
 
-Interface alternative pour réserver ses cours via l'API [Peppy](https://peppy.cool) : planning, suggestions de cours, réservations, statistiques et abonnements.
+Interface alternative pour réserver ses cours via l'API [Peppy](https://peppy.cool) : planning, suggestions de cours, réservations, suivi des perfs, statistiques et abonnements.
 
 Le détail des ajouts par rapport à l'application Peppy est dans [AMELIORATIONS.md](AMELIORATIONS.md).
 
@@ -19,10 +19,10 @@ Puis ouvrir http://localhost:5173 et se connecter avec son compte Peppy.
 Peppy+ n'a ni base de données, ni compte, ni outil de suivi. Tout transite par l'API Peppy :
 
 - **Identifiants** : envoyés uniquement à `api.peppy.cool`, via le petit serveur local qui relaie les requêtes sans rien enregistrer.
-- **Dans ton navigateur** (`localStorage`) : le jeton de session Peppy, ton prénom, la salle choisie, les filtres et les suggestions écartées. La déconnexion efface la session.
+- **Dans ton navigateur** (`localStorage`) : le jeton de session Peppy, ton prénom, la salle choisie, le filtre « Places dispo », les suggestions écartées, tes pourcentages favoris et la liste des mouvements où tu as des records (pour les charger plus vite). La déconnexion efface la session.
 - **Sur le disque du serveur** : seulement les photos et logos publics du CDN Peppy, mis en cache dans `.cache/img` pour ne pas les retélécharger. Ce dossier peut être supprimé à tout moment.
 
-Les données (planning, réservations, inscrits, factures) sont redemandées à l'API à chaque fois et restent en mémoire le temps de la session.
+Les données (planning, réservations, inscrits, perfs, factures) sont redemandées à l'API à chaque fois et restent en mémoire le temps de la session.
 
 ## Structure
 
@@ -31,6 +31,7 @@ Les données (planning, réservations, inscrits, factures) sont redemandées à 
 | `server.mjs` | Sert l'interface, relaie `/graphql` vers l'API Peppy (avec le cookie de renouvellement du jeton) et met en cache les images (`/img`). |
 | `public/app.js` | Application : requêtes GraphQL, état, vues (planning, résas, abonnement, fiche cours). |
 | `public/stats.js` | Calcul et rendu des statistiques. |
+| `public/perfs.js` | Records, scores de WOD, formulaire d'ajout et calcul des charges. |
 | `public/styles.css` | Styles. |
 
 ## Héberger en ligne

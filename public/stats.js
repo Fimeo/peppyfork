@@ -1,7 +1,6 @@
 // Statistiques de fréquentation calculées à partir de tout l'historique de réservations.
 
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const cap = (v) => (v ? v[0].toUpperCase() + v.slice(1) : '');
 const pad = (n) => String(n).padStart(2, '0');
 const startOfDay = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
 const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
@@ -108,7 +107,6 @@ export function computeStats(reservations, { frequency, noPenaltyMinutes, paid }
   return {
     minutesTotal, bestMonth, bestWeek, medianBook, sameDayBook,
     paid, costPerSession: paid ? paid / done.length : null,
-    recentSlots: done.slice(-30).map((r) => r.slot.id),
     total: done.length, since: done[0].slot.start, weeks, active, best, bestEnd, streak, frequency,
     atQuota: frequency ? weeks.filter((w) => w.count >= frequency).length : null,
     avgActive: done.length / Math.max(1, active),
@@ -169,29 +167,7 @@ function hbars(items, total) {
 const hoursAgo = (h) => (h >= 48 ? `${num(h / 24)} j` : h >= 1 ? `${num(h)} h` : `${num(h * 60)} min`);
 const euros = (v) => v.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: v < 100 ? 2 : 0 });
 
-// Personnes croisées le plus souvent sur les dernières séances (chargé à part : une requête par séance).
-function viewPartners(p, sessions) {
-  const title = '<div class="section-title">Partenaires d\'entraînement</div>';
-  if (p === undefined || p === 'loading') {
-    return `${title}<section class="card chart partners-ask">
-      <p class="muted">Qui croises-tu le plus souvent ? Le calcul demande la liste des inscrits de tes ${sessions} dernières séances, une requête par séance.</p>
-      <button class="btn ghost ${p === 'loading' ? 'busy' : ''}" data-action="partners">Calculer</button>
-    </section>`;
-  }
-  if (!p.top.length) return '';
-  const max = p.top[0].count;
-  return `<div class="section-title">Partenaires d'entraînement</div>
-    <section class="card chart partners">
-      <p class="muted" style="margin:0 0 12px;font-size:13px">Les personnes croisées le plus souvent sur tes ${p.sessions} dernières séances.</p>
-      ${p.top.map(({ user, count }) => `<div class="partner">
-        ${p.avatar(user)}<span class="partner-name">${esc(cap(user.firstname?.trim()))} ${esc(user.lastname?.[0] ? `${user.lastname[0].toUpperCase()}.` : '')}</span>
-        <span class="hbar-track"><span class="hbar-fill" style="width:${(count / max) * 100}%"></span></span>
-        <span class="hbar-val">${count}</span>
-      </div>`).join('')}
-    </section>`;
-}
-
-export function viewStats(s, partners) {
+export function viewStats(s) {
   if (!s) return '<div class="empty"><b>Pas encore de séance</b>Les statistiques apparaîtront après ton premier cours.</div>';
   const pct = Math.round((s.active / s.weeks.length) * 100);
   const yearDelta = s.hasLastYear ? s.thisYear - s.lastYearToDate : null;
@@ -271,6 +247,5 @@ export function viewStats(s, partners) {
       ${tile(num(s.missedWaitlist), 'listes d\'attente ratées', 'jamais passé en inscrit')}
       ${tile(`${num(s.confirmed)}<span class="of">/${num(s.total)}</span>`, 'présences confirmées', s.absent ? `${plural(s.absent, 'absence')} notée${s.absent > 1 ? 's' : ''}` : 'sur place')}
     </div>
-    ${viewPartners(partners, s.recentSlots.length)}
     <p class="muted foot">Une séance compte dès qu'elle est passée sans être annulée, même si la présence n'a pas été confirmée sur place.</p>`;
 }
