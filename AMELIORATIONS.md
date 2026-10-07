@@ -18,7 +18,7 @@ Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre d
 - **Journée déjà prise** : si tu as déjà une séance réservée ce jour-là, les autres cours sont atténués et sans bouton Réserver.
 - **Boutons clairs** : Réserver, « + Liste d'attente » (action) distinct du statut « Attente #2 », et Annuler en rouge.
 - **WOD du jour** affiché au-dessus des cours, en blocs repliables.
-- Navigation au clavier (← →) entre les jours, rafraîchissement automatique des places toutes les 60 s.
+- Navigation au clavier (← →) entre les jours, glisser à gauche ou à droite sur les jours pour changer de semaine, rafraîchissement automatique des places toutes les 60 s.
 
 ### Suggestions de cours pour s'inscrire en un clic
 
@@ -40,7 +40,7 @@ Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre d
 - **Records des mouvements que tu pratiques uniquement** : meilleure charge (1RM, ou 1RM estimé avec la formule d'Epley), meilleures charges par nombre de répétitions (3RM, 5RM…), petite courbe de progression et gain depuis la première perf (« +37 kg depuis juil. 2024 »).
 - **Scores sur les WOD** (Helen, Grace…) : dernier score, niveau et record. La fiche d'un WOD affiche sa description pour chaque niveau (RX, Inter, Débutant), au niveau de ton dernier score par défaut, et les conseils.
 - **Fiche d'un mouvement** : historique complet et **calcul des charges** à partir du 1RM (modifiable). Les préréglages vont de 50 à 95 %, on peut saisir un pourcentage libre, et ★ ajoute un pourcentage aux favoris, affichés en premier.
-- **Ajout d'une perf** sans liste déroulante : un champ de recherche parmi les 95 mouvements et les WOD (les tiens, puis ceux de l'API). On y saisit la charge et les répétitions, le temps (min:s) ou les reps, le niveau pour un WOD, et la date. Entrée choisit le premier résultat.
+- **Ajout d'une perf** sans liste déroulante : un champ de recherche (sans correction automatique) parmi les 95 mouvements et les WOD (les tiens, puis ceux de l'API). On y saisit la charge et les répétitions, le temps (min:s) ou les reps, le niveau pour un WOD, et la date. Entrée choisit le premier résultat.
 
 ### Mes réservations
 

@@ -3,5 +3,7 @@
   "name": "peppy-plus",
   "main": "worker.mjs",
   "compatibility_date": "2025-09-01",
-  "assets": { "directory": "./public", "binding": "ASSETS" }
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  // Pas d'adresse par version (…-peppy-plus.<sous-domaine>.workers.dev) : elles échapperaient à Cloudflare Access.
+  "preview_urls": false
 }

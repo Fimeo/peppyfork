@@ -235,7 +235,7 @@ export function calcGrid(base, favs) {
 export function viewAdd(sel) {
   return `<form class="sheet-body" id="perf-form" autocomplete="off">
     <h3>Ajouter une perf</h3>
-    ${sel ? viewSelected(sel) : `<input id="perf-search" class="perf-search" type="search" placeholder="Mouvement ou WOD : squat, Helen, 5 km…" autofocus>
+    ${sel ? viewSelected(sel) : `<input id="perf-search" class="perf-search" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="Mouvement ou WOD : squat, Helen, 5 km…" autofocus>
       <div id="perf-results" class="perf-results"></div>`}
     <div class="sheet-actions">
       ${sel ? '<button class="btn block primary" type="submit">Enregistrer</button>' : ''}

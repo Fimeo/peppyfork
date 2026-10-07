@@ -143,7 +143,7 @@ input, select { font: inherit; color: inherit; }
 .back:hover { color: var(--text); }
 .page-title { margin: 6px 0 0; font: 800 30px/1 var(--display); text-transform: uppercase; }
 
-.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; touch-action: pan-y; }
 .day { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 8px 0 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; }
 .day small { font: 700 12px/1 var(--display); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
 .day b { font: 800 26px/1.05 var(--display); }
@@ -280,6 +280,9 @@ input, select { font: inherit; color: inherit; }
 .perf-search { width: 100%; margin-top: 14px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 14px; font: 16px var(--body); color: var(--text); }
 .perf-search:focus { outline: 2px solid var(--volt); outline-offset: -1px; }
 .perf-results { display: flex; flex-direction: column; margin-top: 6px; min-height: 120px; }
+/* Recherche : hauteur fixe calée sur la zone visible, seuls les résultats défilent (la fiche ne saute plus à chaque lettre). */
+#perf-form:has(#perf-search) { display: flex; flex-direction: column; height: min(560px, calc(88dvh - 2px), calc(var(--vvh, 100dvh) - 14px)); }
+#perf-form:has(#perf-search) .perf-results { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .perf-hint { font-size: 13px; padding: 10px 2px; margin: 0; }
 .perf-result { display: flex; justify-content: space-between; align-items: center; gap: 10px; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 11px 4px; text-align: left; }
 .perf-result:hover { background: var(--surface-2); }
@@ -439,7 +442,10 @@ input, select { font: inherit; color: inherit; }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 #toast.err { background: var(--red); color: #fff; }
 
-dialog#sheet { border: 1px solid var(--line); padding: 0; margin: auto auto 0; width: 100%; max-width: 560px; max-height: 88vh; border-radius: 24px 24px 0 0; background: var(--surface); color: var(--text); }
+/* --vvt / --vvb : zone masquée en haut / en bas par le clavier mobile (voir fitSheet dans app.js). */
+dialog#sheet { border: 1px solid var(--line); padding: 0; margin: auto auto 0; top: var(--vvt, 0px); bottom: var(--vvb, 0px); width: 100%; max-width: 560px; max-height: min(88dvh, calc(var(--vvh, 100dvh) - 12px)); overscroll-behavior: contain; border-radius: 24px 24px 0 0; background: var(--surface); color: var(--text); }
+/* Pas de défilement de la page derrière une fiche ouverte. */
+html:has(dialog[open]), html:has(dialog[open]) body { overflow: hidden; }
 @media (min-width: 600px) { dialog#sheet { margin: auto; border-radius: 24px; } }
 dialog#sheet::backdrop { background: rgb(0 0 0 / .65); backdrop-filter: blur(3px); }
 .sheet-body { padding: 22px 20px calc(20px + env(safe-area-inset-bottom)); }

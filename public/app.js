@@ -1006,6 +1006,16 @@ const sheet = $('#sheet');
 function closeSheet() { if (sheet.open) sheet.close(); }
 sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });
 
+// Clavier mobile : la fiche reste dans la zone visible (visualViewport) au lieu de passer dessous.
+const vv = window.visualViewport;
+function fitSheet() {
+  const root = document.documentElement.style;
+  root.setProperty('--vvh', `${vv.height}px`);
+  root.setProperty('--vvt', `${vv.offsetTop}px`);
+  root.setProperty('--vvb', `${Math.max(0, document.documentElement.clientHeight - vv.height - vv.offsetTop)}px`);
+}
+if (vv) { fitSheet(); vv.addEventListener('resize', fitSheet); vv.addEventListener('scroll', fitSheet); }
+
 async function openSlot(slotId) {
   const s = findSlot(slotId);
   if (!s) return;
@@ -1254,6 +1264,10 @@ function goToDay(d) {
   } else render();
 }
 
+function changeWeek(dir) {
+  goToDay(addDays(state.weekStart, 7 * dir));
+}
+
 // ---------------------------------------------------------------- events
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-action]');
@@ -1264,7 +1278,7 @@ document.addEventListener('click', (e) => {
   switch (action) {
     case 'tab': return setTab(el.dataset.tab);
     case 'day': return goToDay(new Date(`${el.dataset.day}T00:00`));
-    case 'week': return goToDay(addDays(state.weekStart, 7 * Number(el.dataset.dir)));
+    case 'week': return changeWeek(Number(el.dataset.dir));
     case 'today': return goToDay(new Date());
     case 'open-ex': return openExercise(el.dataset.id);
     case 'open-wod': return openWodScores(el.dataset.id);
@@ -1338,6 +1352,22 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') goToDay(addDays(state.day, 1));
   if (e.key === 'ArrowLeft') goToDay(addDays(state.day, -1));
 });
+
+// Glisser à gauche / à droite sur les jours : semaine suivante / précédente.
+let swipe = null;
+document.addEventListener('touchstart', (e) => {
+  swipe = e.touches.length === 1 && e.target.closest('.days') ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+}, { passive: true });
+document.addEventListener('touchend', (e) => {
+  if (!swipe) return;
+  const dx = e.changedTouches[0].clientX - swipe.x;
+  const dy = e.changedTouches[0].clientY - swipe.y;
+  swipe = null;
+  if (Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
+  const dir = dx < 0 ? 1 : -1;
+  changeWeek(dir);
+  $('.days')?.animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0.3 }, { transform: 'none', opacity: 1 }], { duration: 200, easing: 'ease-out' });
+}, { passive: true });
 
 // Infobulles des graphiques (attribut data-tip).
 const tip = document.createElement('div');
