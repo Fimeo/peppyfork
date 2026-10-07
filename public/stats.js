@@ -104,7 +104,39 @@ export function computeStats(reservations, { frequency, noPenaltyMinutes, paid }
   const medianBook = bookLeads.length ? bookLeads[Math.floor(bookLeads.length / 2)] : null;
   const sameDayBook = booked.length ? booked.filter((r) => dayKey(r.createdAt) === dayKey(r.slot.start)).length / booked.length : null;
 
+  // --- anecdotes. Pour une annulation, updatedAt = moment où l'on a annulé.
+  const minutesBetween = (a, b) => (new Date(b) - new Date(a)) / 60000;
+  const wdOf = (d) => (new Date(d).getDay() + 6) % 7;
+  // Ping-pong : réservé puis annulé dans la demi-heure.
+  const pingPong = cancelled.filter((r) => r.createdAt && minutesBetween(r.createdAt, r.updatedAt) < 30);
+  // Démotivation : le jour de cours le plus souvent annulé, rapporté aux réservations de ce jour.
+  const cancelRate = DAYS.map((_, wd) => {
+    const c = cancelled.filter((r) => wdOf(r.slot.start) === wd).length;
+    const n = c + done.filter((r) => wdOf(r.slot.start) === wd).length;
+    return { wd, c, n, rate: n >= 8 ? c / n : 0 };
+  }).sort((a, b) => b.rate - a.rate)[0];
+  // Motivation : le jour où l'on réserve le plus pour les jours suivants, et l'heure favorite pour le faire.
+  const ahead = reservations.filter((r) => r.createdAt && dayKey(r.createdAt) !== dayKey(r.slot.start));
+  const bookDays = Array(7).fill(0);
+  const bookHours = Array(24).fill(0);
+  for (const r of ahead) { bookDays[wdOf(r.createdAt)]++; bookHours[new Date(r.createdAt).getHours()]++; }
+  const bookDay = bookDays.indexOf(Math.max(...bookDays));
+  const bookHour = bookHours.indexOf(Math.max(...bookHours));
+  const night = reservations.filter((r) => r.createdAt && new Date(r.createdAt).getHours() < 6).length;
+  // Annulation la plus tardive (avant le début du cours).
+  const lastMinute = cancelled.map((r) => ({ r, min: minutesBetween(r.updatedAt, r.slot.start) })).filter((x) => x.min > 0).sort((a, b) => a.min - b.min)[0];
+  // Plus longue pause entre deux séances.
+  let pause = null;
+  for (let i = 1; i < done.length; i++) {
+    const days = (startOfDay(done[i].slot.start) - startOfDay(done[i - 1].slot.start)) / 864e5;
+    if (!pause || days > pause.days) pause = { days, from: done[i - 1].slot.start, to: done[i].slot.start };
+  }
+
   return {
+    pingPong: pingPong.length, pingPongFast: pingPong.filter((r) => minutesBetween(r.createdAt, r.updatedAt) < 2).length,
+    cancelRate: cancelRate?.rate ? cancelRate : null,
+    bookDay: ahead.length ? { wd: bookDay, count: bookDays[bookDay], hour: bookHour } : null,
+    night, lastMinute, pause,
     minutesTotal, bestMonth, bestWeek, medianBook, sameDayBook,
     paid, costPerSession: paid ? paid / done.length : null,
     total: done.length, since: done[0].slot.start, weeks, active, best, bestEnd, streak, frequency,
@@ -240,12 +272,22 @@ export function viewStats(s) {
 
     <div class="section-title">Habitudes</div>
     <div class="stats">
-      ${s.favorite ? tile(`${DAYS[s.favorite.wd]} ${s.favorite.time}`, 'créneau favori', `${esc(s.favorite.type)} · ${plural(s.favorite.count, 'fois')}`) : ''}
+      ${s.favorite ? tile(`${DAYS[s.favorite.wd]} ${s.favorite.time}`, 'créneau favori', `${esc(s.favorite.type)} · ${num(s.favorite.count)} fois`) : ''}
       ${s.medianBook != null ? tile(hoursAgo(s.medianBook), 'd\'avance pour réserver', `en général · ${num(s.sameDayBook * 100)} % le jour même`) : ''}
       ${tile(num(s.cancelled), 'annulations', s.medianLead != null ? `en général ${s.medianLead >= 48 ? `${num(s.medianLead / 24)} j` : `${num(s.medianLead)} h`} avant` : '')}
       ${s.late != null ? tile(num(s.late), 'annulations tardives', 'dans le délai de pénalité') : ''}
-      ${tile(num(s.missedWaitlist), 'listes d\'attente ratées', 'jamais passé en inscrit')}
+      ${tile(num(s.missedWaitlist), 'listes d\'attente ratées', 'encore en attente au début du cours')}
       ${tile(`${num(s.confirmed)}<span class="of">/${num(s.total)}</span>`, 'présences confirmées', s.absent ? `${plural(s.absent, 'absence')} notée${s.absent > 1 ? 's' : ''}` : 'sur place')}
     </div>
+    <div class="section-title">Anecdotes</div>
+    <div class="stats">
+      ${s.cancelRate ? tile(DAYS_LONG[s.cancelRate.wd], 'jour de démotivation', `${num((s.cancelRate.c / s.cancelRate.n) * 100)} % des résas du ${DAYS_LONG[s.cancelRate.wd]} annulées`) : ''}
+      ${s.bookDay ? tile(DAYS_LONG[s.bookDay.wd], 'jour de motivation', `${num(s.bookDay.count)} résas faites ce jour-là pour les jours suivants, surtout vers ${s.bookDay.hour} h`) : ''}
+      ${tile(num(s.pingPong), 'annulations ping-pong', s.pingPong ? `réservé puis annulé dans la demi-heure${s.pingPongFast ? `, dont ${s.pingPongFast} en moins de 2 min` : ''}` : 'jamais d\'hésitation')}
+      ${s.lastMinute ? tile(s.lastMinute.min < 60 ? `${num(Math.max(1, Math.floor(s.lastMinute.min)))} min` : hoursAgo(s.lastMinute.min / 60), 'annulation la plus tardive', `avant le cours du ${fmt(s.lastMinute.r.slot.start, { day: 'numeric', month: 'short', year: 'numeric' })}`) : ''}
+      ${s.night ? tile(num(s.night), 'résas nocturnes', 'faites entre minuit et 6 h') : ''}
+      ${s.pause?.days > 1 ? tile(s.pause.days >= 14 ? `${num(s.pause.days / 7)} sem.` : `${num(s.pause.days)} j`, 'plus longue pause', `du ${fmt(s.pause.from, { day: 'numeric', month: 'short', year: 'numeric' })} au ${fmt(s.pause.to, { day: 'numeric', month: 'short', year: 'numeric' })}`) : ''}
+    </div>
+
     <p class="muted foot">Une séance compte dès qu'elle est passée sans être annulée, même si la présence n'a pas été confirmée sur place.</p>`;
 }

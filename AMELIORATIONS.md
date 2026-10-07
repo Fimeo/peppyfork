@@ -55,6 +55,13 @@ Calculées sur **toutes les séances, tous abonnements confondus** :
 - Semaines actives, série en cours, meilleure série, moyenne par semaine, semaines au quota.
 - **Bilan** : heures d'entraînement, meilleur mois, meilleure semaine, **coût moyen par séance** (total payé en abonnements et cartes ÷ séances).
 - Carte des semaines actives (façon GitHub), séances par mois, par jour, par heure, par type de cours.
+- **Anecdotes** :
+  - jour de démotivation (jour de cours le plus souvent annulé, en proportion) ;
+  - jour de motivation (jour où tu réserves le plus pour la suite, et à quelle heure) ;
+  - annulations « ping-pong » (réservé puis annulé dans la demi-heure) ;
+  - annulation la plus tardive ;
+  - résas nocturnes ;
+  - plus longue pause entre deux séances.
 - Habitudes : créneau favori, **délai moyen de réservation** et part réservée le jour même, annulations (dont tardives), listes d'attente ratées, présences confirmées.
 
 ### Abonnement

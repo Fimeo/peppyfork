@@ -155,7 +155,7 @@ const Q = {
 
 const isAuthError = (e) => e?.extensions?.code === 'UNAUTHENTICATED' || /unauthori[sz]ed|not authenticated|jwt|invalid token|token expired/i.test(e?.message || '');
 
-// Le jeton d'accès (JWT) dure 1 h ; le serveur local relaie le cookie de rafraîchissement
+// Le jeton d'accès (JWT) dure 1 h ; le relais (server.mjs ou worker.mjs) transmet le cookie de rafraîchissement
 // posé par Peppy, ce qui permet d'en obtenir un nouveau sans redemander le mot de passe.
 const jwtExp = (t) => { try { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).exp * 1000; } catch { return 0; } };
 
@@ -503,7 +503,7 @@ function toast(msg, isError = false) {
   toastTimer = setTimeout(() => (el.className = ''), isError ? 5000 : 2600);
 }
 
-// Les images du CDN Peppy passent par le serveur local, qui les garde en cache (voir server.mjs).
+// Les images du CDN Peppy passent par le relais, qui les met en cache (voir server.mjs et worker.mjs).
 const img = (u) => (/^https:\/\/peppy-prod-cdn\.s3\./.test(u || '') ? `/img?u=${encodeURIComponent(u)}` : u);
 
 function avatar(u) {
@@ -667,7 +667,7 @@ function viewLogin() {
       <label class="field">Mot de passe<input name="password" type="password" autocomplete="current-password" required></label>
       <div class="error" id="login-error"></div>
       <button class="btn primary block" type="submit">Se connecter</button>
-      <p class="muted" style="font-size:12px;margin-top:4px">Tes identifiants sont envoyés uniquement à l'API Peppy, via le serveur local.</p>
+      <p class="muted" style="font-size:12px;margin-top:4px">Tes identifiants sont envoyés uniquement à l'API Peppy, via le relais Peppy+, qui ne les enregistre pas.</p>
     </form>
   </main>`;
 }
