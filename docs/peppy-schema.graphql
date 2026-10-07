@@ -1,0 +1,7418 @@
+# Schéma de l'API Peppy (https://api.peppy.cool/graphql), obtenu par introspection le 2026-10-06.
+# Généré depuis peppy-schema.json : types, champs et arguments uniquement (l'API ne fournit pas de descriptions).
+
+type Query {
+  login(data: UserLoginInput!): UserWithEnrollment!
+  loginPro(data: UserAdminLoginInput!): UserAdminWithToken!
+  checkCoach(data: String!): User
+  checkEmail(data: String!): Boolean
+  checkEmailAndRegistration(email: String!): CheckEmailAndRegistrationOutput!
+  getUser(where: ID!): RestrictedUser!
+  getUserByEmail(data: UserCheckInput!): UserInBox!
+  getUserByEmailAdmin(email: String!): User
+  getUserAdmin(where: ID!): User!
+  getUsersAdmin(where: UserSearchInput, orderBy: UserOrderByInput, page: Int, pageSize: Int): UserConnection!
+  getManagerByEmail(email: String!): User
+  meAdmin: User!
+  meTeam: UserWithVodBusinessSubscriptions!
+  me: UserWithBoxes!
+  getMyState: UserState!
+  getMyCards: [Card!]!
+  getCardDetail: UserPaymentDetail!
+  getEmptySetupIntent: PartialSetupIntent!
+  getUserCancellation(where: CancellationInput!, page: Int, pageSize: Int): ReservationConnection!
+  getMyHasUnseenNotification: Boolean!
+  findUsersFrom(boxId: ID!, firstname: String!, lastname: String!): [RestrictedUser!]!
+  getMyIbans: [Iban!]!
+  getWorkouts(where: WorkoutSearchInput, orderBy: WorkoutOrderByInput, page: Int, pageSize: Int): WorkoutConnection!
+  getRestrictedWorkouts(where: WorkoutSearchInput, orderBy: WorkoutOrderByInput, page: Int, pageSize: Int): RestrictedWorkoutConnection!
+  getWorkout(where: ID!): Workout
+  getRestrictedWorkout(where: ID!): RestrictedWorkout!
+  getWorkoutCategories: [WorkoutCategory!]!
+  getExpenses(where: ID!, page: Int, pageSize: Int): InvoicesConnection!
+  getMyExpenses(status: InvoiceStatus, creditorId: ID, page: Int, pageSize: Int): InvoicesExtendedConnection!
+  getUserExpenses(data: GetUserExpensesInput!, page: Int, pageSize: Int): InvoicesConnection!
+  getMyExpenseTotalByCreditors: [ExpenseTotal!]!
+  getAllBoxes(where: BoxSearchInput!): [Box!]!
+  getBoxes(where: BoxSearchInput, orderBy: BoxOrderByInput, page: Int, pageSize: Int): BoxConnection!
+  getMyBoxes(page: Int, pageSize: Int): BoxConnection!
+  getNearestBoxes(where: NearestBoxSearchInput!): [Box!]!
+  getBoxesInArea(where: BoxesInAreaSearchInput!): [RestrictedBox!]!
+  getMyFavoriteFitMarketBoxes(latitude: Float!, longitude: Float!, page: Int!, pageSize: Int): FitMarketBoxConnection!
+  getFitMarketBoxes(where: GetFitMarketBoxesSearchInput!, page: Int!, pageSize: Int): FitMarketBoxConnection!
+  getBox(where: ID!): Box!
+  getRestrictedBox(where: ID!): RestrictedBox!
+  getRestrictedBoxes(name: String, mapOnly: Boolean, page: Int!, pageSize: Int): RestrictedBoxConnection!
+  getBoxDetails(where: ID!): BoxDetails!
+  getBoxCardDetail(where: ID!): UserPaymentDetail!
+  getToDos(where: ID!): BoxToDosOutput!
+  getBoxTestUsers(where: ID!): [User!]!
+  getBoxClient(boxId: ID!, userId: ID!): BoxClient
+  getBoxClients(where: BoxClientsWhereInput!, orderBy: BoxClientsOrderByInput, page: Int, pageSize: Int): BoxClientsConnection!
+  exportBoxClients(where: ExportBoxClientsWhereInput!): String!
+  exportBoxProspects(boxId: ID!): String!
+  exportBoxEnrollments(where: ExportBoxEnrollmentsWhereInput!): String!
+  exportBoxReservations(where: ExportBoxReservationsWhereInput!): String!
+  getBoxInvoices(where: StripeInvoicesSearchInput!): StripeInvoicesConnection!
+  getBoxNextInvoice(where: ID!): StripeInvoiceExtended
+  getEnrollmentInvoicesPreview(data: EnrollmentInvoicesPreviewInput!): EnrollmentInvoicePreview!
+  getPenalties(where: ID!, page: Int, pageSize: Int): PenaltyConnection!
+  getSlots(where: SlotSearchInput, orderBy: SlotOrderBy, page: Int, pageSize: Int): SlotConnection!
+  getOnMapSlots(where: SlotSearchInput!, page: Int, pageSize: Int): RestrictedSlotConnection!
+  getQuickSellSlots(where: SlotSearchInput!, page: Int, pageSize: Int): RestrictedSlotConnection!
+  getFitMarketSlots(where: GetFitMarketSlotsInput!, first: Int, after: String, last: Int, before: String): FlattenedRestrictedSlotConnection!
+  getDatesWithinRangeWithFitMarketSlots(boxId: ID!, fitMarketActivated: Boolean!, start: DateTime!, end: DateTime!): [String!]!
+  getFitMarketSlotCursor(boxId: ID!, beforeDate: DateTime!): String
+  getMonthDatesWithOnMapSlots(where: ID!, monthStartDate: DateTime!, withTrial: Boolean): [String!]!
+  getSlot(where: ID!): Slot!
+  getSlotTypes(where: ID!): [SlotType!]!
+  getMyReservations(range: DateRangeInput, statuses: [ReservationStatus!], page: Int, pageSize: Int): ReservationConnection!
+  getMyUpcomingEvents: [SlotExtended!]!
+  getUserReservations(where: GetUserReservationsInput!, page: Int, pageSize: Int): ReservationConnection!
+  getRecurrentSlots(where: ID!, recurrentWeekId: String): [RecurrentSlot!]!
+  getRecurrentWeeks(where: ID!): [RecurrentWeek!]!
+  checkIfQuicksellSlotsActivated(boxId: ID!): Boolean!
+  getSlotsCountToDelete(boxId: ID!, filters: RemoveSlotsInput): Int!
+  getSlotIdsForDeletion(boxId: ID!, filters: RemoveSlotsInput!): [ID!]!
+  getMyLastRankingOnWorkout(workoutId: ID!, difficulty: SessionDifficulty): Ranking
+  getMyPendingRankings: [Ranking!]!
+  getRankings(where: RankingWhereInput, orderBy: RankingOrderBy, page: Int, pageSize: Int): RankingConnection!
+  getRankingsByWorkout(where: RankingWorkoutWhereInput!, orderBy: RankingOrderBy, page: Int, pageSize: Int): RankingExtendedConnection!
+  getRankingsForWorkout(where: RankingRowWhereInput!, page: Int!, pageSize: Int): RankingRowConnection!
+  getRankingsBySlot(where: ID!, orderBy: RankingOrderBy, page: Int, pageSize: Int): [Ranking!]!
+  getDueInvoicesForDate(dueDate: DateTime!): Int!
+  performMembershipPayment(dueDate: DateTime!): Boolean!
+  changeBoxEnrollmentsDebitDay(where: ID!, debitDay: Int!): Boolean!
+  createEnrollmentsInvoices(where: ID!, offerIds: [ID!]): Boolean!
+  deleteBoxEnrollments(where: ID!): Boolean!
+  deleteBoxDueTransactions(where: ID!, from: DateTime): Boolean!
+  transitionToBalanceOperations: Boolean!
+  testWorkflowCron: Boolean!
+  testExpiringMembersWorkflowCron: Boolean!
+  testGhostMembersWorkflowCron: Boolean!
+  testWorkflowExpenseLimitCron: Boolean!
+  testStartFutureEnrollmentsCron: Boolean!
+  testMailingConfiguration(boxId: ID!): Boolean!
+  setConnectedAccountRefundFeature: Boolean!
+  recalculateBoxBalanceFromDate(boxId: ID!, date: DateTime!, balanceType: BalanceType!): Boolean!
+  getEnrollmentsAdmin(where: EnrollmentWhereInputAdmin, page: Int, pageSize: Int): EnrollmentConnection!
+  getEnrollments(where: EnrollmentWhereInput, page: Int, pageSize: Int): EnrollmentConnection!
+  getUserEnrollments(data: UserEnrollmentsWhereInput!): [Enrollment!]!
+  getUserExpiredEnrollments(data: UserEnrollmentsWhereInput!, page: Int, pageSize: Int): EnrollmentConnection!
+  getMyEnrollments(statuses: [EnrollmentStatus!], page: Int, pageSize: Int): EnrollmentConnection!
+  getEnrollmentSanctions(where: EnrollmentSanctionFilterInput!, page: Int, pageSize: Int): ExtendedSanctionConnection!
+  getEnrollmentReservationQuotas(enrollmentId: ID!, boxId: ID!, at: DateTime): EnrollmentReservationQuotas!
+  getOffer(where: ID!): Offer!
+  getOffers(where: OfferWhereInput, page: Int, pageSize: Int): OfferConnection!
+  getAllBoxOffers(where: ID!): [Offer!]!
+  getAllActiveOffers(where: ID!): [Offer!]!
+  getBoxInShopOffers(boxId: ID, boxIds: [ID!], type: OfferType, usesCredits: Boolean, page: Int!, pageSize: Int): OfferConnection!
+  getShopCategories(where: ID!): [ShopCategory!]
+  getInventoryCsvExport(boxId: ID!, status: ShopItemExportStatus!): String!
+  getShopItems(where: ShopItemsWhereInput, page: Int, pageSize: Int): ShopItemsConnection!
+  getNote(where: NoteWhereInput!): Note
+  getMyLastMonthWorkoutsCount: [StatValue]!
+  getMyRankingStats(period: StatPeriod): UserRankingStats!
+  getBusinessTurnover(where: ID!, input: StatInput!): StatOutput!
+  getBoxTurnover(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxPredictedTurnover(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxAverageOfferPrice(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxCashRegisterSells(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxClientUnpaidTotal(where: ID!, taxFree: Boolean!): StatValue!
+  getBoxClientWaitingCashlessTotal(where: ID!, taxFree: Boolean!): StatValue!
+  getBoxOfferRepartition(where: ID!): [StatValue]!
+  getBoxClientAgeRanges(where: ID!, gender: UserGender!): [StatValue]!
+  getBoxClientLocalisations(where: ID!): [StatValue]!
+  getBoxActiveClientsByMonth(where: ID!, input: StatInput!): StatOutput!
+  getBoxAttendingClientsByMonth(where: ID!, input: StatInput!): StatOutput!
+  getBoxSlotFillPercentage(where: ID!, recurrentWeekId: ID, input: StatInput!): [StatValue]!
+  getBoxTurnoverByCategories(where: ID!, taxFree: Boolean!, input: StatInput!): [StatValue]!
+  getBoxActiveClientsOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getBoxActiveClientsByGenderOnPeriod(where: ID!, gender: UserGender!, input: StatInput!): StatOutput!
+  getBoxNewClientsOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getBoxLostClientsOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getBoxNewEnrollmentsOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getBoxNewEnrollmentsFromShopOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getBoxActiveOffersByMonth(where: ID!, type: OfferType!, input: StatInput!): StatOutput!
+  getBoxActiveOffers(where: ID!, type: OfferType!, input: StatInput!): StatOutput!
+  getBoxReservationsOnPeriod(where: ID!, statuses: [ReservationStatus!]!, input: StatInput!): StatOutput!
+  getBoxOfferReservationStatsOnPeriod(where: ID!, input: StatInput!): [OfferReservationStatsOutput!]!
+  getBoxDropinsOnPeriod(where: ID!, isTrial: Boolean!, input: StatInput!): StatOutput!
+  getBoxDropinsTurnoverOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getBoxNewProspectsOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getBoxProspectConversionRateOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getPlanPurchasesByPeriod(where: ID!, input: StatInput!): StatOutput!
+  getPlanSubscriptionsByPeriod(where: ID!, input: StatInput!): StatOutput!
+  getCreatorPlanPurchasesByPeriod(where: ID!, input: StatInput!): StatOutput!
+  getCreatorPlanSubscriptionsByPeriod(where: ID!, input: StatInput!): StatOutput!
+  getCreatorPlanSellRepartition(where: ID!): [StatValue]!
+  getCreatorClientAgeRepartition(where: ID!, gender: UserGender!): [StatValue]!
+  getCreatorAveragePlanPurchase(where: ID!, input: StatInput!): StatOutput!
+  getCreatorAveragePlanSubscription(where: ID!, input: StatInput!): StatOutput!
+  getCreatorAverageSubscriberCount(where: ID!, input: StatInput!): StatOutput!
+  getChannelOverallTestingUsersCount: Int!
+  getChannelTestingUsersCount(where: ID, input: StatInput!): StatOutput!
+  getNewChannelTestingUsersCount(where: ID, input: StatInput!): StatOutput!
+  getChannelCommitmentRepartition(where: ID, input: StatInput!): [StatValue]!
+  getChannelOverallPayingUsersCount: Int!
+  getChannelPayingUsersCount(where: ID, input: StatInput!): StatOutput!
+  getNewChannelPayingUsersCount(where: ID, input: StatInput!): StatOutput!
+  getCreatorReactionsOnPeriod(where: ID, input: StatInput!): StatOutput!
+  getCreatorCommentsOnPeriod(where: ID, input: StatInput!): StatOutput!
+  getCreatorWatchTimeOnPeriod(where: ID, input: StatInput!): StatOutput!
+  getWorkflowExecutionsStartOrEndOnPeriod(where: ID!, terminated: Boolean!, goalReached: Boolean, input: StatInput!): StatOutput!
+  getActiveWorkflowExecutionsOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getWorkflowCommunicationsOnPeriod(where: ID!, type: TemplateType!, input: StatInput!): StatOutput!
+  getWorkflowConversionRateOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getWorkflowCostInCentsOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getOffersPurchasedOnPeriod(where: ID!, offerType: OfferType!, utmMedium: UTMMedium, input: StatInput!): StatOutput!
+  getDropinsBookedOnPeriod(where: ID!, isTrial: Boolean!, utmMedium: UTMMedium, input: StatInput!): StatOutput!
+  getOnlineSellsOnPeriod(where: ID!, utmMedium: UTMMedium, utmChannel: UTMChannel, asTime: Boolean, input: StatInput!): StatOutput!
+  getFitMarketTurnover(where: ID!, input: StatInput!): StatOutput!
+  getBoxAvgWeeklyAttendancePerMember(where: ID!, input: StatInput!, offerIds: [ID!]): StatOutput!
+  getBoxAvgPassageValue(where: ID!, businessInfoId: ID!, taxFree: Boolean!, input: StatInput!, offerIds: [ID!]): StatOutput!
+  getMemberKpiStats(where: ID!, userId: ID!, businessInfoId: ID!, taxFree: Boolean!): MemberKpiStats!
+  getBoxSlotRevenue(where: ID!, businessInfoId: ID!, taxFree: Boolean!, input: StatInput!, recurrentWeekId: ID): [SlotRevenueStat!]!
+  getBoxActiveMembersOnPeriod(where: ID!, input: StatInput!, offerIds: [ID!]): StatOutput!
+  getBoxMrrOnPeriod(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxMrrActiveOnPeriod(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxMrrGhostOnPeriod(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxArpuOnPeriod(where: ID!, taxFree: Boolean!, input: StatInput!): StatOutput!
+  getBoxWeeklyCapacityOnPeriod(where: ID!, input: StatInput!, slotTypeIds: [ID!]): StatOutput!
+  getBoxWeeklyAttendancesOnPeriod(where: ID!, input: StatInput!, slotTypeIds: [ID!]): StatOutput!
+  getBoxOfferMarginOnPeriod(where: ID!, taxFree: Boolean!, input: StatInput!, offerIds: [ID!]): StatOutput!
+  getBoxOfferCostPerMemberOnPeriod(where: ID!, input: StatInput!, offerIds: [ID!]): StatOutput!
+  getBoxOfferChurnOnPeriod(where: ID!, input: StatInput!, offerIds: [ID!]): StatOutput!
+  getBoxOfferLtvOnPeriod(where: ID!, taxFree: Boolean!, input: StatInput!, offerIds: [ID!]): StatOutput!
+  getBoxCostPerCheckInOnPeriod(where: ID!, input: StatInput!): StatOutput!
+  getExerciseCategories: [ExerciseCategory!]!
+  getExercises(search: String, page: Int, pageSize: Int): ExerciseConnection!
+  getCategoryExercises(categoryName: String!, page: Int, pageSize: Int): ExerciseConnection!
+  getMyLastPerformanceForRange(exerciseId: ID!, range: Int): Performance
+  getMyPerformances(exerciseId: ID!, range: Int, page: Int!, pageSize: Int): PerformanceConnection!
+  getMyPRsOnExercise(where: ID!): [Performance!]!
+  getMyNotifications(page: Int, pageSize: Int): NotificationsConnection!
+  getSepaExports(where: ID!, page: Int, pageSize: Int): SepaExportConnection!
+  getUnpaidSepaInvoices(where: UnpaidSepaInvoicesInput!, page: Int, pageSize: Int): SepaInvoicesExtendedConnection!
+  downloadSepaExport(where: ID!, collectionDate: DateTime!): SepaExportDownload!
+  downloadSepaExportCsv(where: ID!): String!
+  getInvoice(where: ID!): Invoice!
+  getInvoices(where: InvoicesWhereInput, page: Int, pageSize: Int, orderBy: String): InvoicesConnection!
+  getMyInvoices(page: Int, pageSize: Int, orderBy: String): InvoicesConnection!
+  getUserEnrollmentInvoices(data: GetUserEnrollmentInvoicesInput!, page: Int, pageSize: Int): InvoicesConnection!
+  getUserUnpaidEnrollmentInvoices(data: GetUserUnpaidEnrollmentInvoicesInput!, page: Int, pageSize: Int): InvoicesConnection!
+  getBoxSubscriptionInvoices(businessInfoId: ID!, page: Int, pageSize: Int): InvoicesConnection!
+  getVodSubscriptionInvoices(subId: ID!, page: Int, pageSize: Int): InvoicesConnection!
+  getVodBusinessSubscriptionInvoices(subId: ID!, page: Int, pageSize: Int): InvoicesConnection!
+  getSepaAutoDashboardStats(businessInfoId: ID!): SepaAutoDashboardStats!
+  getSepaAutoUnpaidInvoices(businessInfoId: ID!, page: Int, pageSize: Int): InvoicesConnection!
+  getEInvoices(businessInfoId: ID!, page: Int, pageSize: Int, search: String, status: EInvoiceStatus): EInvoiceConnection!
+  getEInvoice(where: ID!): EInvoice!
+  getEInvoiceDocument(where: ID!): EInvoiceDocument!
+  getEInvoiceOAuthConnection(businessInfoId: ID!): OAuthConnection
+  meCreator: CreatorWithAccessibleAccounts!
+  getCreator(where: ID!): RestrictedCreator!
+  getRestrictedCreators(search: String, page: Int, pageSize: Int): RestrictedCreatorConnection!
+  getCreators(search: String, page: Int, pageSize: Int): CreatorConnection!
+  loginAdmin(data: UserLoginInput!): UserWithAccessToken!
+  loginCreator(data: UserLoginInput!): CreatorWithTokenAndAccessibleAccounts!
+  loginPeppy(data: UserLoginInput!): UserWithEnrollmentAndAccessToken!
+  loginTeam(data: UserLoginInput!): UserWithVodBusinessSubscriptionsAndAccessToken!
+  socialLogin(authProvider: SocialAuthProvider!, authToken: String!, userFirstname: String, userLastname: String): UserWithEnrollment!
+  socialLoginPeppy(authProvider: SocialAuthProvider!, authToken: String!, userFirstname: String, userLastname: String): UserWithEnrollmentAndAccessToken!
+  socialLoginPeppyNative(authProvider: SocialAuthProvider!, authToken: String!): UserWithEnrollmentAndAccessToken!
+  getLesson(where: ID!): RestrictedLesson!
+  getPlanLesson(where: ID!): RestrictedPlanLesson!
+  getLessons(where: LessonFiltersInput!, page: Int, pageSize: Int): RestrictedLessonConnection!
+  getLockedPlanLessons(where: ID!, page: Int, pageSize: Int): LockedPlanLessonConnection
+  getPlanLessonsAndDoneMarks(where: PlanLessonFiltersInput!, page: Int, pageSize: Int): PlanLessonAndDoneMarkConnection!
+  getAllPlanLessons(where: PlanLessonFiltersInput!): [PlanLesson!]!
+  getLessonReaction(where: ID!): Reaction
+  getPlan(where: ID!): RestrictedPlan!
+  getRestrictedPlans(where: PlanFiltersInput, page: Int, pageSize: Int): RestrictedPlanConnection!
+  getPlans(where: PlanFiltersInput, page: Int, pageSize: Int): PlanConnection!
+  getMyPlans: UserPlans!
+  getPlanPurchase(where: ID!): PlanPurchase
+  getPlanSubscription(where: ID!): PlanSubscription
+  getPlanCheckoutLink(where: ID!): String!
+  getContentCategories: [ContentCategory!]!
+  getVideos(where: VideoFiltersInput!, page: Int, pageSize: Int): VideoConnection!
+  getTags(search: String, page: Int, pageSize: Int): TagConnection!
+  getTrendingTags: [Tag!]!
+  getBalanceOperations(where: ID!, balanceType: BalanceType!, page: Int, pageSize: Int): BalanceOperationConnection!
+  getMyBalanceOperations(page: Int, pageSize: Int): BalanceOperationConnection!
+  getUnbankedChequeBalanceOperations(where: ID!, page: Int, pageSize: Int): BalanceOperationConnection!
+  getUserCurrentBalance(where: ID!): BalanceOperation
+  getUserCurrentBalanceForBox(userId: ID!, boxId: ID!, currency: Currency): Int!
+  getUserBalanceOperations(userId: ID!, page: Int, pageSize: Int, orderBy: [BalanceOperationOrderByInput!], date: DateTime, description: String, type: BalanceOperationType, balanceType: BalanceType): BalanceOperationConnection!
+  getDiscoveries(where: GetDiscoveriesInput!): Discoveries!
+  getCreatorShopDiscoveries(where: ID!): CreatorShopDiscoveries!
+  getPromotionCode(planId: ID, boxId: ID, code: String!, forFitMarket: Boolean): PromotionCode!
+  getPromotionCodes(planId: ID, boxId: ID): [PromotionCode!]!
+  getPromotionCodeGroups(boxId: ID): [PromotionCodeGroup!]!
+  downloadPromotionCodeGroupCsv(where: ID!): String!
+  getBalances(stripeAccountId: String!): StripeBalances!
+  getLastPayouts(stripeAccountId: String!, after: String): StripePayoutConnection!
+  downloadPayoutTransactionsCsv(stripeAccountId: String!, stripePayoutId: String!): String
+  downloadPayoutTransactionsOnRangeCsv(stripeAccountId: String!, startDate: DateTime, endDate: DateTime): String
+  getFeedback(where: ID!): Feedback!
+  getPlanFeedbacks(where: ID!, page: Int!, pageSize: Int): FeedbackConnection!
+  getBoxFeedbacksAverages(where: ID!): BoxFeedbackAverages!
+  getBoxFeedbacksWithComments(where: ID!, page: Int!, pageSize: Int): FeedbackConnection!
+  getProspects(where: ProspectWhereInput!, page: Int!, pageSize: Int!): ProspectConnection!
+  getFlattenedProspects(where: FlattenedProspectWhereInput!, page: Int!, pageSize: Int!): FlattenedProspectConnection!
+  getChannel(where: ID!): RestrictedChannel!
+  getChannels(search: String, page: Int!, pageSize: Int): RestrictedChannelConnection!
+  getChannelVideo(where: ID!): RestrictedChannelVideo!
+  getChannelVideos(where: GetChannelVideosInput!, page: Int!, pageSize: Int): RestrictedChannelVideoConnection!
+  getChannelPlaylist(where: ID!): RestrictedChannelPlaylist!
+  getChannelPlaylists(where: ID, page: Int!, pageSize: Int): RestrictedChannelPlaylistConnection!
+  getAllChannelPlaylists(where: ID!): [ChannelPlaylist!]!
+  getChannelVideosOnPlaylist(playlistId: ID!): [RestrictedChannelVideosOnPlaylists!]!
+  getChannelVideosNotOnPlaylist(playlistId: ID!, page: Int!, pageSize: Int): ChannelVideoConnection!
+  getBoxContracts(where: ID!): [Contract!]!
+  getDropin(where: ID!): Dropin!
+  getDropinRequest(where: ID!): DropinRequest!
+  getDropinRequests(status_in: [DropinRequestStatus!], orderBy: DropinRequestOrderByInput, page: Int!, pageSize: Int): DropinRequestConnection!
+  getDropinRequestsCountSinceLastCreation(lastRequest: DateTime!): Int!
+  getDropins(where: GetDropinsInput!, page: Int!, pageSize: Int): DropinConnection!
+  getMyDropins(page: Int!, pageSize: Int): DropinConnection!
+  getMyPastDropins(page: Int!, pageSize: Int): DropinConnection!
+  getDropinStats(where: ID!, from: DateTime, to: DateTime): DropinStats!
+  getMyReferrals(where: ReferralFilters!, page: Int!, pageSize: Int): ReferralConnection!
+  getComments(where: ID!, page: Int!, pageSize: Int): CommentConnection!
+  getMyComment(where: ID!): Comment
+  getHangingComments(creatorId: ID!, page: Int!, pageSize: Int): CommentConnection!
+  getEquipments(search: String, page: Int!, pageSize: Int): EquipmentConnection!
+  getBlogPost(where: ID!): BlogPost!
+  getBlogPosts(slug: String, page: Int, pageSize: Int): BlogPostConnection!
+  getBlogPostLinks: [BlogPost!]!
+  getDealAdmin(where: ID!): Deal!
+  getDeal(where: ID!): RestrictedDeal!
+  getDealsAdmin(type: DealType, page: Int!, pageSize: Int): DealConnection!
+  getDeals(page: Int!, pageSize: Int): RestrictedDealConnection!
+  getMyVodSubscriptions: [VodSubscription!]!
+  getMyVodSubscriptionCookies: Boolean!
+  getTodos(boxId: ID!, completed: Boolean, page: Int, pageSize: Int): TodoConnection!
+  getTodayTodos(boxId: ID!, page: Int, pageSize: Int): TodoConnection!
+  getFeaturePromotion(where: ID!): FeaturePromotion!
+  getFeaturePromotionsAdmin(status: FeaturePromotionStatus!, page: Int!, pageSize: Int): FeaturePromotionConnection!
+  getFeaturePromotions(page: Int!, pageSize: Int): FeaturePromotionConnection!
+  getHeadlineFeaturePromotions: [FeaturePromotion!]!
+  getFeedPosts(boxId: ID!, page: Int, pageSize: Int): FeedPostConnection!
+  getMyFeedPosts(page: Int, pageSize: Int): FeedPostConnection!
+  getFeedPostReactions(postId: ID!, emoji: String!, page: Int, pageSize: Int): FeedPostReactionConnection!
+  getFeedBoxLatestReactions(boxId: ID!, page: Int, pageSize: Int): FeedPostReactionConnection!
+  getFeedStats(boxId: ID!): FeedStats!
+  getCampaign(id: ID!): Campaign!
+  getCampaigns(boxId: ID!, status: CampaignStatus, page: Int!, pageSize: Int): CampaignConnection!
+  getCampaignRecipients(campaignId: ID!, page: Int!, pageSize: Int): CampaignRecipientConnection!
+  getCampaignRecipientsPreview(boxId: ID!, filters: CampaignRecipientsFiltersInput!, page: Int!, pageSize: Int): CampaignRecipientsPreviewConnection!
+  compileAndGetCampaignStats(campaignId: ID!): CampaignStats!
+  getTemplate(id: ID!): Template!
+  getTemplates(boxId: ID!, workflowRelated: Boolean, type: TemplateType, page: Int!, pageSize: Int): TemplateConnection!
+  getAllTemplates(boxId: ID!): [Template!]!
+  getNotificationTemplates(where: ID!, status: NotificationTemplateStatus!, page: Int, pageSize: Int): NotificationTemplatesConnection!
+  getNotificationTemplateRecipientCount(where: ID!, data: NotificationTemplateRecipientCountInput!): Int!
+  getWorkflow(where: ID!): Workflow!
+  getWorkflows(where: ID!, page: Int!, pageSize: Int): WorkflowConnection!
+  getAllPendingWorkflowExecutions(where: ID!): [WorkflowExecution!]!
+  getPendingWorkflowExecutions(where: ID!, page: Int!, pageSize: Int): WorkflowExecutionConnection!
+  getAllWorkflowExecutionsOnPeriod(where: WorkflowExecutionsOnPeriodInput!): [WorkflowExecution!]!
+  getTemplateWorkflows(page: Int!, pageSize: Int): WorkflowConnection!
+  getAllTemplateWorkflows: [Workflow!]!
+  getLogEvents(where: GetLogEventsInput!, page: Int!, pageSize: Int): LogEventConnection!
+  getContactsWithUnreadMessages(boxId: ID!, page: Int!, pageSize: Int): UnreadContactConnection!
+  getBoxHasUnseenMessage(boxId: ID!): Boolean!
+  getForm(id: ID!): Form!
+  getActiveForm(id: ID!): Form!
+  getForms(boxId: ID!, page: Int!, pageSize: Int): FormConnection!
+  getNominativeForms(boxId: ID!): [Form!]!
+  getFormSubmission(id: ID!): FormSubmission
+  getFormSubmissionForProspect(prospectId: ID!): FormSubmission
+  getFormSubmissionForUserAndBox(userId: ID!, boxId: ID!): FormSubmission
+  isFormAlreadySubmited(formId: ID!): Boolean!
+  getFormSubmissions(formId: ID!, page: Int!, pageSize: Int): FormSubmissionConnection!
+  getFormSubmissionFields(formFieldId: ID!, page: Int!, pageSize: Int): FormSubmissionFieldConnection!
+  getFormFieldSubmissionCountByOption(formFieldId: ID!): [FormSubmissionFieldCountByOption!]!
+  getPendingForms: [Form!]!
+  getPrices(where: ID!): [Price!]!
+  forceAppUpdate(appVersion: String!): Boolean!
+  forceMobileProAppUpdate(appVersion: String!): Boolean!
+  getUpsell(code: String!): Upsell!
+  getUpsells: [Upsell!]!
+}
+
+type Mutation {
+  register(data: UserRegisterInput!): UserWithToken!
+  updateUser(data: UserUpdateInput!): User!
+  updateUserAdmin(where: ID!, data: UserUpdateAdminInput!): User!
+  deleteUser(where: ID): Boolean!
+  updatePassword(data: UserUpdatePasswordInput!): Boolean
+  forgetPassword(data: UserForgetPasswordInput!): Boolean!
+  resetPassword(data: UserResetPasswordInput!): Boolean
+  resetPasswordAdmin(where: ID!): String
+  createCoach(where: ID!, data: UserCreateAdminInput!): Box!
+  createStripeAccount(data: CreateStripeAccountInput!): User!
+  addCard(data: AddCardInput!): User
+  removeCard(where: ID!): User!
+  deleteCard(where: ID!): Boolean!
+  changeDefaultCard(where: ID!): User!
+  disableAccount: Boolean!
+  updateSettings(data: updateSettingsInput): User!
+  deleteUserAdmin(where: ID!): Boolean!
+  setPushToken(where: ID!, pushToken: String!, withTestNotification: Boolean): User!
+  setupNewCard: String!
+  completeUserRegistration(birthdate: DateTime!, gender: UserGender!): User!
+  sendAppFeedback(feedback: String!): User!
+  updateReviewAppData(hasRatedApp: Boolean): User!
+  sendTempCredentials(userId: ID!): Boolean!
+  createWorkout(data: CreateWorkout): Workout!
+  createWorkoutAdmin(data: WorkoutInputAdmin): Workout!
+  updateWorkout(where: ID!, data: UpdateWorkout): Workout!
+  updateWorkoutAdmin(where: ID!, data: WorkoutInputAdmin): Workout!
+  removeWorkout(where: ID!): Boolean!
+  createWorkoutCategory(name: String!, boxId: ID): WorkoutCategory!
+  addWorkoutBlock(where: ID!, data: CreateBlockInput!): WorkoutBlock!
+  updateWorkoutBlock(where: ID!, data: UpdateBlockInput!): WorkoutBlock!
+  moveWorkoutBlock(blockId: ID!, targetWorkoutId: ID!, position: Int!, wodDate: DateTime): WorkoutBlock!
+  copyWorkoutBlock(blockId: ID!): WorkoutBlock!
+  removeWorkoutBlock(where: ID!): Boolean!
+  deleteExpense(where: ID!): Boolean!
+  setupExpensePayment(where: ID!, data: SetupPaymentInput!): PaymentSetup!
+  completeExpensePayment(where: ID!, paymentIntentId: String!): Invoice!
+  setupExpensesPayment(where: ID!, data: SetupPaymentInput!): PaymentSetup!
+  completeExpensesPayment(where: ID!, paymentIntentId: String!): Invoice!
+  resolveExpenses(data: ResolveExpensesInput!): [Invoice!]!
+  createBox(data: BoxCreateInput!): Box!
+  moveBoxToTest(where: ID!, data: BoxToTestInput!): Box!
+  moveBoxToTrans(where: ID!, paymentType: String!): Box!
+  updateBoxTestUsers(where: ID!, userIds: [ID!]!): [User!]!
+  updateBox(where: ID, data: BoxUpdateInput!): Box!
+  updateBoxAdmin(where: ID!, data: BoxUpdateAdminInput!): Box!
+  addManagerToUnaffiliatedBox(where: ID!, data: BoxUpdateAdminInput!): Box!
+  initializeBoxCalibration(where: ID!): Box!
+  updatePaymentInfo(where: ID!, data: PaymentInfoInput!): Box
+  updateBoxParameters(where: ID!, data: BoxParametersInput!): Box
+  updateBoxClientInfos(where: ID!, data: UserUpdateInput): User!
+  updateBoxBusinessInfo(where: ID!, data: UpdateBusinessInfoInput!): Box!
+  updateBoxTeamMember(where: ID!, data: UpdateBoxTeamMemberInput!): User!
+  updateBoxQuickSellConfiguration(where: ID!, data: UpdateQuickSellConfigurationInput!): QuickSellConfiguration!
+  addBoxClient(where: ID!, data: AddBoxClientInput!, ignoreWarnings: Boolean): BoxClient!
+  addCoach(where: ID!, data: String!): Box!
+  removeCoach(where: ID, data: String!): Box!
+  uploadImage(where: ID!, data: Upload!): String!
+  uploadLogo(where: ID!, data: Upload!): Box!
+  removeImage(where: ID!, data: String!): Box!
+  removeLogo(where: ID!): Box!
+  updateBoxAccess(where: ID!, isRestricted: Boolean!): Boolean!
+  addItemToBoxInvoice(where: ID!, totalTTC: Float!, description: String!): Boolean!
+  addBoxCard(where: ID!, data: TempAddCardInput!): Box!
+  setupBoxCard(where: ID!): String!
+  createStripeBoxAccount(data: CreateStripeAccountBoxInput): Box!
+  requestStripeSepaDebitCapabilityFor(boxId: ID!): Boolean!
+  toggleBoxFavorite(boxId: ID!): Boolean!
+  configureSms(where: ID!, fromName: String!): SmsConfiguration!
+  createOnboardingAccountLink(boxId: String!): String!
+  toggleBoxUpsell(where: ID!, upsellId: ID!): BoxUpsell!
+  createPenalty(where: ID!, data: CreatePenaltyInput!): Penalty!
+  updatePenalty(where: ID!, data: UpdatePenaltyInput!): Penalty!
+  deletePenalty(where: ID!): Boolean!
+  deleteSanction(where: ID!): Boolean!
+  createWeekSlots(where: ID!, data: CreateWeekSlotsInput): Boolean!
+  createSlot(where: ID!, data: CreateSlotInput): Slot!
+  updateSlot(where: ID!, data: UpdateSlotInput): Slot!
+  updateSlotAdmin(where: ID!, data: UpdateSlotInputAdmin): Slot!
+  removeSlot(where: ID!): Boolean!
+  removeSlots(boxId: ID!, filters: RemoveSlotsInput, manuallyAddedSlotIdsForDeletion: [ID!], manuallyRemovedSlotIdsForDeletion: [ID!]): Boolean!
+  updateReservation(where: ID!, data: ReservationStatus!): Reservation!
+  removeReservation(where: ID!): Boolean!
+  createReservation(where: ID!, userId: ID!, enrollmentId: ID, forceMainList: Boolean, isRecurrent: Boolean, forceAfterCreditLimit: Boolean): Slot!
+  createEventReservation(slotId: ID!, data: ManagerEventReservationCreationInput!): Slot!
+  confirmReservation(where: ID!, data: ConfirmReservationInput): Reservation!
+  confirmSlotReservations(where: ID!, reservationIds: [ID!]!, dropinIds: [ID!]!): Slot
+  cancelReservation(where: ID!): Reservation!
+  cancelEventReservations(reservationIds: [ID!]!): [Reservation!]!
+  makeReservation(where: ID!, calendarEventId: String, enrollmentId: ID, onBehalfOf: String): Reservation!
+  makeEventReservation(slotId: ID!, onlyGuests: Boolean, guests: [String!], calendarEventId: String): [Reservation!]!
+  setupEventReservationPurchase(slotId: ID!, onlyGuests: Boolean, guests: [String!], data: SetupPaymentInput!, calendarEventId: String): PaymentSetup!
+  completeEventReservationPurchase(paymentIntentId: String!): [Reservation!]!
+  programWorkout(where: ID!, data: ProgramWorkoutInput): [Slot!]!
+  registerUserFromWaitList(where: ID!): Boolean!
+  createRecurrentWeek(where: ID!, name: String, fromId: ID): RecurrentWeek!
+  deleteRecurrentWeek(where: ID!): Boolean!
+  createRecurrentSlot(where: ID!, data: CreateRecurrentSlotInput): RecurrentSlot!
+  updateRecurrentSlot(where: ID!, data: UpdateRecurrentSlotInput): RecurrentSlot!
+  removeRecurrentSlot(where: ID!): Boolean!
+  createSlotType(data: CreateSlotTypeInput!): SlotType!
+  updateSlotType(where: ID!, data: UpdateSlotTypeInput!): SlotType!
+  propagateQuickSellConfiguration(boxId: ID!): Boolean!
+  propagateFitMarketConfiguration(boxId: ID!): Boolean!
+  createRanking(where: ID!, data: CreateRankingInput): Ranking!
+  updateRanking(where: ID!, data: UpdateRankingInput): Ranking!
+  deleteRanking(where: ID!): Boolean!
+  createGlobalShopCategory(data: createGlobalShopCategoryInput!): ShopCategory!
+  createExerciseCategory(name: String!): Boolean!
+  updateBoxStripePlan(where: ID!): Boolean!
+  createNotificationAdmin(where: ID!, data: CreateNotificationInput!): Boolean!
+  createGlobalSlotType(data: CreateSlotTypeAdminInput!): Boolean!
+  updateSlotTypeAdmin(where: ID!, data: CreateSlotTypeAdminInput!): Boolean!
+  setWorkoutDates: Boolean!
+  setExerciseSlugs: Boolean!
+  setOfferTitleSlugs: Boolean!
+  deleteEnrollmentFutureInvoices(where: ID!): Boolean!
+  createEnrollmentFutureInvoices(where: ID!): Boolean!
+  updateStripeConfigurationMetadataInBatch: Boolean!
+  createSepaAutoMandatesFor(boxId: ID!, checkOnly: Boolean): MandatesAdminCreationOutput!
+  createEnrollment(where: ID!, data: CreateEnrollmentInput!, ignoreWarnings: Boolean): Enrollment!
+  acceptEnrollment(where: ID!): Enrollment!
+  refuseEnrollment(where: ID!): Boolean!
+  deleteEnrollmentSanction(where: ID!, data: ID!): Enrollment!
+  setupEnrollmentRetryPayment(where: ID!, data: SetupPaymentInput!): PaymentSetup!
+  completeEnrollmentRetryPayment(where: ID!, paymentIntentId: String!): Enrollment!
+  updateEnrollment(where: ID!, data: EnrollmentUpdateInput): Enrollment!
+  updateMyEnrollment(where: ID!, data: UpdateMyEnrollmentInput!): Enrollment!
+  adjustEnrollmentCredits(where: ID!, creditBalance: Int!): Enrollment!
+  updateEnrollmentAdmin(where: ID!, data: EnrollmentUpdateInputAdmin): Enrollment!
+  cancelUserEnrollment(where: ID!): Enrollment!
+  suspendUserEnrollment(where: ID!, data: SuspensionInput!): Enrollment!
+  liftEnrollmentSuspension(where: ID!): Enrollment!
+  setupPrepaidCardPayment(where: ID!, data: SetupPaymentInput!): PaymentSetup!
+  completePrepaidCardPayment(where: ID!, paymentIntentId: String!): Enrollment!
+  setupEnrollmentUpfrontPayment(where: ID!, data: SetupPaymentInput!): PaymentSetup!
+  completeEnrollmentUpfrontPayment(where: ID!, paymentIntentId: String!): Enrollment!
+  switchEnrollment(data: SwitchEnrollmentInput!): Enrollment!
+  createOffer(where: ID!, data: CreateOfferInput!): Offer!
+  updateOffer(where: ID!, data: UpdateOfferInput!): Offer!
+  updateOfferAccessibility(where: ID!, data: UpdateOfferAccessibilityInput!): Offer!
+  updateOfferSellConditions(where: ID!, data: [SellConditionInput!]): Offer!
+  deleteOfferSellCondition(where: ID!): Boolean!
+  deleteOfferAdmin(where: ID!): Boolean!
+  createOfferPaymentIntent(offerId: ID!, startDate: DateTime, skipPlatformFees: Boolean, utmTracking: UTMTrackingInput, transferCreditsFromEnrollmentId: ID, onBehalfOf: String): OfferPaymentIntent!
+  setupOfferPaymentIntent(offerPaymentIntentId: ID!, startDate: DateTime!, priceId: ID): OfferPaymentIntent!
+  updateOfferPaymentIntentOnBehalfOf(where: ID!, onBehalfOf: String): OfferPaymentIntent!
+  setupOfferPurchase(offerPaymentIntentId: ID!, data: SetupPaymentInput!): PaymentSetup!
+  completeOfferPurchase(offerPaymentIntentId: ID!, paymentIntentId: String!): Enrollment!
+  setupFutureOfferStart(offerPaymentIntentId: ID!): Enrollment!
+  createShopCategory(data: createShopCategoryInput!): ShopCategory!
+  createShopItem(data: createShopItemInput!): ShopItem!
+  updateShopCategory(where: ID!, data: updateShopCategoryInput!): ShopCategory!
+  switchShopCategoryStatus(where: ID!, data: updateShopCategoryStatusInput!): ShopCategory!
+  updateShopItem(where: ID!, data: updateShopItemInput!): ShopItem!
+  disableShopItem(where: ID!): ShopItem!
+  disableShopCategory(where: ID!): ShopCategory!
+  updateNote(where: NoteWhereInput!, data: String!): Note
+  savePerformance(data: CreatePerformanceInput!): Boolean!
+  savePerformanceForRange(data: CreatePerformanceForRangeInput!): Performance!
+  deletePerformance(where: ID!): Boolean!
+  createNotification(data: CreateNotificationInput!): Notification!
+  createSepaExport(data: CreateSepaExportInput!): SepaExport!
+  deleteSepaExport(where: ID!): Boolean!
+  changeSepaExportState(where: ID!, isResolved: Boolean!): SepaExport!
+  createIban(iban: String!): Iban!
+  confirmIbanDebitAuthorizationForBox(boxId: ID!, ibanId: ID!): Boolean!
+  setupIbanDebitAuthorizationForBox(boxId: ID!): String!
+  setIbanAsDefault(ibanId: ID!): SetIbanAsDefaultOutput!
+  deleteIban(ibanId: ID!): Boolean!
+  retrySepaPaymentFor(invoiceId: ID!): Invoice!
+  createInvoice(data: CreateInvoiceInput!): Invoice!
+  updateInvoice(where: ID!, data: UpdateInvoiceInput!): Invoice!
+  deleteInvoice(where: ID!): Boolean!
+  resolveInvoice(where: ID!, data: ResolveInvoiceInput!): Invoice!
+  refundInvoice(where: ID!, refundByPaymentMethod: [RefundInput!]!): Invoice!
+  createEnrollmentInvoice(where: ID!, data: CreateEnrollmentInvoiceInput!): Invoice!
+  deleteEnrollmentInvoice(where: ID!): Boolean!
+  switchEnrollmentInvoiceToUnpaid(where: ID!): Invoice!
+  voidInvoice(where: ID!): Invoice!
+  createEInvoiceOnboardingURL(businessInfoId: ID!): EInvoiceOnboardingURLCreationResult!
+  updateEInvoiceStatus(where: ID!, data: UpdateEInvoiceStatusInput!): EInvoice!
+  createCreator(data: CreateCreatorInput!): Creator!
+  updateCreator(where: ID!, data: UpdateCreatorInput!): Creator!
+  createCreatorIntroVideo(where: ID!): VideoWithUploadLink!
+  deleteCreator(where: ID!): Boolean!
+  addPartner(where: ID!, partnerId: ID!): Creator!
+  removePartner(where: ID!, partnerId: ID!): Creator!
+  signup(data: UserRegisterInput!): UserWithAccessToken!
+  setupSocialSignup(authProvider: SocialAuthProvider!, authToken: String!, userFirstname: String, userLastname: String): User!
+  confirmSocialSignup(data: ConfirmSocialSignupInput!): UserWithAccessToken!
+  confirmSocialSignupNative(data: ConfirmSocialSignupInput!): UserWithAccessToken!
+  refreshAdminToken: AccessToken!
+  refreshCreatorToken: AccessToken!
+  refreshPeppyToken: AccessToken!
+  refreshTeamToken: AccessToken!
+  logoutAdmin: Boolean!
+  logoutCreator: Boolean!
+  logoutPeppy: Boolean!
+  logoutTeam: Boolean!
+  updatePasswordCreator(currentPassword: String!, newPassword: String!): Boolean!
+  createLesson(data: CreateLessonInput!): Lesson!
+  updateLesson(where: ID!, data: UpdateLessonInput!): Lesson!
+  createPlanLesson(planId: ID!, data: CreatePlanLessonInput!): PlanLesson!
+  decrementPlanLessonsDay(data: DecrementPlanLessonsDayInput!): Boolean!
+  completeLesson(where: ID!, data: CompleteLessonInput!): Boolean!
+  createLessonReaction(where: ID!, type: ReactionType!): Reaction!
+  deleteLessonReaction(where: ID!): Boolean!
+  updatePlanLessonsOrder(orderedIds: [ID!]!): [Lesson!]
+  addPlanLesson(planId: ID!): Lesson!
+  deletePlanLesson(planId: ID!, lessonId: ID!): Boolean!
+  createPlan(data: CreatePlanInput!): Plan!
+  updateDraftPlan(where: ID!, data: UpdateDraftPlanInput!): Plan!
+  updatePlanState(where: ID!, state: ContentState!): Plan!
+  setupPlanPurchase(where: ID!, data: SetupPlanPaymentInput!): PaymentSetup!
+  setupPlanSubscription(where: ID!, data: SetupPlanPaymentInput!): PaymentSetup!
+  completePlanPurchase(where: ID!, paymentIntentId: String!): PlanPurchase!
+  completePlanSubscription(where: ID!, paymentIntentId: String!): PlanSubscription!
+  setupPlanSubscriptionPaymentRetry(where: ID!, data: SetupPaymentInput!): PaymentSetup!
+  completePlanSubscriptionPaymentRetry(where: ID!, paymentIntentId: String!): PlanSubscription!
+  resetPlanPurchaseProgress(where: ID!): PlanPurchase!
+  updatePlanPrices(where: ID!, prices: [CreatePriceInput!]!): Plan!
+  endPlanSubscription(where: ID!): PlanSubscription!
+  createVideo(data: CreateVideoInput!): VideoWithUploadLink!
+  createBalanceOperation(where: ID!, data: CreateBalanceOperationInput): BalanceOperation!
+  createUserBalanceOperation(userId: ID!, currency: Currency!, data: CreateUserBalanceOperationInput!): BalanceOperation!
+  bankChequeOperations(where: ID!, operationIds: [ID!]!): BalanceOperation!
+  setupBalanceProvision(provisionType: BalanceProvisionType!, data: SetupPaymentInput!): PaymentSetup!
+  completeBalanceProvision(paymentIntentId: String!): BalanceOperation!
+  deleteBalanceOperation(where: ID!): Boolean!
+  updateBalanceOperation(where: ID!, data: UpdateBalanceOperationInput): BalanceOperation!
+  recalculateUserBalanceOperationsChain(userId: ID!, currency: Currency!, balanceType: BalanceType!): Boolean!
+  createCoupon(data: CreateCouponInput!): Coupon!
+  createPromotionCode(data: CreatePromotionCodeInput!): PromotionCode!
+  deactivateCoupon(where: ID!, planId: ID): Coupon!
+  createPromotionCodeGroup(where: ID, data: CreatePromotionCodeGroupInput!): PromotionCodeGroup!
+  deactivatePromotionCodeGroup(where: ID!): Boolean!
+  generateBoxPlatformFeesPromotionCode(where: ID!): PromotionCode!
+  createCreatorBusiness(where: ID!, data: CreateCreatorBusinessInput!): BusinessInfo!
+  createBusinessPartner(where: ID!, data: CreateBusinessPartnerInput!): BusinessPartner!
+  updateBusinessPartner(where: ID!, data: UpdateBusinessPartnerInput!): BusinessPartner!
+  updateBusinessInfo(where: ID!, data: BusinessInfoInput!): BusinessInfo!
+  updateBankAccount(where: ID!, bankAccountTokenId: String!): BankAccount!
+  generateCreatorStripeCustomAccountPortalLink(creatorId: ID!, accountTokenId: String): String!
+  createFeedback(data: CreateFeedbackInput!): Feedback!
+  createFeedbackForBox(data: CreateFeedbackForBoxInput!): Feedback!
+  createFeedbackResponse(where: ID!, comment: String!): Feedback!
+  updateFeedbackResponse(where: ID!, comment: String!): Feedback!
+  createProspect(data: CreateProspectInput!): Prospect!
+  updateProspect(where: ID!, data: UpdateProspectInput!): Prospect!
+  deleteProspect(where: ID!): Boolean!
+  setProspectAsConverted(where: ID!, conversionDate: DateTime!, toUserId: ID): Prospect!
+  setProspectState(where: ID!, state: ProspectState!): Prospect!
+  createChannel: Channel!
+  createChannelVideo(title: String!, videoId: ID!): ChannelVideo!
+  updateChannelVideo(where: ID!, data: UpdateChannelVideoInput!): ChannelVideo!
+  deleteChannelVideo(where: ID!): Boolean!
+  updateChannelVideoVisibility(where: ID!, visibility: Visibility!): ChannelVideo!
+  createChannelPlaylist(name: String!): ChannelPlaylist!
+  updateChannelPlaylist(where: ID!, data: UpdateChannelPlaylistInput!): ChannelPlaylist!
+  addChannelVideosToPlaylist(channelVideoIds: [ID!]!, channelPlaylistId: ID!): Boolean!
+  removeChannelVideoFromPlaylist(channelVideoId: ID!, channelPlaylistId: ID!): Boolean!
+  updateChannelVideoPlaylistPosition(position: Int!, channelVideoId: ID!, channelPlaylistId: ID!): Boolean!
+  createBoxOfferContract(data: CreateContractInput!): Contract!
+  updateBoxOfferContract(where: ID!, data: UpdateContractInput!): Contract!
+  createDropin(where: ID!, prospectId: ID, data: CreateDropinInput, utmSource: UTMSource): Slot!
+  removeDropin(where: ID!): Boolean!
+  setupDropinPurchase(slotId: ID!, promotionCodeId: ID, skipPlatformFees: Boolean, fromQuickSell: Boolean, fromFitMarket: Boolean, isTrial: Boolean, formSubmissionFields: [SubmitFormFieldInput!], utmTracking: UTMTrackingInput, data: SetupPaymentInput!): PaymentSetup!
+  completeDropinPurchase(slotId: ID!, paymentIntentId: String!): Dropin!
+  bookFreeDropinWithCode(slotId: ID!, promotionCodeId: ID, isTrial: Boolean, fromQuickSell: Boolean, fromFitMarket: Boolean, fromSEO: Boolean, formSubmissionFields: [SubmitFormFieldInput!], utmTracking: UTMTrackingInput): Dropin!
+  deleteDropin(where: ID!): Boolean!
+  makeDropinRequestForGym(input: MakeDropinRequestForGymInput!): DropinRequest!
+  updateDropinRequestForAdmin(where: ID!, input: UpdateDropinRequestInput!): DropinRequest!
+  cancelDropinRequest(where: ID!): DropinRequest!
+  confirmDropinRequest(where: ID!): DropinRequest!
+  createComment(where: ID, parentId: ID, text: String!): Comment!
+  updateComment(where: ID!, text: String!): Comment!
+  deleteComment(where: ID!): Boolean!
+  updateContent(where: ID!, data: UpdateContentInput!): RestrictedContent!
+  updateContentState(where: ID!, state: ContentState!): RestrictedContent!
+  createBlogPost(title: String!): BlogPost!
+  updateBlogPost(where: ID!, data: UpdateBlogPostInput!): BlogPost!
+  updateBlogPostState(where: ID!, state: ContentState!): BlogPost!
+  createDeal(type: DealType!): Deal!
+  updateDeal(where: ID!, data: UpdateDealInput!): Deal!
+  contactDealBrand(where: ID!, data: ContactDealBrandInput!): Boolean!
+  createVodSubscription(data: CreateVodSubscriptionInput!): VodSubscription!
+  setupVodSubscriptionRetryPayment(where: ID!): PaymentSetup!
+  cancelVodSubscription(where: ID!): VodSubscription!
+  createTodo(data: CreateTodoInput!): Todo!
+  updateTodo(where: ID!, data: UpdateTodoInput!): Todo!
+  completeTodo(where: ID!, data: CompleteTodoInput!): Todo!
+  deleteTodo(where: ID!): Boolean!
+  createFeaturePromotion(title: String!): FeaturePromotion!
+  updateFeaturePromotion(where: ID!, data: UpdateFeaturePromotionInput!): FeaturePromotion!
+  publishFeaturePromotion(where: ID!): FeaturePromotion!
+  scheduleFeaturePromotion(where: ID!, publishDate: DateTime!): FeaturePromotion!
+  deleteFeaturePromotion(where: ID!): Boolean!
+  closeFeaturePromotion(where: ID!): FeaturePromotion!
+  createFeedPost(boxId: ID!, content: String!): FeedPost!
+  deleteFeedPost(postId: ID!): Boolean!
+  toggleFeedPostReaction(postId: ID!, emoji: String!): Boolean!
+  createCampaign(boxId: ID!, data: CreateCampaignInput!): Campaign!
+  updateCampaign(id: ID!, data: UpdateCampaignInput!): Campaign!
+  deleteCampaign(id: ID!): Boolean!
+  sendCampaign(id: ID!): Campaign!
+  createTemplate(data: CreateTemplateInput!): Template!
+  updateTemplate(id: ID!, data: UpdateTemplateInput!): Template!
+  duplicateTemplate(id: ID!, name: String): Template!
+  deleteTemplate(id: ID!): Boolean!
+  createNotificationTemplate(where: ID!, data: CreateNotificationTemplateInput!): NotificationTemplate!
+  updateNotificationTemplate(where: ID!, data: UpdateNotificationTemplateInput!): NotificationTemplate!
+  deleteNotificationTemplate(where: ID!): Boolean!
+  createWorkflow(boxId: ID!, fromId: ID, name: String!): Workflow!
+  createWorkflowAdmin(name: String!): Workflow!
+  updateWorkflow(where: ID!, data: UpdateWorkflowInput!): Workflow!
+  updateWorkflowTrigger(where: ID!, data: UpdateWorkflowTriggerInput): WorkflowTrigger!
+  createWorkflowStep(where: ID!, data: CreateWorkflowStepInput): Workflow!
+  updateWorkflowStep(where: ID!, data: UpdateWorkflowStepInput): WorkflowStep!
+  deleteWorkflowStep(where: ID!): Workflow!
+  deleteWorkflowExecution(where: ID!): Boolean!
+  activateWorkflow(where: ID!, ignoreWarnings: Boolean): ActivateWorkflowResponse
+  deactivateWorkflow(where: ID!): Boolean
+  createManualNoteLogEvent(entityId: ID!, entityType: String!, note: String!, boxId: ID!): LogEvent!
+  sendMemberCommunication(data: SendMemberCommunicationInput!): SendMemberCommunicationPayload!
+  createForm(data: CreateFormInput!): Form!
+  updateForm(id: ID!, data: UpdateFormInput!): Form!
+  submitForm(id: ID!, data: SubmitFormInput!): FormSubmission!
+  toggleFormActivity(formId: ID!): Form!
+  createPrice(offerId: ID!, data: CreatePriceInput!): Price!
+  updatePrice(where: ID!, data: UpdatePriceInput!): Price!
+  deletePrice(where: ID!): Boolean!
+}
+
+type AccessRights {
+  id: ID!
+  box: Box!
+  slotTypes: [SlotType!]!
+  slotTypeLimits: [SlotTypeLimit!]!
+}
+
+input AccessRightsInput {
+  box: ID!
+  slotTypes: [ID!]
+  slotTypeLimits: [SlotTypeLimitInput!]
+}
+
+type AccessToken {
+  accessToken: String!
+  expiresIn: Int!
+}
+
+type ActivateWorkflowResponse {
+  hasErrors: Boolean!
+  caveats: [WorkflowActivationCaveat!]!
+}
+
+input AddBoxClientInput {
+  offerId: ID!
+  user: UserInput!
+  existingUserId: ID
+  fromProspectId: ID
+  priceId: ID
+  paymentMethod: PaymentMethod
+  paymentType: PaymentTypeDeprecated
+  startDate: DateTime!
+  customPrice: Float
+  renewal: Boolean
+  renewalType: RenewalType
+  upfrontPayment: Boolean
+  debitDay: Int
+  enrollmentInvoiceSetup: EnrollmentInvoiceSetupInput
+  onBehalfOf: String
+}
+
+input AddCardInput {
+  setupIntentId: String!
+  firstname: String
+  lastname: String
+}
+
+input AddEmployeeVodSubscriptionInput {
+  firstname: String!
+  lastname: String!
+  email: String!
+}
+
+input AddUserInput {
+  email: String!
+}
+
+type Address {
+  id: ID!
+  line1: String!
+  line2: String
+  city: String!
+  zipCode: String!
+  region: String
+  country: String
+}
+
+type Aggregate {
+  count: Int!
+  sum: Int
+}
+
+enum AverageLessonDuration {
+  LESS_THAN_15
+  BETWEEN_15_30
+  MORE_THAN_30
+}
+
+type BalanceOperation {
+  id: ID!
+  invoice: Invoice
+  invoiceId: ID
+  businessInfo: BusinessInfo
+  user: User
+  balance: Int!
+  currency: Currency!
+  type: BalanceOperationType
+  description: String
+  amountIn: Int
+  amountOff: Int
+  balanceType: BalanceType!
+  banked: Boolean
+  bankedAt: DateTime
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+type BalanceOperationConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [BalanceOperationEdge!]
+}
+
+type BalanceOperationEdge {
+  node: BalanceOperation!
+  cursor: String!
+}
+
+enum BalanceOperationOrderByInput {
+  createdAt_DESC
+  createdAt_ASC
+  id_DESC
+  id_ASC
+}
+
+enum BalanceOperationType {
+  REGULARISATION
+  BANKING
+  WITHDRAWAL
+  BAIL_OUT
+}
+
+enum BalanceProvisionType {
+  TEN
+  TWENTY
+  FIFTY
+}
+
+enum BalanceType {
+  CASH
+  CHEQUE
+  OTHER
+}
+
+type BankAccount {
+  id: ID!
+  last4: String!
+  country: String!
+  currency: String!
+  bankName: String!
+  stripeId: String!
+}
+
+type BasketItem {
+  id: ID!
+  quantity: Int!
+  item: ShopItem!
+  sellingPrice: Float!
+}
+
+type BlogPost {
+  id: ID!
+  state: ContentState!
+  title: String!
+  titleSlug: String!
+  content: String
+  metaDescription: String
+  thumbnailUrl: String
+  timeToReadInMinutes: Int
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+type BlogPostConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [BlogPostEdge!]
+}
+
+type BlogPostEdge {
+  node: BlogPost!
+  cursor: String!
+}
+
+enum BookingType {
+  DROPIN
+  TRIAL
+}
+
+type Box {
+  id: ID!
+  name: String!
+  nameSlug: String
+  stripeId: String
+  paymentDetail: PaymentDetail
+  paymentInfo: PaymentInfo
+  businessInfo: BusinessInfo
+  parameters: BoxParameters
+  paymentType: DeprecatedPaymentType
+  email: String
+  phone: String
+  address: String
+  latitude: Float
+  longitude: Float
+  description: String
+  logo: String
+  images: [String!]
+  peppyStatus: BoxStatus
+  coaches: [User!]
+  manager: User
+  schedule: [Schedule!]
+  submanager: User
+  iban: String
+  bic: String
+  wodNotification: Boolean
+  hasUnseenMessage: Boolean
+  showOnMap: Boolean
+  showOnFitMarket: Boolean
+  fitMarketDropinPrice: Int
+  dropinPrice: Int
+  trialPrice: Int
+  dropinPromotionCode: PromotionCode
+  expenses: [Expense!]
+  isRestricted: Boolean
+  distance: Int
+  defaultRecurrentWeek: RecurrentWeek
+  mailingConfiguration: MailingConfiguration
+  quickSellConfiguration: QuickSellConfiguration
+  smsConfiguration: SmsConfiguration
+  upsells: [BoxUpsell!]
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type BoxClient {
+  id: ID!
+  lastname: String!
+  firstname: String!
+  gender: UserGender
+  phone: String
+  birthdate: DateTime
+  email: String!
+  registrationCode: String
+  registrationType: RegisterType!
+  registrationDone: Boolean!
+  avatar: String
+  address: String
+  zipcode: String
+  city: String
+  iban: String
+  bic: String
+  paymentDetail: ID
+  lastSeen: DateTime
+  nextShowUp: DateTime
+  cashlessCount: Int
+  cashlessTotal: Int
+  unpaidCount: Int
+  unpaidTotal: Int
+  enrollmentCount: Int!
+  reservationCount: Int
+  visitCount: Int
+  firstEnrollmentStart: DateTime
+  lastEnrollmentEnd: DateTime
+  missingCreditCard: Boolean
+  withRefusedPayment: Boolean
+  withValidatedEnrollment: Boolean
+  withPendingEnrollment: Boolean
+  withSuspendedEnrollment: Boolean
+  withFutureEnrollment: Boolean
+  metadata: JSON
+}
+
+type BoxClientsConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  rows: [BoxClient!]!
+}
+
+enum BoxClientsOrderByInput {
+  firstname_ASC
+  firstname_DESC
+  lastname_ASC
+  lastname_DESC
+}
+
+input BoxClientsWhereInput {
+  box: ID
+  search: String
+  withNextShowUp: Boolean
+  withUnpaidTotal: Boolean
+  withLastSeen: Boolean
+  filters: [FilterStatus]
+}
+
+type BoxConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [BoxEdge!]
+  totalCount: Int
+}
+
+input BoxCreateInput {
+  boxName: String!
+  ownerLastname: String
+  ownerFirstname: String
+  ownerEmail: String!
+  ownerPhone: String
+}
+
+type BoxDetails {
+  enrollmentsCount: Int!
+  pricing: Float!
+}
+
+type BoxEdge {
+  node: Box!
+  cursor: String!
+}
+
+type BoxExtended {
+  box: Box!
+  totalDue: Float
+}
+
+type BoxFeedbackAverages {
+  ratingCount: Int!
+  ratingAverage: Float
+  receptionAverage: Float
+  teamAverage: Float
+  moodAverage: Float
+  serviceQualityAverage: Float
+  equipmentAverage: Float
+  commentCount: Int!
+}
+
+enum BoxListType {
+  FASTLANE
+  AROUND
+  HIGH_BOOKING
+  POPULAR
+  ATMOSPHERE
+}
+
+enum BoxOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  email_ASC
+  email_DESC
+  description_ASC
+  description_DESC
+  address_ASC
+  address_DESC
+  latitude_ASC
+  latitude_DESC
+  longitude_ASC
+  longitude_DESC
+  phone_ASC
+  phone_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type BoxParameters {
+  slotPublicationInterval: Int
+  slotClosingReservationInterval: Int
+  slotClosingWaitingListUpdateInterval: Int
+  maxPendingReservations: Int
+  countChildrenSlotTypeReservationsInMaxPending: Boolean
+  slotNoPenaltyCancellationInterval: Int
+  allowLateReservationCancelling: Boolean
+  slotClosingConfirmationInterval: Int
+  allowNoShow: Boolean
+  allowReservationWhenUnpaid: Boolean
+  areSlotReservationsVisibleToMembers: Boolean
+  automaticNoShowOnPendingReservations: Boolean
+  monthlyOperatingCharges: Int
+}
+
+input BoxParametersInput {
+  slotPublicationInterval: Int
+  slotClosingReservationInterval: Int
+  slotClosingWaitingListUpdateInterval: Int
+  maxPendingReservations: Int
+  countChildrenSlotTypeReservationsInMaxPending: Boolean
+  slotNoPenaltyCancellationInterval: Int
+  allowLateReservationCancelling: Boolean
+  slotClosingConfirmationInterval: Int
+  allowNoShow: Boolean
+  allowReservationWhenUnpaid: Boolean
+  areSlotReservationsVisibleToMembers: Boolean
+  automaticNoShowOnPendingReservations: Boolean
+  monthlyOperatingCharges: Int
+}
+
+input BoxSearchInput {
+  search: String
+  userId: ID
+  managerId: String
+  status: BoxStatus
+}
+
+enum BoxStatus {
+  CALIBRAGE
+  TEST
+  TRANSFORMED
+}
+
+type BoxToDosOutput {
+  hasLogo: Boolean!
+  hasPhotos: Boolean!
+  hasAddress: Boolean!
+  hasGpsCoor: Boolean!
+  hasPhone: Boolean!
+  hasSchedule: Boolean!
+}
+
+input BoxToTestInput {
+  testStart: String!
+  testEnd: String!
+}
+
+input BoxUpdateAdminInput {
+  name: String
+  email: String
+  description: String
+  address: String
+  phone: String
+  latitude: Float
+  longitude: Float
+  iban: String
+  bic: String
+  externalAccount: String
+  subscriptionId: String
+  customerId: String
+  personId: String
+  defaultPaymentMethodId: String
+  card: CardInput
+  isRestricted: Boolean
+  manager: ManagerCreatedByAdminInput
+  mailingConfiguration: MailingConfigurationInput
+  showOnFitMarket: Boolean
+}
+
+input BoxUpdateInput {
+  name: String
+  email: String
+  description: String
+  address: String
+  phone: String
+  schedule: [ScheduleInput!]
+  wodNotification: Boolean
+  showOnMap: Boolean
+  showOnFitMarket: Boolean
+  dropinPrice: Float
+  fitMarketDropinPrice: Float
+  trialPrice: Float
+  defaultRecurrentWeekId: ID
+}
+
+type BoxUpsell {
+  id: ID!
+  upsell: Upsell!
+  upsellId: ID!
+  isActive: Boolean!
+  state: BoxUpsellState!
+  activatedAt: DateTime
+  deactivationRequestedAt: DateTime
+  trialUsage: JSON
+}
+
+enum BoxUpsellState {
+  ACTIVE
+  CANCELLED
+  TRIAL
+}
+
+type BoxWithoutMandate {
+  id: ID!
+  logo: String
+  name: String!
+  businessName: String!
+}
+
+input BoxesInAreaSearchInput {
+  search: String
+  latMin: Float!
+  latMax: Float!
+  lngMin: Float!
+  lngMax: Float!
+  from: Point
+  first: Int
+}
+
+type BusinessInfo {
+  id: ID!
+  businessName: String
+  logo: String
+  legalEntityType: String
+  capital: Float
+  address: String
+  city: String
+  region: String
+  zipCode: String
+  countryCode: CountryCode
+  siren: String
+  rcsNumber: String
+  tvaNumber: String
+  box: Box
+  creator: Creator
+  type: BusinessType
+  bankAccount: BankAccount
+  taxRate: Int
+  businessPartners: [BusinessPartner!]!
+  stripeId: String
+  hasStripeRequirements: Boolean
+  sepaMandates: [SepaMandate!]!
+  preferredCurrency: Currency!
+  updatedAt: DateTime
+  createdAt: DateTime
+  stripeConfigurationMetadata: JSON
+}
+
+input BusinessInfoInput {
+  businessName: String
+  legalEntityType: String
+  capital: Float
+  address: String
+  city: String
+  region: String
+  zipCode: String
+  siren: String
+  rcsNumber: String
+  tvaNumber: String
+  tokenId: String
+}
+
+type BusinessPartner {
+  id: ID!
+  firstname: String
+  lastname: String
+  address: Address
+  birthdate: DateTime
+  ownershipPercent: Float
+  roles: [BusinessPartnerRole!]!
+  hasStripeRequirements: Boolean!
+  title: String
+  stripeId: String!
+}
+
+enum BusinessPartnerRole {
+  EXECUTIVE
+  REPRESENTATIVE
+  DIRECTOR
+}
+
+enum BusinessType {
+  BOX
+  CREATOR
+}
+
+type Campaign {
+  id: ID!
+  name: String
+  subject: String
+  type: CampaignType
+  status: CampaignStatus
+  clientStatuses: [ClientStatus!]
+  offers: [Offer!]
+  recipientCount: Int
+  publishDate: DateTime
+  stats: CampaignStats
+  invoice: Invoice
+  box: RestrictedBox
+  template: Template
+  updatedAt: DateTime
+  createdAt: DateTime
+  metadata: JSON
+}
+
+type CampaignConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [CampaignEdge!]
+}
+
+type CampaignEdge {
+  node: Campaign!
+  cursor: String!
+}
+
+type CampaignRecipient {
+  id: ID!
+  firstname: String
+  lastname: String
+  phone: String
+  pushToken: String
+  email: String
+  hasSeen: Boolean
+  hasClicked: Boolean
+  hasReceived: Boolean
+  deliveryErrorCode: String
+  user: User
+  prospect: Prospect
+  campaign: Campaign!
+  createdAt: DateTime!
+}
+
+type CampaignRecipientConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [CampaignRecipientEdge!]
+}
+
+type CampaignRecipientEdge {
+  node: CampaignRecipient!
+  cursor: String!
+}
+
+input CampaignRecipientFiltersInput {
+  search: String
+  clientStatuses: [ClientStatus!]
+  offerIds: [ID!]
+  campaignType: CampaignType
+}
+
+input CampaignRecipientsFiltersInput {
+  clientStatuses: [ClientStatus!]
+  offerIds: [ID!]
+  campaignType: CampaignType
+  search: String
+}
+
+type CampaignRecipientsPreview {
+  id: ID!
+  firstname: String
+  lastname: String
+  email: String
+  phone: String
+  pushToken: String
+  isProspect: Boolean
+}
+
+type CampaignRecipientsPreviewConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [CampaignRecipientsPreviewEdge!]
+}
+
+type CampaignRecipientsPreviewEdge {
+  node: CampaignRecipientsPreview!
+  cursor: String!
+}
+
+type CampaignStats {
+  id: ID!
+  campaign: Campaign
+  openRate: Float
+  clickRate: Float
+  deliveryRate: Float
+  links: JSON
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+}
+
+input CampaignTemplateInput {
+  id: ID
+  content: String
+  design: JSON
+}
+
+enum CampaignType {
+  EMAIL
+  SMS
+  NOTIFICATION
+}
+
+input CancelMembershipInput {
+  userId: ID!
+  membershipId: ID!
+  membershipEnd: DateTime!
+  renewal: Boolean!
+}
+
+input CancelSuspensionInput {
+  prorateAmount: Int!
+  isReported: Boolean!
+}
+
+input CancellationInput {
+  box: ID!
+  user: ID!
+}
+
+type Card {
+  id: ID!
+  paymentIntentId: String
+  paymentMethodId: String!
+  brand: String!
+  lastNumber: Int!
+  holder: String
+  expirationDate: String!
+  isDefault: Boolean!
+  country: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input CardInput {
+  setupIntentId: String!
+  paymentMethodId: String!
+  brand: String!
+  lastNumber: Int!
+  holder: String!
+  expirationDate: String!
+  isDefault: Boolean!
+  country: String
+}
+
+type CardSetup {
+  id: String
+  clientSecret: String
+  status: String
+  redirectUrl: String
+  returnUrl: String
+  paymentMethodId: String
+}
+
+type Channel {
+  id: ID!
+  creator: Creator!
+  content: Content!
+  videoCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ChannelConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ChannelEdge!]
+}
+
+type ChannelEdge {
+  node: Channel!
+  cursor: String!
+}
+
+type ChannelPlaylist {
+  id: ID!
+  name: String!
+  nameSlug: String!
+  description: String
+  visibility: Visibility!
+  thumbnailUrl: String
+  videoCount: Int!
+  channel: Channel
+  tags: [Tag!]!
+}
+
+type ChannelPlaylistConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ChannelPlaylistEdge!]
+}
+
+type ChannelPlaylistEdge {
+  node: ChannelPlaylist!
+  cursor: String!
+}
+
+enum ChannelPrice {
+  NO_COMMITMENT
+  COMMITMENT_3_MONTHS
+  COMMITMENT_6_MONTHS
+}
+
+type ChannelSubscription {
+  id: ID!
+  price: ChannelPrice!
+  channel: RestrictedChannel!
+  debitDay: Int!
+  user: User!
+  startDate: DateTime!
+  terminationDate: DateTime
+  commitmentEndDate: DateTime
+  lastPaymentDate: DateTime
+  trialPeriodEndDate: DateTime
+  status: ChannelSubscriptionStatus!
+  unpaidSince: DateTime
+  unpaidErrorCode: String
+  unpaidAmount: Int
+  stripeId: String
+  feedback: Feedback
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum ChannelSubscriptionStatus {
+  ONGOING
+  UNPAID
+  CANCELING
+  CANCELED
+}
+
+type ChannelVideo {
+  id: ID!
+  title: String!
+  titleSlug: String!
+  description: String
+  video: Video!
+  visibility: Visibility!
+  publishDate: DateTime
+  thumbnailUrl: String
+  isFree: Boolean!
+  playlists: [ChannelVideosOnPlaylists!]!
+  parts: [ChannelVideoPart!]!
+  tags: [Tag!]!
+  type: ChannelVideoType!
+  channel: Channel!
+  likeCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ChannelVideoConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ChannelVideoEdge!]
+}
+
+type ChannelVideoEdge {
+  node: ChannelVideo!
+  cursor: String!
+}
+
+type ChannelVideoPart {
+  id: ID!
+  name: String!
+  duration: Int!
+  durationUnit: ChannelVideoPartDurationUnit!
+  description: String!
+  position: Int
+  timestamp: Int
+}
+
+enum ChannelVideoPartDurationUnit {
+  MINUTE
+  ROUND
+}
+
+type ChannelVideoReaction {
+  channelVideo: ChannelVideo!
+  user: User!
+  reaction: Reaction!
+  createdAt: DateTime!
+}
+
+enum ChannelVideoType {
+  MISCELLANEOUS
+  WORKOUT
+  NUTRITION
+}
+
+type ChannelVideosOnPlaylists {
+  position: Int!
+  channelVideo: ChannelVideo!
+  playlist: ChannelPlaylist!
+  assignedAt: DateTime!
+}
+
+type Charge {
+  id: ID!
+  amount: Int!
+  customer: User
+  description: String
+  failureCode: String
+  failureMessage: String
+  paymentMethod: PaymentMethod
+  status: ChargeStatus!
+  updatedAt: DateTime!
+  createdAt: DateTime
+}
+
+enum ChargeStatus {
+  SUCCESS
+  ERROR
+  NEED_AUTH
+}
+
+type CheckEmailAndRegistrationOutput {
+  exists: Boolean!
+  registrationDone: Boolean
+}
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  WITH_UNPAID_OFFER
+  WITH_UNPAID_CASHLESS
+  GHOST
+  PROSPECT
+  HOT_PROSPECT
+  COLD_PROSPECT
+}
+
+enum ClientType {
+  EXTERN_CLIENT
+  BOX_CLIENT
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  author: User
+  children: [Comment!]!
+  parent: Comment
+  lesson: Lesson
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CommentConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [CommentEdge!]
+}
+
+type CommentEdge {
+  node: Comment!
+  cursor: String!
+}
+
+input CompleteLessonInput {
+  rating: Int
+  comment: String
+  feeling: FeelingType
+  planLessonId: ID
+}
+
+input CompleteTodoInput {
+  phoneCallTaskStatus: PhoneCallTaskStatus
+  note: String
+}
+
+input ConfirmReservationInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input ConfirmSocialSignupInput {
+  firstname: String!
+  lastname: String!
+  email: String!
+  birthdate: String!
+  gender: UserGender!
+  phone: String
+  socialProvider: SocialAuthProvider
+}
+
+type Contact {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  email: String
+  phone: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input ContactDealBrandInput {
+  boxId: ID!
+  name: String!
+  email: String!
+  phone: String!
+  message: String!
+}
+
+input ContactInfoInput {
+  firstname: String!
+  lastname: String!
+  email: String
+  phone: String
+}
+
+type Content {
+  id: ID!
+  state: ContentState!
+  name: String!
+  nameSlug: String!
+  difficulty: Difficulty
+  tags: [Tag!]
+  description: String
+  thumbnailUrl: String
+  wideSplashUrl: String
+  titleLogoUrl: String
+  wideSplashDescription: String
+  introVideo: Video
+  participants: [Creator!]
+  categories: [ContentCategory!]!
+  duration: Int
+  durationUnit: TimeUnit
+  equipmentLevel: EquipmentLevel
+  equipments: [ContentEquipment!]!
+  averageRating: Float
+  ratingCount: Int!
+  publishDate: DateTime
+  prices: [Price!]
+  videoUploadLink: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ContentCategory {
+  id: String!
+  name: String!
+  nameSlug: String!
+  thumbnailUrl: String
+}
+
+type ContentEquipment {
+  equipment: Equipment!
+  quantity: Int!
+}
+
+input ContentInput {
+  name: String!
+  difficulty: Difficulty!
+  description: String
+  participants: [ID!]!
+  state: ContentState!
+  tags: [TagInput!]
+  duration: Int!
+  durationUnit: TimeUnit!
+  equipmentLevel: EquipmentLevel!
+  prices: [CreatePriceInput!]!
+  introVideoId: ID!
+  thumbnail: Upload
+}
+
+enum ContentState {
+  DRAFT
+  PUBLISHED
+  HIDDEN
+}
+
+type Contract {
+  id: ID!
+  name: String!
+  url: String!
+  box: Box
+  withRenewal: Boolean!
+  renewalType: RenewalType!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Counters {
+  id: ID!
+  totalCount: Int!
+  weekCount: Int!
+  lateCancellationCount: Int!
+  unpaidCount: Int!
+  noShowCount: Int!
+}
+
+input CountersUpdateInput {
+  totalCount: Int
+  weekCount: Int
+}
+
+enum CountryCode {
+  FR
+  BE
+  MC
+  LU
+  CH
+}
+
+type Coupon {
+  id: ID!
+  name: String
+  amountOff: Int
+  percentOff: Float
+  trialPeriodDays: Int
+  credit: Int
+  platformFeesPercentOff: Float
+  expirationDate: DateTime
+  maxRedemption: Int
+  timesRedeemed: Int
+  active: Boolean!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+input CreateAddressInput {
+  line1: String!
+  line2: String
+  city: String!
+  zipCode: String!
+  region: String
+  country: String
+}
+
+input CreateBalanceOperationInput {
+  amountIn: Int
+  amountOff: Int
+  type: BalanceOperationType!
+  description: String
+  balanceType: BalanceType!
+  taxRate: Float
+  paymentMethod: PaymentMethod
+}
+
+input CreateBlockInput {
+  title: String!
+  description: String!
+  coachNotes: String
+  performanceType: PerformanceType
+  unitLabel: String
+  position: Int!
+  color: String
+  wodDate: DateTime
+}
+
+input CreateBusinessPartnerInput {
+  firstname: String!
+  lastname: String!
+  address: CreateAddressInput!
+  birthdate: DateTime!
+  ownershipPercent: Float!
+  roles: [BusinessPartnerRole!]!
+  title: String!
+  tokenId: String!
+}
+
+input CreateCampaignInput {
+  name: String!
+  type: CampaignType!
+  subject: String
+  status: CampaignStatus
+  offerIds: [ID!]
+  clientStatuses: [ClientStatus!]
+  publishDate: DateTime
+  template: CampaignTemplateInput
+  metadata: JSON
+}
+
+input CreateChannelVideoPartInput {
+  name: String!
+  duration: Int!
+  durationUnit: ChannelVideoPartDurationUnit!
+  position: Int!
+  description: String!
+}
+
+input CreateContractInput {
+  boxId: ID!
+  name: String!
+  file: Upload!
+  withRenewal: Boolean!
+  renewalType: RenewalType
+}
+
+input CreateCouponInput {
+  name: String!
+  planId: ID!
+  amountOff: Int
+  percentOff: Float
+  expirationDate: DateTime
+  maxRedemption: Int
+}
+
+input CreateCreatorAdminUser {
+  email: String!
+  firstname: String!
+  lastname: String!
+}
+
+input CreateCreatorBusinessInput {
+  partners: [CreateBusinessPartnerInput!]!
+  info: BusinessInfoInput!
+  bankAccountTokenId: String!
+}
+
+input CreateCreatorInput {
+  adminId: ID
+  userData: CreateCreatorAdminUser
+  displayName: String!
+  platformFeePercentage: Float!
+}
+
+input CreateDiscountInput {
+  value: Float
+  start: DateTime
+  end: DateTime
+}
+
+input CreateDropinInput {
+  firstname: String!
+  lastname: String!
+  phone: String
+  email: String
+  isTrial: Boolean
+}
+
+input CreateEnrollmentInput {
+  offerId: ID!
+  userId: ID!
+  priceId: String
+  paymentMethod: PaymentMethod
+  paymentType: PaymentTypeDeprecated
+  startDate: DateTime!
+  customPrice: Float
+  renewal: Boolean
+  renewalType: RenewalType
+  upfrontPayment: Boolean
+  debitDay: Int
+  iban: String
+  bic: String
+  enrollmentInvoiceSetup: EnrollmentInvoiceSetupInput
+  onBehalfOf: String
+}
+
+input CreateEnrollmentInvoiceInput {
+  totalTTC: Float!
+  dueDate: DateTime!
+  status: InvoiceStatus!
+  paymentMethod: PaymentMethod!
+}
+
+input CreateExpenseInput {
+  amount: Float!
+  description: String!
+  date: DateTime!
+  box: ID!
+}
+
+input CreateFeedbackForBoxInput {
+  dropinId: ID
+  boxId: ID
+  ratings: RatingsForBoxInput!
+  comment: String
+}
+
+input CreateFeedbackInput {
+  planPurchaseId: ID
+  planSubscriptionId: ID
+  comment: String
+  rating: Int
+}
+
+input CreateFormInput {
+  name: String!
+  boxId: ID!
+  isNominative: Boolean
+  quickSellFormType: QuickSellFormType
+}
+
+input CreateInvoiceInput {
+  debtor: ID
+  creditor: ID!
+  enrollment: ID
+  lines: [CreateInvoiceLineInput!]!
+  paymentMethod: PaymentMethod
+  dueDate: DateTime
+  paymentDate: DateTime
+  description: String
+  discounts: [ID!]
+  status: InvoiceStatus
+  type: InvoiceType!
+  amountIn: Int
+  useBalance: Boolean
+}
+
+input CreateInvoiceLineInput {
+  id: ID
+  description: String
+  discounts: [ID!]
+  shopItem: ID
+  quantity: Int!
+  enrollment: ID
+  type: InvoiceLineType!
+  unitAmount: Int!
+  taxRate: Float!
+}
+
+input CreateLessonInput {
+  creatorId: ID!
+  content: ContentInput!
+  parts: [CreateLessonPartInput!]!
+  free: Boolean!
+}
+
+input CreateLessonPartInput {
+  name: String!
+  duration: Int!
+  durationUnit: LessonPartDurationUnit!
+  position: Int!
+  description: String!
+}
+
+input CreateMembershipInput {
+  user: ID!
+  membershipStart: DateTime!
+  commitment: Int!
+  renewal: Boolean!
+  price: Float!
+  iban: String
+  bic: String
+  address: String
+  discountPrice: Float
+  discountStart: DateTime
+  discountEnd: DateTime
+  city: String
+  zipcode: String
+  country: String
+}
+
+input CreateNotificationInput {
+  to: ID!
+  title: String!
+  content: String!
+  type: NotificationType!
+  redirection: NotificationRedirection
+}
+
+input CreateNotificationTemplateInput {
+  title: String!
+  content: String!
+  status: NotificationTemplateStatus!
+  clientStatuses: [ClientStatus!]!
+  offerIds: [ID!]!
+  publishDate: DateTime
+}
+
+input CreateOfferInput {
+  type: OfferType!
+  title: String!
+  description: String
+  duration: Int
+  durationUnit: TimeUnit
+  price: Float
+  registrationFees: Float
+  entries: EntriesInput!
+  accessRights: [AccessRightsInput!]!
+  isInShop: Boolean
+  contractId: ID
+  upfrontPaymentPrice: Float
+  sellConditions: [SellConditionInput!]
+  prices: [CreatePriceInput!]
+}
+
+input CreatePenaltyInput {
+  period: Int!
+  category: PenaltyCategory!
+  name: String!
+  stages: [CreateStageInput!]!
+}
+
+input CreatePerformanceForRangeInput {
+  exerciseId: ID!
+  range: Int
+  value: Float!
+  date: DateTime
+}
+
+input CreatePerformanceInput {
+  exerciseId: ID!
+  valuesForRange: [ValueForRange!]!
+}
+
+input CreatePlanInput {
+  creatorId: String!
+  name: String!
+  lessonCount: Int!
+}
+
+input CreatePlanLessonInput {
+  lessonId: ID!
+  day: Int!
+  week: Int
+  weekOfYear: Int
+  year: Int
+}
+
+input CreatePriceInput {
+  mode: PriceMode!
+  numberOfPayments: Int
+  commitment: Int
+  commitmentUnit: TimeUnit
+  currency: Currency
+  amount: Int!
+  interval: Int
+  intervalUnit: TimeUnit
+  showOnQuickSell: Boolean
+  creditsPerRecharge: Int
+  creditRechargeMode: CreditRechargeMode
+}
+
+input CreatePromotionCodeGroupInput {
+  name: String!
+  description: String
+  amountOff: Int
+  percentOff: Float
+  credit: Int
+  freeDays: Int
+  numberOfCodes: Int!
+  expirationDate: DateTime
+}
+
+input CreatePromotionCodeInput {
+  code: String!
+  planId: ID
+  boxId: ID
+  amountOff: Int
+  percentOff: Float
+  expirationDate: DateTime
+  maxRedemption: Int
+}
+
+input CreateProspectInput {
+  firstname: String!
+  lastname: String!
+  phone: String
+  email: String
+  dropinId: String
+  boxId: String
+  utmSource: UTMSource
+}
+
+input CreateRankingInput {
+  performance: Float!
+  date: DateTime!
+  difficulty: SessionDifficulty!
+  feeling: FeelingType
+  isOfficial: Boolean
+  feedback: String
+}
+
+input CreateRecurrentSlotInput {
+  type: ID
+  weekday: Int!
+  startHour: String!
+  endHour: String!
+  listSize: Int!
+  alternativeTitle: String
+  slotType: ID!
+  recurrentWeekId: ID
+  coachIds: [ID!]
+}
+
+input CreateSanctionInput {
+  suspensionPeriod: Int
+  amount: Float
+  category: SanctionCategory!
+}
+
+input CreateSepaExportInput {
+  boxId: ID!
+  businessInfoId: ID!
+  closingDate: DateTime!
+  globalTransactionCheckState: GlobalCheckState!
+  transactionIDs: [ID!]!
+}
+
+input CreateSlotInput {
+  listSize: Int!
+  start: DateTime!
+  end: DateTime!
+  workoutId: ID
+  slotType: ID
+  alternativeTitle: String
+  description: String
+  coaches: [ID!]
+  recurrentSlot: ID
+  isPublished: Boolean!
+  isEvent: Boolean
+  eventPrice: Int
+  showOnQuickSell: Boolean
+  fromQuickSellListSize: Int
+  quickSellDropinLimit: Int
+  quickSellTrialLimit: Int
+}
+
+input CreateSlotTypeAdminInput {
+  name: String!
+  description: String
+  color: String!
+  icon: String!
+}
+
+input CreateSlotTypeInput {
+  boxId: ID!
+  name: String!
+  description: String
+  color: String!
+  multiplePrepaidCardReservationsAllowed: Boolean
+  creditCost: Int
+  maxPerDay: Int
+  frequency: Int
+  maxPerMonth: Int
+  maxPerBillingCycle: Int
+}
+
+input CreateStageInput {
+  quantity: Int!
+  sanctions: [CreateSanctionInput!]!
+}
+
+input CreateStripeAccountBoxInput {
+  countryCode: CountryCode!
+  accountToken: String!
+  boxId: ID!
+}
+
+input CreateStripeAccountInput {
+  accountToken: String!
+  cardToken: String!
+}
+
+input CreateTemplateInput {
+  boxId: ID!
+  name: String!
+  type: TemplateType!
+  subject: String
+  content: String
+  design: JSON
+}
+
+input CreateTodoInput {
+  boxId: ID!
+  description: String!
+  assigneeId: ID
+  deadline: DateTime
+}
+
+input CreateUserBalanceOperationInput {
+  amountIn: Int
+  amountOff: Int
+  type: BalanceOperationType!
+  description: String
+  balanceType: BalanceType!
+  createdAt: DateTime
+}
+
+input CreateUserMembershipInput {
+  user: UserInput!
+  membershipStart: DateTime!
+  commitment: Int!
+  renewal: Boolean!
+  price: Float!
+  discountPrice: Float
+  discountStart: DateTime
+  discountEnd: DateTime
+  iban: String
+  bic: String
+}
+
+input CreateVideoInput {
+  creatorId: ID!
+  title: String!
+  description: String
+  isPublic: Boolean!
+}
+
+input CreateVodBusinessSubscriptionInput {
+  adminFirstname: String!
+  adminLastname: String!
+  adminEmail: String!
+  businessName: String!
+  thumbnail: Upload!
+  referralCreatorId: ID
+}
+
+input CreateVodSubscriptionInput {
+  promotionCodeId: ID
+  cardId: ID
+}
+
+input CreateWeekSlotsInput {
+  mondayDate: DateTime!
+  isPublished: Boolean
+  recurrentWeekId: ID
+}
+
+input CreateWorkflowStepInput {
+  type: WorkflowStepType!
+  metadata: JSON
+  previousStepId: ID
+  template: WorkflowStepTemplateInput
+  branchId: ID
+  branches: [WorkflowBranchInput!]
+}
+
+input CreateWorkout {
+  name: String!
+  performanceType: PerformanceType
+  box: ID!
+  session: [SessionInput!]
+  advice: String
+  wodDate: String
+  slotTypeId: ID
+  slotType: String
+  isPublished: Boolean!
+}
+
+input CreateWorkoutType {
+  boxId: ID!
+  name: String!
+  color: String!
+}
+
+type Creator {
+  id: ID!
+  admin: User
+  partners: [Creator!]
+  displayName: String
+  displayNameSlug: String
+  aboutParagraph: String
+  socialNetworkLinks: SocialNetworkLinks
+  profilePictureUrl: String
+  wallPaperUrl: String
+  introVideo: Video
+  programCount: Int
+  membershipCount: Int
+  platformFeePercentage: Float
+  tags: [Tag!]
+  businessInfo: BusinessInfo
+  channel: Channel
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CreatorConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [CreatorEdge!]
+}
+
+type CreatorDiscoveries {
+  items: [RestrictedCreator!]!
+  hasMore: Boolean!
+  totalCount: Int!
+}
+
+type CreatorEdge {
+  node: Creator!
+  cursor: String!
+}
+
+type CreatorShopDiscoveries {
+  programs: PlanDiscoveries!
+  memberships: PlanDiscoveries!
+}
+
+type CreatorWithAccessibleAccounts {
+  creator: Creator!
+  accessibleAccounts: [Creator!]!
+}
+
+type CreatorWithTokenAndAccessibleAccounts {
+  creator: Creator!
+  accessibleAccounts: [Creator!]!
+  accessToken: String!
+  expiresIn: Int!
+}
+
+enum CreditRechargeMode {
+  ACCUMULATE
+  RESET
+}
+
+enum Currency {
+  EUR
+  GBP
+  USD
+  CHF
+  MAD
+  DZD
+  TND
+  XPF
+}
+
+type CustomerHistory {
+  id: ID!
+  description: String
+  rate: String
+  createdAt: String
+}
+
+type CustomerSheet {
+  id: ID!
+  note: String
+  todo: [Todo!]
+  histories: [CustomerHistory!]
+  createdAt: String
+}
+
+input DateRangeInput {
+  start: DateTime
+  end: DateTime
+}
+
+scalar DateTime
+
+type Deal {
+  id: ID!
+  offer: String
+  condition: String
+  description: String
+  promotionCode: String
+  url: String
+  brandName: String
+  brandLogoUrl: String
+  brandBannerUrl: String
+  brandDescription: String
+  brandContactEmail: String
+  type: DealType!
+  isVisible: Boolean!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type DealConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [DealEdge!]
+}
+
+type DealEdge {
+  node: Deal!
+  cursor: String!
+}
+
+enum DealType {
+  B2B
+  B2C
+}
+
+enum DebitOption {
+  REGISTRATION_DAY
+  FIX_DAY
+  OTHER
+}
+
+input DecrementPlanLessonsDayInput {
+  planId: ID!
+  fromDay: Int!
+  weekOfYear: Int!
+  year: Int!
+}
+
+enum DeprecatedPaymentType {
+  AUTO
+  MANUAL
+}
+
+enum Difficulty {
+  ALL
+  BEGINNER
+  MEDIUM
+  EXPERT
+}
+
+type Discount {
+  id: ID!
+  coupon: Coupon!
+  start: DateTime!
+  end: DateTime
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type DiscountBox {
+  id: ID!
+  box: Box!
+  value: Float!
+  start: DateTime!
+  end: DateTime!
+  isUsed: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type DiscountClient {
+  id: ID!
+  membership: Membership
+  value: Float!
+  start: DateTime!
+  end: DateTime!
+}
+
+type Discoveries {
+  creators: CreatorDiscoveries
+  programs: PlanDiscoveries
+  memberships: PlanDiscoveries
+  lessons: LessonDiscoveries
+}
+
+input DisponibilityInput {
+  date: DateTime
+  hourRangeStart: Int
+  hourRangeEnd: Int
+}
+
+type Dropin {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  phone: String
+  email: String
+  presenceConfirmedAt: DateTime
+  slot: Slot
+  dropinRequestId: String
+  dropinRequest: DropinRequest
+  user: User
+  prospect: Prospect
+  fromMap: Boolean!
+  fromSEO: Boolean!
+  fromQuickSell: Boolean!
+  fromFitMarket: Boolean!
+  isTrial: Boolean
+  utmTracking: UTMTracking
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type DropinConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [DropinEdge!]
+}
+
+type DropinEdge {
+  node: Dropin!
+  cursor: String!
+}
+
+input DropinMetadataInput {
+  activities: [String!]
+  disponibility: DisponibilityInput
+  proposedSlot: ProposedSlotInput
+  price: Int
+  note: String
+  refusedBy: String
+}
+
+type DropinRequest {
+  id: ID!
+  status: DropinRequestStatus!
+  metadata: JSON
+  box: RestrictedBox!
+  user: RestrictedUser!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  confirmedStartDate: DateTime
+}
+
+type DropinRequestConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [DropinRequestEdge!]
+}
+
+type DropinRequestEdge {
+  node: DropinRequest!
+  cursor: String!
+}
+
+input DropinRequestOrderByInput {
+  createdAt: String
+}
+
+enum DropinRequestStatus {
+  WAITING_FOR_PEPPY
+  WAITING_FOR_GYM
+  WAITING_FOR_USER
+  CANCELED
+  CONFIRMED
+  ACTIVE_GROUP
+}
+
+type DropinStats {
+  turnover: Int!
+  dropinCount: Int!
+}
+
+type EInvoice {
+  id: ID!
+  direction: EInvoiceDirection!
+  externalInvoiceId: String!
+  supplierName: String!
+  supplierSiren: String
+  supplierSiret: String
+  supplierAddress: String
+  supplierVatNumber: String
+  invoiceNumber: String
+  issuedAt: DateTime
+  receivedAt: DateTime!
+  dueDate: DateTime
+  subtotal: Int!
+  tax: Int!
+  total: Int!
+  amountRemaining: Int
+  currency: Currency!
+  status: EInvoiceStatus!
+  lines: [EInvoiceLine!]!
+  businessInfo: BusinessInfo!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type EInvoiceConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [EInvoiceEdge!]
+  totalCount: Int
+}
+
+enum EInvoiceDirection {
+  INCOMING
+  OUTGOING
+}
+
+type EInvoiceDocument {
+  contentType: String!
+  dataBase64: String!
+  fileName: String!
+  responsePreview: String
+}
+
+type EInvoiceEdge {
+  node: EInvoice!
+  cursor: String!
+}
+
+enum EInvoiceLifecycleAction {
+  ACKNOWLEDGED
+  ACCEPTED
+  PARTIALLY_ACCEPTED
+  REFUSED
+  DISPUTED
+  ON_HOLD
+  PAYMENT_SENT
+}
+
+type EInvoiceLine {
+  id: String
+  label: String!
+  description: String
+  quantity: String
+  quantityUnit: String
+  unitPrice: Int!
+  subtotal: Int!
+  tax: Int!
+  total: Int!
+  vatRate: String
+}
+
+type EInvoiceOnboardingURLCreationResult {
+  businessInfoId: ID!
+  onboardingUrl: String!
+}
+
+enum EInvoiceStatus {
+  MADE_AVAILABLE
+  ACKNOWLEDGED
+  ACCEPTED
+  PARTIALLY_ACCEPTED
+  REFUSED
+  DISPUTED
+  ON_HOLD
+  PAYMENT_SENT
+  PAID
+  PARTIALLY_PAID
+}
+
+type Enrollment {
+  id: ID!
+  offer: Offer!
+  user: User!
+  paymentMethod: PaymentMethod!
+  paymentType: PaymentTypeDeprecated
+  startDate: DateTime!
+  endDate: DateTime
+  createdAt: DateTime
+  counters: Counters!
+  status: EnrollmentStatus!
+  customPrice: Float
+  specialPrice: SpecialPrice
+  unpaidInvoices: [Invoice!]
+  refusedPayments: [PaymentHistory!]
+  lastUse: DateTime
+  acceptedAt: DateTime
+  suspension: Suspension
+  renewal: Boolean!
+  renewalType: RenewalType!
+  upfrontPayment: Boolean
+  contract: Contract
+  isMostRecent: Boolean!
+  debitDay: Int
+  boughtFromShop: Boolean
+  utmSource: UTMSource
+  utmMetadata: JSON
+  priceId: String
+  price: Price
+  creditBalance: Int
+  nextCreditRechargeDate: DateTime
+  onBehalfOf: String
+}
+
+type EnrollmentConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [EnrollmentEdge!]
+}
+
+type EnrollmentEdge {
+  node: Enrollment!
+  cursor: String!
+}
+
+enum EnrollmentExportColumn {
+  OFFER_NAME
+  START_DATE
+  END_DATE
+  STATUS
+  PAYMENT_METHOD
+  CREATED_AT
+  OFFER_PRICE
+  CUSTOM_PRICE
+  RENEWAL
+  UPFRONT_PAYMENT
+  ENTRIES_LEFT
+  MAX_ENTRIES
+  NUMBER_OF_RESERVATIONS
+  PRICE_MODE
+  OFFER_DURATION
+  ENGAGEMENT
+  PAYMENT_INTERVAL
+  NUMBER_OF_PAYMENTS
+}
+
+input EnrollmentInvoiceLineInput {
+  amount: Float!
+  description: String!
+  deferrable: Boolean!
+  editable: Boolean!
+}
+
+type EnrollmentInvoiceLinePreview {
+  amount: Float!
+  description: String!
+  deferrable: Boolean!
+  editable: Boolean!
+}
+
+type EnrollmentInvoicePreview {
+  dueTodayInvoiceLines: [EnrollmentInvoiceLinePreview!]!
+  nextInvoiceLines: [EnrollmentInvoiceLinePreview!]!
+  nextDueDate: DateTime
+  isFirstCycleInvoiceDueToday: Boolean!
+}
+
+input EnrollmentInvoiceSetupInput {
+  dueTodayPaymentMethod: PaymentMethod!
+  dueTodayInvoiceLines: [EnrollmentInvoiceLineInput!]!
+  nextInvoiceLines: [EnrollmentInvoiceLineInput!]!
+  cashAmountIn: Int
+}
+
+input EnrollmentInvoicesPreviewInput {
+  offerId: ID!
+  priceId: ID
+  startDate: DateTime!
+  debitDay: Int
+  customPrice: Float
+  upfrontPayment: Boolean
+  renewal: Boolean
+  includeRegistrationFees: Boolean
+}
+
+input EnrollmentPaymentInput {
+  enrollmentId: ID!
+  paymentIntentId: ID
+}
+
+type EnrollmentPaymentOutput {
+  paymentIntent: PaymentIntent!
+  enrollment: Enrollment
+}
+
+type EnrollmentReservationQuotas {
+  pendingReservations: PendingReservationsQuota
+  offer: SlotTypeRemainingCount
+  slotTypes: [SlotTypeRemainingCount!]!
+}
+
+input EnrollmentSanctionFilterInput {
+  id: ID!
+  status: ExtendedSanctionStatus!
+}
+
+enum EnrollmentStatus {
+  FUTURE
+  VALIDATED
+  PENDING
+  EXPIRED
+  CANCELLING
+  SUSPENDED
+}
+
+enum EnrollmentSwitchEndDateOption {
+  SAME_AS_PREVIOUS
+  NEW_COMMITMENT
+}
+
+input EnrollmentUpdateInput {
+  renewal: Boolean
+  renewalType: RenewalType
+  debitDay: Int
+  endDate: DateTime
+  paymentMethod: PaymentMethod
+  iban: String
+  bic: String
+  counters: CountersUpdateInput
+  creditBalance: Int
+  onBehalfOf: String
+}
+
+input EnrollmentUpdateInputAdmin {
+  startDate: DateTime
+  endDate: DateTime
+  status: EnrollmentStatus
+  customPrice: Float
+  renewal: Boolean
+  counters: CountersUpdateInput
+  debitDay: Int
+}
+
+input EnrollmentWhereInput {
+  box: ID
+  search: String
+  filters: [FilterStatus]
+  fromOtherBox: Boolean
+}
+
+input EnrollmentWhereInputAdmin {
+  userId: ID!
+  statuses: [EnrollmentStatus!]
+}
+
+input EntriesInput {
+  frequency: Int
+  max: Int
+  maxPerDay: Int
+  maxPerMonth: Int
+  maxPerBillingCycle: Int
+}
+
+type Equipment {
+  id: ID!
+  name: String!
+  nameSlug: String!
+}
+
+type EquipmentConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [EquipmentEdge!]
+}
+
+type EquipmentEdge {
+  node: Equipment!
+  cursor: String!
+}
+
+input EquipmentInput {
+  id: ID!
+  quantity: Int!
+}
+
+enum EquipmentLevel {
+  NO_EQUIPMENT
+  HOME
+  GYM
+}
+
+type Exercise {
+  id: ID!
+  name: String!
+  description: String
+  videoLink: String
+  category: ExerciseCategory!
+  subCategory: String
+  performanceType: PerformanceType!
+  performanceOrder: PerformanceOrder!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type ExerciseCategory {
+  id: ID!
+  name: String!
+  description: String
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type ExerciseConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ExerciseEdge!]
+}
+
+type ExerciseEdge {
+  node: Exercise!
+  cursor: String!
+}
+
+type Expense {
+  id: ID!
+  amount: Float!
+  description: String!
+  user: User!
+  date: DateTime!
+  paymentDate: DateTime
+  status: PaymentStatus!
+  box: Box!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ExpenseTotal {
+  id: ID!
+  creditorId: ID!
+  creditorName: String!
+  creditorLogo: String
+  total: Int
+}
+
+input ExportBoxClientsWhereInput {
+  boxId: ID!
+  filters: [FilterStatus!]!
+  offerIds: [String!]
+}
+
+input ExportBoxEnrollmentsWhereInput {
+  boxId: ID!
+  filters: [FilterStatus!]!
+  offerIds: [String!]
+  columns: [EnrollmentExportColumn!]
+}
+
+input ExportBoxReservationsWhereInput {
+  boxId: ID!
+  coachIds: [ID!]
+  slotTypeIds: [ID!]
+  dateFrom: DateTime
+  dateTo: DateTime
+}
+
+input ExportXmlInput {
+  boxId: ID!
+  startDate: DateTime
+  endDate: DateTime
+}
+
+type ExtendedSanction {
+  id: ID!
+  penaltyName: String!
+  penaltyCategory: PenaltyCategory!
+  suspensionPeriod: Int
+  suspensionEndDate: DateTime
+  amount: Float
+  category: SanctionCategory!
+  enrollment: Enrollment
+  status: ExtendedSanctionStatus!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type ExtendedSanctionConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ExtendedSanctionEdge!]
+}
+
+type ExtendedSanctionEdge {
+  node: ExtendedSanction!
+  cursor: String!
+}
+
+enum ExtendedSanctionStatus {
+  PENDING
+  RESOLVED
+}
+
+type FeaturePromotion {
+  id: ID!
+  title: String
+  description: String
+  pdfUrl: String
+  pictureUrl: String
+  publishDate: DateTime
+  emailTemplateId: String
+  emailSubject: String
+  notificationTemplates: [NotificationTemplate!]!
+  closedBy: [User!]!
+  isVisible: Boolean!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type FeaturePromotionConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FeaturePromotionEdge!]
+}
+
+type FeaturePromotionEdge {
+  node: FeaturePromotion!
+  cursor: String!
+}
+
+enum FeaturePromotionStatus {
+  PUBLISHED
+  PROGRAMMED
+  HIDDEN
+}
+
+type FeedPost {
+  id: ID!
+  box: Box!
+  author: User!
+  content: String!
+  reactions: [FeedPostReactionSummary!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type FeedPostConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FeedPostEdge!]
+}
+
+type FeedPostEdge {
+  node: FeedPost!
+  cursor: String!
+}
+
+type FeedPostReaction {
+  postId: ID!
+  userId: ID!
+  emoji: String!
+  createdAt: DateTime!
+  post: FeedPost!
+  user: User!
+}
+
+type FeedPostReactionConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FeedPostReactionEdge!]
+}
+
+type FeedPostReactionEdge {
+  node: FeedPostReaction!
+  cursor: String!
+}
+
+type FeedPostReactionSummary {
+  emoji: String!
+  count: Int!
+  reactedByMe: Boolean!
+}
+
+type FeedStats {
+  postCount: Int!
+  reactionCount: Int!
+}
+
+type Feedback {
+  id: ID!
+  rating: Rating
+  comment: Comment
+  author: User
+  box: RestrictedBox
+  planPurchase: PlanPurchase
+  planSubscription: PlanSubscription
+  response: Comment
+  lesson: Lesson
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type FeedbackConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FeedbackEdge!]
+}
+
+type FeedbackEdge {
+  node: Feedback!
+  cursor: String!
+}
+
+enum FeelingType {
+  GRINNING
+  SMILY
+  NEUTRAL
+  FROWNING
+  SKULL
+}
+
+enum FilterStatus {
+  UNPAID
+  ACTIF
+  PENDING
+  EXPIRED
+  SUSPENDED
+  NO_CARDS
+  MEMBERSHIP
+  PREPAID_CARD
+  FROM_OTHER_BOX
+  FUTURE
+  EXPIRING
+  BIRTHDAY
+  PROSPECT
+  FROM_SHOP
+  GHOST
+  SHOWS_UP_TODAY
+  CASHLESS
+  LAST_14_DAYS_NEW_CLIENTS
+  LAST_14_DAYS_EXPIRED_CLIENTS
+  NEXT_7_DAYS_EXPIRING_CLIENTS
+}
+
+type FitMarketBox {
+  id: ID!
+  name: String!
+  images: [String!]
+  isFavorite: Boolean!
+  distance: Int
+  averageRating: Float
+  ratingCount: Int
+  isFastLaneActivated: Boolean!
+}
+
+type FitMarketBoxConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FitMarketBoxEdge!]
+  totalCount: Int
+}
+
+type FitMarketBoxEdge {
+  node: FitMarketBox!
+  cursor: String!
+}
+
+type FlattenedProspect {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  slug: String!
+  phone: String
+  email: String
+  userId: ID
+  dropinStart: DateTime
+  dropinEnd: DateTime
+  isTrial: Boolean
+  forcedState: ProspectState
+  utmSource: UTMSource
+  utmMedium: UTMMedium
+  utmChannel: UTMChannel
+  createdAt: DateTime!
+}
+
+type FlattenedProspectConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FlattenedProspectEdge!]
+  totalCount: Int!
+}
+
+type FlattenedProspectEdge {
+  node: FlattenedProspect!
+  cursor: String!
+}
+
+input FlattenedProspectWhereInput {
+  boxId: ID!
+  search: String
+  isHot: Boolean
+  reservationType: ProspectReservationType
+  utmSource: UTMSource
+}
+
+type FlattenedRestrictedSlot {
+  id: ID!
+  start: DateTime!
+  end: DateTime!
+  alternativeTitle: String
+  slotTypeName: String!
+  slotTypeDescription: String
+}
+
+type FlattenedRestrictedSlotConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FlattenedRestrictedSlotEdge!]
+}
+
+type FlattenedRestrictedSlotEdge {
+  node: FlattenedRestrictedSlot!
+  cursor: String!
+}
+
+type Form {
+  id: ID!
+  name: String!
+  description: String
+  fields: [FormField!]
+  isNominative: Boolean!
+  isForMembers: Boolean!
+  returnUrl: String
+  submissionEmail: String
+  shouldCreateProspect: Boolean!
+  isActive: Boolean!
+  box: RestrictedBox!
+  submissions: [FormSubmission!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type FormConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FormEdge!]
+}
+
+type FormEdge {
+  node: Form!
+  cursor: String!
+}
+
+type FormField {
+  id: ID!
+  formId: ID!
+  form: Form!
+  type: FormFieldType!
+  label: String
+  description: String
+  rules: JSON
+  position: Int
+  options: [String!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input FormFieldInput {
+  id: ID
+  type: FormFieldType!
+  label: String
+  description: String
+  rules: JSON
+  position: Int!
+  options: [String!]
+}
+
+enum FormFieldType {
+  CONTACT_INFO
+  TEXT_SHORT
+  TEXT_LONG
+  NUMBER
+  DATE
+  SELECT
+  MULTIPLE_CHOICE
+}
+
+type FormSubmission {
+  id: ID!
+  prospectId: ID
+  prospect: Prospect
+  contactId: ID
+  contact: Contact
+  userId: ID
+  user: User
+  formId: ID!
+  form: Form!
+  fields: [FormSubmissionField!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type FormSubmissionConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FormSubmissionEdge!]
+}
+
+type FormSubmissionEdge {
+  node: FormSubmission!
+  cursor: String!
+}
+
+type FormSubmissionField {
+  id: ID!
+  formSubmissionId: ID!
+  formSubmission: FormSubmission!
+  fieldId: ID
+  field: FormField
+  fieldCopy: JSON
+  valueString: String
+  valueNumber: Float
+  valueDate: DateTime
+  valueBoolean: Boolean
+  valueJson: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type FormSubmissionFieldConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [FormSubmissionFieldEdge!]
+}
+
+type FormSubmissionFieldCountByOption {
+  option: String
+  count: Int
+}
+
+type FormSubmissionFieldEdge {
+  node: FormSubmissionField!
+  cursor: String!
+}
+
+input GetChannelVideosInput {
+  channelId: ID
+  playlistId: ID
+  free: Boolean
+  search: String
+}
+
+input GetDiscoveriesInput {
+  search: String
+}
+
+input GetDropinsInput {
+  boxId: ID!
+  date: DateTime
+  fromMap: Boolean
+}
+
+input GetFitMarketBoxesSearchInput {
+  search: String
+  listType: BoxListType
+  latitude: Float!
+  longitude: Float!
+  withImages: Boolean
+}
+
+input GetFitMarketSlotsInput {
+  boxId: ID!
+  fitMarketActivated: Boolean!
+  start: DateTime!
+  end: DateTime!
+}
+
+input GetLogEventsInput {
+  entityId: String!
+  entityType: String!
+  boxId: ID!
+  types: [LogEventType!]
+}
+
+input GetUserEnrollmentInvoicesInput {
+  userId: ID
+  enrollmentId: ID
+  businessInfoId: ID
+  filter: InvoiceFilter
+}
+
+input GetUserExpensesInput {
+  userId: ID!
+  businessInfoId: ID!
+}
+
+input GetUserReservationsInput {
+  userId: String!
+  boxId: String!
+  enrollmentId: String
+  from: DateTime
+  to: DateTime
+}
+
+input GetUserUnpaidEnrollmentInvoicesInput {
+  userId: ID!
+  boxId: ID!
+}
+
+enum GlobalCheckState {
+  CHECKED
+  NOT_CHECKED
+}
+
+type Iban {
+  id: ID!
+  last4: String!
+  bankCode: String!
+  country: String!
+  stripeId: String!
+  isDefault: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  sepaMandates: [SepaMandate!]!
+}
+
+type Invoice {
+  id: ID!
+  debtor: User
+  creditor: BusinessInfo
+  enrollment: Enrollment
+  lines: [InvoiceLine!]
+  status: InvoiceStatus!
+  paymentMethod: PaymentMethod!
+  dueDate: DateTime
+  paymentDate: DateTime
+  sepaExport: SepaExport
+  description: String
+  discounts: [Discount!]
+  charges: [Charge!]
+  charge: Charge
+  subtotal: Int!
+  tax: Int!
+  total: Int!
+  platformFees: Int
+  currency: Currency!
+  amountRefunded: Int!
+  stripePaymentIntentId: String
+  refunds: [Invoice!]!
+  voidedAt: DateTime
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type InvoiceAggregate {
+  count: Int!
+  sum: Int
+  amountRefunded: Int
+}
+
+type InvoiceCounters {
+  totalTTC: Float!
+  invoiceCount: Int!
+}
+
+type InvoiceEdge {
+  node: Invoice!
+  cursor: String!
+}
+
+enum InvoiceFilter {
+  DUE
+  TO_COME
+  UNPAID
+}
+
+type InvoiceLine {
+  id: ID!
+  amount: Int!
+  description: String
+  discounts: [Discount!]
+  shopItem: ShopItem
+  quantity: Int!
+  enrollment: Enrollment
+  type: InvoiceLineType!
+  unitAmount: Int!
+  taxRate: Float!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+enum InvoiceLineType {
+  OFFER
+  SHOP_ITEM
+  OTHER
+  REFUND
+  DROPIN
+  REGULARISATION
+  EVENT
+}
+
+enum InvoiceStatus {
+  DRAFT
+  WAITING
+  PAID
+  OPEN
+  VOID
+  UNPAID
+  PROCESSING
+}
+
+enum InvoiceType {
+  SHOP
+  OFFER
+}
+
+type InvoicesConnection {
+  total: Int!
+  pageInfo: PageInfo!
+  aggregate: InvoiceAggregate!
+  edges: [InvoiceEdge!]
+}
+
+type InvoicesExtendedConnection {
+  total: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [InvoiceEdge!]
+  boxes: [InvoicesExtendedConnectionBoxes!]
+}
+
+type InvoicesExtendedConnectionBoxes {
+  box: Box!
+  totalDue: Int!
+}
+
+input InvoicesWhereInput {
+  businessInfoId: ID
+  debtorId: ID
+  enrollmentId: ID
+  startDate: DateTime
+  endDate: DateTime
+  search: String
+  paymentMethods: [PaymentMethod]
+  paymentTypes: [InvoiceLineType]
+  clientTypes: [ClientType]
+  statuses: [String]
+  status: InvoiceStatus
+  due: Boolean
+  isUnpaid: Boolean
+  isRefunded: Boolean
+}
+
+scalar JSON
+
+type Lesson {
+  id: ID!
+  content: Content!
+  parts: [LessonPart!]
+  free: Boolean!
+  likeCount: Int
+  creator: Creator!
+  position: Int
+  plan: RestrictedPlan
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LessonConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [LessonEdge!]
+}
+
+type LessonDiscoveries {
+  items: [Lesson!]!
+  hasMore: Boolean!
+  totalCount: Int!
+}
+
+type LessonEdge {
+  node: Lesson!
+  cursor: String!
+}
+
+input LessonFiltersInput {
+  creatorId: ID
+  categoryId: ID
+  averageDuration: AverageLessonDuration
+  difficulty: Difficulty
+  free: Boolean
+  search: String
+  orderBy: LessonOrderByInput
+}
+
+enum LessonOrderByInput {
+  createdAt_DESC
+  createdAt_ASC
+}
+
+type LessonPart {
+  id: ID!
+  name: String!
+  duration: Int!
+  durationUnit: LessonPartDurationUnit!
+  description: String!
+  position: Int
+}
+
+enum LessonPartDurationUnit {
+  MINUTE
+  ROUND
+}
+
+type LockedContent {
+  id: ID!
+  state: ContentState!
+  name: String!
+  nameSlug: String!
+  difficulty: Difficulty
+  tags: [Tag!]
+  description: String
+  thumbnailUrl: String
+  wideSplashUrl: String
+  titleLogoUrl: String
+  wideSplashDescription: String
+  participants: [RestrictedCreator!]
+  duration: Int
+  durationUnit: TimeUnit
+  equipmentLevel: EquipmentLevel
+  averageRating: Float
+  ratingCount: Int!
+  publishDate: DateTime
+  prices: [Price!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LockedLesson {
+  id: ID!
+  content: LockedContent!
+  free: Boolean!
+  creator: RestrictedCreator!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LockedPlanLesson {
+  id: ID!
+  lesson: LockedLesson!
+  plan: Plan!
+  day: Int!
+  week: Int
+  weekOfYear: Int
+  year: Int
+}
+
+type LockedPlanLessonConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [LockedPlanLessonEdge!]
+}
+
+type LockedPlanLessonEdge {
+  node: LockedPlanLesson!
+  cursor: String!
+}
+
+type LockedVideo {
+  id: ID!
+  title: String!
+  titleSlug: String!
+  description: String
+  thumbnailUrl: String
+  state: VideoState!
+  creator: Creator!
+  durationInSeconds: Int
+  isPublic: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LogEvent {
+  id: ID!
+  type: LogEventType!
+  initiatorId: ID
+  initiator: User
+  prospectInitiatorId: ID
+  prospectInitiator: Prospect
+  messageId: ID
+  message: Message
+  metadata: JSON
+  entityId: String
+  entityType: String
+  parentEntityId: String
+  parentEntityType: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LogEventConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [LogEventEdge!]
+}
+
+type LogEventEdge {
+  node: LogEvent!
+  cursor: String!
+}
+
+enum LogEventType {
+  MANUAL_NOTE
+  UPSELL_ACTIVATED
+  UPSELL_DEACTIVATED
+  UPSELL_DEACTIVATION_SCHEDULED
+  UPSELL_DEACTIVATION_SCHEDULE_CANCELLED
+  UPSELL_DEACTIVATED_BY_CRON
+  UPSELL_TRIAL_STARTED
+  UPSELL_TRIAL_CANCELLED
+  UPSELL_TRIAL_CONVERSION
+  PROSPECT_STATE_CHANGED
+  RESERVATION_CREATED
+  RESERVATION_CANCELLED
+  RESERVATION_CONFIRMED
+  RESERVATION_MOVED_TO_MAIN_LIST
+  DROPIN_CREATED
+  DROPIN_CANCELLED
+  DROPIN_PRESENCE
+  DROPIN_ABSENCE
+  ENROLLMENT_CREATED
+  ENROLLMENT_UPDATED
+  ENROLLMENT_TERMINATED
+  ENROLLMENT_ACCEPTED
+  ENROLLMENT_ACTIVATED
+  ENROLLMENT_SWITCHED
+  ENROLLMENT_EXPIRED
+  ENROLLMENT_SUSPENSION_SCHEDULED
+  ENROLLMENT_SUSPENDED
+  ENROLLMENT_SUSPENSION_LIFTED
+  PROSPECT_CONVERTED
+  MEMBER_CREATED
+  INVOICE_CREATED
+  INVOICE_UPDATED
+  INVOICE_VOIDED
+  SLOT_CALL_ROLL
+  SLOT_UPDATED
+  PROSPECT_CREATED
+  PHONE_CALL_TASK_COMPLETED
+  FORM_SUBMITTED
+  COMMUNICATION
+}
+
+type MailingConfiguration {
+  id: ID!
+  fromEmailAddress: String
+  fromName: String
+  apiKey: String
+  secretKey: String
+  inboundParseConfigured: Boolean!
+}
+
+input MailingConfigurationInput {
+  apiKey: String
+  secretKey: String
+  fromEmailAddress: String
+  fromName: String
+  inboundParseConfigured: Boolean
+}
+
+input MakeDropinRequestForGymInput {
+  boxId: ID!
+  disponibility: DisponibilityInput
+  activities: [String!]
+  slotId: ID
+}
+
+input ManagerCreateInput {
+  email: String!
+  firstname: String!
+  lastname: String!
+  password: String!
+  gender: UserGender!
+  phone: String!
+  birthdate: String!
+  diploma: String
+}
+
+input ManagerCreatedByAdminInput {
+  email: String
+  firstname: String
+  lastname: String
+  password: String
+  gender: UserGender
+  phone: String
+}
+
+input ManagerEventReservationCreationInput {
+  userId: ID
+  firstname: String
+  lastname: String
+  phone: String
+  amountPaidInCents: Int
+  paymentMethod: PaymentMethod
+}
+
+type MandatesAdminCreationOutput {
+  success: Boolean!
+  usersWithoutMandates: [User!]
+  usersWithoutMandatesCount: Int
+  errors: [String!]
+}
+
+enum MemberCommunicationType {
+  EMAIL
+  SMS
+}
+
+type MemberKpiStats {
+  weeklyPace: Float!
+  daysBetweenVisits: Float
+  passageValue: Float!
+}
+
+type Membership {
+  id: ID!
+  status: MembershipStatus!
+  user: User!
+  box: Box!
+  membershipStart: DateTime!
+  membershipEnd: DateTime!
+  membershipPrice: Float!
+  discounts: [DiscountClient!]!
+  refusedPayments: [PaymentHistory!]!
+  lastPayment: DateTime
+  commitment: Int!
+  renewal: Boolean!
+  isMostRecent: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type MembershipConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [MembershipEdge!]
+}
+
+type MembershipEdge {
+  node: Membership!
+  cursor: String!
+}
+
+type MembershipExtendedConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [MembershipEdge!]
+}
+
+enum MembershipStatus {
+  PENDING
+  CANCELLING
+  VALIDATED
+  EXPIRED
+}
+
+input MembershipWhereInput {
+  box: ID
+  search: String
+  filters: [FilterStatus]
+}
+
+type Message {
+  id: ID!
+  boxId: ID!
+  recipientId: ID
+  prospectRecipientId: ID
+  type: MessageType!
+  direction: MessageDirection!
+  status: MessageStatus!
+  title: String
+  content: String
+  htmlContent: String
+  from: String
+  externalMessageId: String
+  authorId: ID
+  author: User
+  parentMessageId: ID
+  templateId: ID
+  template: Template
+  workflowId: ID
+  workflow: Workflow
+  metadata: JSON
+  seen: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum MessageDirection {
+  OUTBOUND
+  INBOUND
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  BOUNCED
+  OPENED
+  CLICKED
+  UNDELIVERABLE
+}
+
+enum MessageType {
+  EMAIL
+  SMS
+  NOTIF
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+input NearestBoxSearchInput {
+  search: String
+  center: Point!
+  radiusInMeters: Int!
+  from: Point
+  first: Int
+}
+
+type Note {
+  id: ID!
+  box: Box
+  user: User
+  description: String!
+}
+
+input NoteWhereInput {
+  prospectId: ID
+  userId: ID
+  boxId: ID!
+}
+
+type Notification {
+  id: ID!
+  user: User
+  box: Box
+  title: String!
+  content: String!
+  hasBeenSeen: Boolean!
+  redirection: NotificationRedirection
+  type: NotificationType!
+  metadata: JSON
+  notificationTemplate: NotificationTemplate
+  campaign: Campaign
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type NotificationEdge {
+  node: Notification!
+  cursor: String!
+}
+
+enum NotificationRedirection {
+  ENROLLMENTS
+  WALLET
+  CASHLESS
+  TRAININGS
+  STATS
+  BOOKING
+  INVOICES
+  PROFILE
+  CLIENT
+  SLOT
+  WORKFLOW_STATS
+  DASHBOARD_TASKS
+}
+
+type NotificationTemplate {
+  id: ID!
+  title: String
+  content: String
+  publishDate: DateTime
+  status: NotificationTemplateStatus
+  offers: [Offer!]
+  clientStatuses: [ClientStatus!]
+  recipientCount: Int
+  recipientRoles: [UserRole!]
+  businessInfo: BusinessInfo
+  featurePromotion: FeaturePromotion
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type NotificationTemplateEdge {
+  node: NotificationTemplate!
+  cursor: String!
+}
+
+input NotificationTemplateRecipientCountInput {
+  filters: [ClientStatus!]!
+  offerIds: [ID!]!
+}
+
+enum NotificationTemplateStatus {
+  PUBLISHED
+  SCHEDULED
+  DRAFT
+}
+
+input NotificationTemplateUpdateInput {
+  id: ID!
+  title: String
+  content: String
+}
+
+type NotificationTemplatesConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [NotificationTemplateEdge!]
+}
+
+enum NotificationType {
+  UPDATE
+  NEWS
+  WARNING
+  FORM
+}
+
+type NotificationsConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [NotificationEdge!]
+}
+
+type OAuthConnection {
+  id: ID!
+  provider: String!
+  connectionStatus: OAuthConnectionStatus
+  connectionError: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+enum OAuthConnectionStatus {
+  VALID
+  INVALID
+}
+
+type Offer {
+  id: ID!
+  box: Box!
+  type: OfferType!
+  title: String!
+  titleSlug: String
+  image: String
+  description: String
+  duration: Int
+  durationUnit: TimeUnit
+  price: Float
+  registrationFees: Float!
+  currency: Currency!
+  entries: SetupEntry!
+  accessRights: [AccessRights!]
+  isActive: Boolean!
+  isInShop: Boolean!
+  isOnQuickSell: Boolean!
+  contract: Contract
+  upfrontPaymentPrice: Float
+  sellConditions: [SellCondition!]
+  prices: [Price!]
+}
+
+type OfferConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [OfferEdge!]
+}
+
+type OfferEdge {
+  node: Offer!
+  cursor: String!
+}
+
+type OfferMarginStats {
+  offerId: ID!
+  title: String!
+  offerType: String!
+  offerPrice: Float!
+  activeEnrollments: Int!
+  monthlyCheckins: Float!
+  costPerMember: Float!
+  margin: Float
+}
+
+type OfferPaymentIntent {
+  id: ID!
+  expires: DateTime!
+  nextPaymentDate: DateTime
+  nextPaymentAmount: Int
+  dueAmount: Int
+  registrationFees: Int
+  startDate: DateTime
+  needDebitCard: Boolean
+  nextAction: OfferSetupNextAction
+  isProrate: Boolean
+  offer: Offer!
+  user: User!
+  price: Price
+  createdAt: DateTime!
+  onBehalfOf: String
+}
+
+type OfferReservationStatsOutput {
+  offerId: ID!
+  title: String!
+  total: Int
+  averageInterval: Float
+  averageCanceledPercentage: Int
+  averageAbsentPercentage: Int
+}
+
+enum OfferSetupNextAction {
+  SETUP_OFFER_PURCHASE
+  SETUP_FUTURE_OFFER_START
+}
+
+enum OfferStatus {
+  MEMBERSHIP
+  PREPAID_CARD
+  DROPIN
+  ONLINE
+  INACTIF
+}
+
+enum OfferType {
+  MEMBERSHIP
+  PREPAID_CARD
+  DROPIN
+  TEST
+}
+
+input OfferWhereInput {
+  boxId: ID!
+  search: String
+  filters: [OfferStatus]
+}
+
+input OffersWhereInput {
+  boxId: ID!
+  search: String
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type PartialSetupIntent {
+  setupIntentId: String!
+  clientSecret: String!
+}
+
+input PayExpenseInput {
+  invoiceId: ID!
+  paymentIntentId: ID
+}
+
+type PayExpenseOutput {
+  paymentIntent: PaymentIntent!
+  invoice: Invoice
+}
+
+input PayExpensesInput {
+  boxId: ID!
+  paymentIntentId: ID
+}
+
+type PaymentDetail {
+  customerId: String
+  defaultPaymentMethodId: String
+  cards: [Card!]!
+  ibans: [Iban!]!
+  preferredCurrency: Currency
+  subscriptionId: String
+  personId: String
+  hasUnpaid: Boolean
+}
+
+type PaymentHistory {
+  id: ID!
+  debtor: User
+  creditor: Box
+  description: String
+  totalTTC: Float
+  totalTVA: Float
+  totalHT: Float
+  items: [BasketItem!]
+  type: PaymentHistoryType!
+  status: PaymentStatus
+  paymentMethod: PaymentMethod
+  errorCode: String
+  errorFormatted: String
+  dueDate: DateTime
+  paymentDate: DateTime
+  resolving: ID
+  price: Float
+  destination: String
+  source: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum PaymentHistoryType {
+  EXPENSE
+  MEMBERSHIP
+  PREPAID_CARD
+  REFUND
+}
+
+type PaymentInfo {
+  creditorName: String!
+  address: String!
+  zipcode: String
+  city: String!
+  iban: String!
+  bic: String!
+  debitOption: DebitOption!
+  defaultDebitDay: Int
+  creditorId: String
+  externalAccount: String
+}
+
+input PaymentInfoInput {
+  creditorName: String!
+  address: String!
+  zipcode: String
+  city: String!
+  iban: String!
+  bic: String!
+  creditorId: String
+  debitOption: DebitOption!
+  defaultDebitDay: Int
+}
+
+type PaymentIntent {
+  paymentIntentId: String!
+  paymentDate: DateTime!
+  requiresAction: Boolean!
+  clientSecret: String
+  authUrl: String
+  returnUrl: String
+  status: PaymentStatus!
+  errorCode: String
+  errorFormated: String
+}
+
+enum PaymentMethod {
+  VIAPEPPY
+  SEPA
+  SEPA_AUTO
+  CARD
+  CASH
+  CHEQUE
+  BANK_TRANSFER
+  OTHER
+  BALANCE
+}
+
+type PaymentSetup {
+  paymentIntentId: String!
+  paymentIntentClientSecret: String
+  ephemeralKey: String
+  customerId: String
+  isConfirmed: Boolean
+}
+
+enum PaymentStatus {
+  NEED_AUTH
+  SUCCESS
+  ERROR
+  NOT_DONE
+}
+
+enum PaymentTypeDeprecated {
+  AUTO
+  SEPA
+  OTHER
+}
+
+type Penalty {
+  id: ID!
+  box: Box!
+  period: Int
+  name: String!
+  nextReset: DateTime
+  stages: [PenaltyStage!]
+  category: PenaltyCategory!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+enum PenaltyCategory {
+  NO_SHOW
+  UNPAID
+  LATE_CANCELLATION
+}
+
+type PenaltyConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [PenaltyEdge!]
+}
+
+type PenaltyEdge {
+  node: Penalty!
+  cursor: String!
+}
+
+type PenaltyStage {
+  id: ID!
+  quantity: Int!
+  sanctions: [Sanction!]!
+}
+
+type PendingReservationsQuota {
+  max: Int!
+  used: Int!
+}
+
+type Performance {
+  id: ID!
+  exercise: Exercise!
+  value: Float!
+  user: User!
+  range: Int
+  isPR: Boolean
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type PerformanceConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [PerformanceEdge!]
+}
+
+type PerformanceEdge {
+  node: Performance!
+  cursor: String!
+}
+
+enum PerformanceOrder {
+  DESC
+  ASC
+}
+
+enum PerformanceType {
+  TIME
+  WEIGHT
+  REPETITION
+  ROUNDS
+  DISTANCE
+  CALORIE
+  WATTS
+  UNIT
+}
+
+enum PhoneCallTaskStatus {
+  OK
+  KO
+  UNREACHABLE
+  CALL_BACK_LATER
+}
+
+type Plan {
+  id: ID!
+  content: Content!
+  frequency: Int
+  frequencyUnit: TimeUnit
+  demoLesson: Lesson
+  lessonCount: Int
+  type: PlanType!
+  category: PlanCategory!
+  coupon: Coupon
+  promotionCodes: [PromotionCode!]
+  creator: Creator!
+  lessons: [RestrictedLesson!]!
+  averageLessonDurationInSeconds: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum PlanCategory {
+  WORKOUT
+  NUTRITION
+}
+
+type PlanConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [PlanEdge!]
+}
+
+type PlanDiscoveries {
+  items: [RestrictedPlan!]!
+  hasMore: Boolean!
+  totalCount: Int!
+}
+
+type PlanEdge {
+  node: Plan!
+  cursor: String!
+}
+
+input PlanFiltersInput {
+  creatorId: String
+  search: String
+  categoryId: ID
+  state: ContentState
+  type: PlanType
+  category: PlanCategory
+  difficulty: Difficulty
+  averageDuration: AverageLessonDuration
+}
+
+type PlanLesson {
+  id: ID!
+  lesson: Lesson!
+  plan: Plan!
+  day: Int!
+  week: Int
+  weekOfYear: Int
+  year: Int
+}
+
+type PlanLessonAndDoneMark {
+  id: ID!
+  lesson: Lesson!
+  plan: Plan!
+  day: Int!
+  week: Int
+  weekOfYear: Int
+  year: Int
+  doneDate: DateTime
+}
+
+type PlanLessonAndDoneMarkConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [PlanLessonAndDoneMarkEdge!]
+}
+
+type PlanLessonAndDoneMarkEdge {
+  node: PlanLessonAndDoneMark!
+  cursor: String!
+}
+
+type PlanLessonConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [PlanLessonEdge!]
+}
+
+type PlanLessonEdge {
+  node: PlanLesson!
+  cursor: String!
+}
+
+input PlanLessonFiltersInput {
+  planId: ID!
+  day: Int
+  week: Int
+  weeksOfYear: [Int!]
+  year: Int
+  desc: Boolean
+}
+
+type PlanPurchase {
+  id: ID!
+  user: User!
+  plan: Plan!
+  invoice: Invoice
+  lessonDoneCount: Int!
+  currentWeek: Int!
+  nextPlanLesson: PlanLesson
+  feedback: Feedback
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PlanSubscription {
+  id: ID!
+  user: User!
+  plan: Plan!
+  status: PlanSubscriptionStatus!
+  lessonDoneCount: Int!
+  invoices: [Invoice!]!
+  startDate: DateTime!
+  commitmentEndDate: DateTime
+  discount: Discount
+  price: Price
+  unpaidSince: DateTime
+  unpaidErrorCode: String
+  feedback: Feedback
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum PlanSubscriptionStatus {
+  FUTURE
+  SUSPENDED
+  UNPAID
+  EXPIRED
+  ONGOING
+}
+
+enum PlanType {
+  PROGRAM
+  MEMBERSHIP
+}
+
+input Point {
+  latitude: Float
+  longitude: Float
+}
+
+type Price {
+  id: ID!
+  mode: PriceMode!
+  numberOfPayments: Int
+  amount: Int!
+  commitment: Int
+  commitmentUnit: TimeUnit
+  currency: Currency!
+  interval: Int
+  intervalUnit: TimeUnit
+  offerId: ID
+  offer: Offer
+  enrollments: [Enrollment!]
+  isActive: Boolean!
+  showOnQuickSell: Boolean!
+  creditsPerRecharge: Int
+  creditRechargeMode: CreditRechargeMode
+}
+
+enum PriceMode {
+  COMMITMENT_DRIVEN
+  AMOUNT_DRIVEN
+  UPFRONT_PAYMENT
+}
+
+input ProgramWorkoutInput {
+  day: DateTime!
+  workoutId: ID!
+  slotTypeId: ID!
+}
+
+type PromotionCode {
+  id: ID!
+  code: String!
+  plan: Plan!
+  coupon: Coupon!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type PromotionCodeGroup {
+  id: ID!
+  name: String!
+  description: String
+  amountOff: Int
+  percentOff: Float
+  credit: Int
+  trialPeriodDays: Int
+  expirationDate: DateTime
+  usedCodeCount: Int!
+  totalCodeCount: Int!
+  active: Boolean!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+  box: Box
+  codes: [PromotionCode!]!
+}
+
+input ProposedSlotInput {
+  start: String
+  end: String
+}
+
+enum ProrateOption {
+  PAID
+  REPORTED
+  TO_PAY_SEPARATELY
+}
+
+type Prospect {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  slug: String!
+  phone: String
+  email: String
+  box: Box
+  dropin: Dropin
+  user: User
+  utmTracking: UTMTracking
+  formSubmission: FormSubmission
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type ProspectConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ProspectEdge!]
+}
+
+type ProspectEdge {
+  node: Prospect!
+  cursor: String!
+}
+
+enum ProspectReservationType {
+  DROPIN
+  TRIAL
+}
+
+enum ProspectState {
+  COLD
+  HOT
+}
+
+input ProspectWhereInput {
+  boxId: ID!
+  search: String
+}
+
+type QuickSellConfiguration {
+  id: ID!
+  logoUrl: String
+  primaryColor: String
+  secondaryColor: String
+  pixelMetaId: String
+  trialCheckoutFormId: String
+  trialCheckoutForm: Form
+  dropinCheckoutFormId: String
+  dropinCheckoutForm: Form
+}
+
+enum QuickSellFormType {
+  DROPIN
+  TRIAL
+}
+
+type Ranking {
+  id: ID!
+  workout: Workout
+  slot: Slot
+  user: User!
+  performance: Float
+  date: DateTime
+  difficulty: SessionDifficulty
+  lesson: Lesson
+  feeling: FeelingType
+  isOfficial: Boolean
+  feedback: String
+}
+
+type RankingConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RankingEdge!]
+}
+
+type RankingEdge {
+  node: Ranking!
+  cursor: String!
+}
+
+type RankingExtendedConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RankingEdge!]!
+  userRank: UserRanking
+}
+
+enum RankingOrderBy {
+  performance_ASC
+  performance_DESC
+  date_ASC
+  date_DESC
+  difficulty_ASC
+  difficulty_DESC
+  feeling_ASC
+  feeling_DESC
+}
+
+type RankingRow {
+  id: String!
+  firstname: String
+  lastname: String
+  alias: String
+  avatar: String
+  rank: Int
+  performance: Float
+  difficulty: SessionDifficulty
+  feedback: String
+}
+
+type RankingRowConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  edges: [RankingRow!]!
+}
+
+input RankingRowWhereInput {
+  workoutId: ID!
+  slotId: ID
+  search: String
+  difficulties: [SessionDifficulty!]
+  gender: UserGender
+}
+
+input RankingWhereInput {
+  workoutSearch: String
+  userSearch: String
+  user: ID
+  workout: ID
+  slot: ID
+  box: [ID!]
+  category: [ID!]
+  difficulty: SessionDifficulty
+}
+
+input RankingWorkoutWhereInput {
+  workout: ID!
+  difficulty: SessionDifficulty
+}
+
+type Rating {
+  id: ID!
+  value: Float!
+  max: Int!
+  percent: Float!
+  author: User!
+  details: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input RatingsForBoxInput {
+  reception: Int!
+  team: Int!
+  mood: Int!
+  serviceQuality: Int!
+  equipment: Int!
+}
+
+type Reaction {
+  id: ID!
+  type: ReactionType!
+}
+
+enum ReactionType {
+  LIKE
+}
+
+type RecurrentSlot {
+  id: ID!
+  box: Box!
+  type: WorkoutType
+  slotType: SlotType!
+  alternativeTitle: String
+  weekday: Int!
+  listSize: Int!
+  fromMapListSize: Int
+  trialListSize: Int
+  showOnMap: Boolean!
+  showOnQuickSell: Boolean!
+  fromQuickSellListSize: Int
+  quickSellTrialLimit: Int
+  quickSellDropinLimit: Int
+  fromFitMarketListSize: Int
+  showOnFitMarket: Boolean
+  startHour: String!
+  endHour: String!
+  coaches: [User!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  recurrentWeekId: ID
+}
+
+type RecurrentWeek {
+  id: ID!
+  name: String!
+  box: Box!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Referral {
+  id: String!
+  parent: User!
+  child: User!
+  parentCreditAmount: Int
+  childCreditAmount: Int
+  parentStatus: ReferralStatus
+  childStatus: ReferralStatus
+  parentAvailabilityDate: DateTime
+  childAvailabilityDate: DateTime
+  parentCanceledDate: DateTime
+  childCanceledDate: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type ReferralConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ReferralEdge!]
+}
+
+type ReferralEdge {
+  node: Referral!
+  cursor: String!
+}
+
+input ReferralFilters {
+  statuses: [ReferralStatus!]
+}
+
+enum ReferralStatus {
+  CREDITED
+  WAITING_TRIAL_END
+  WAITING_FIRST_MONTHLY_PAYMENT
+  IDLE
+  CANCELED
+}
+
+input RefundInput {
+  paymentMethod: PaymentMethod!
+  amount: Int!
+}
+
+enum RegisterType {
+  STANDARD
+  IMPORTED
+  CREATED
+  SOCIAL
+  GOOGLE
+  APPLE
+  FACEBOOK
+}
+
+input RemoveSlotsInput {
+  start: DateTime
+  end: DateTime
+  coachId: ID
+  recurrentWeekId: ID
+}
+
+enum RenewalType {
+  BILLING_INTERVAL
+  COMMITMENT_DURATION
+}
+
+type Reservation {
+  id: ID!
+  user: User!
+  slot: Slot!
+  status: ReservationStatus!
+  userEnrollment: Enrollment
+  userEnrollmentId: String
+  tag: ReservationTag
+  waitlistPosition: Int
+  calendarEventId: String
+  onBehalfOf: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ReservationConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ReservationEdge!]
+}
+
+type ReservationEdge {
+  node: Reservation!
+  cursor: String!
+}
+
+enum ReservationStatus {
+  VALIDATED
+  PENDING
+  WAITING
+  CANCELLED
+  ABSENT
+}
+
+enum ReservationTag {
+  NOT_PRESENT
+  CANCELLED
+}
+
+input ResolveExpensesInput {
+  ids: [ID!]!
+  paymentMethod: PaymentMethod!
+  amountIn: Float
+}
+
+input ResolveInvoiceInput {
+  paymentMethod: PaymentMethod!
+  amountIn: Int
+}
+
+type RestrcitedBusinessInfo {
+  id: ID!
+  businessName: String
+  logo: String
+  legalEntityType: String
+  capital: Float
+  address: String
+  city: String
+  region: String
+  zipCode: String
+  countryCode: CountryCode
+  siren: String
+  rcsNumber: String
+  tvaNumber: String
+  preferredCurrency: Currency!
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+type RestrictedBox {
+  id: ID!
+  name: String!
+  nameSlug: String
+  email: String
+  phone: String
+  address: String
+  latitude: Float
+  longitude: Float
+  description: String
+  logo: String
+  images: [String!]
+  coaches: [RestrictedUser!]
+  managerId: String
+  manager: RestrictedUser
+  schedule: [Schedule!]
+  dropinPrice: Int
+  trialPrice: Int
+  fitMarketDropinPrice: Int
+  distance: Int
+  averageRating: Float
+  ratingCount: Int
+  showOnMap: Boolean!
+  isFavorite: Boolean!
+  parameters: RestrictedBoxParameters
+  defaultRecurrentWeek: RecurrentWeek
+  businessInfo: RestrcitedBusinessInfo
+  quickSellConfiguration: QuickSellConfiguration
+}
+
+type RestrictedBoxConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedBoxEdge!]
+  totalCount: Int
+}
+
+type RestrictedBoxEdge {
+  node: RestrictedBox!
+  cursor: String!
+}
+
+type RestrictedBoxParameters {
+  areSlotReservationsVisibleToMembers: Boolean
+}
+
+type RestrictedChannel {
+  id: ID!
+  creator: RestrictedCreator!
+  content: RestrictedContent!
+  videoCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedChannelConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedChannelEdge!]
+}
+
+type RestrictedChannelEdge {
+  node: RestrictedChannel!
+  cursor: String!
+}
+
+type RestrictedChannelPlaylist {
+  id: ID!
+  name: String!
+  nameSlug: String!
+  thumbnailUrl: String
+  description: String
+  videoCount: Int!
+  visibility: Visibility!
+  channel: RestrictedChannel
+  tags: [Tag!]!
+}
+
+type RestrictedChannelPlaylistConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedChannelPlaylistEdge!]
+}
+
+type RestrictedChannelPlaylistEdge {
+  node: RestrictedChannelPlaylist!
+  cursor: String!
+}
+
+type RestrictedChannelVideo {
+  id: ID!
+  title: String!
+  titleSlug: String!
+  description: String
+  video: RestrictedVideo!
+  publishDate: DateTime
+  isFree: Boolean!
+  thumbnailUrl: String
+  likeCount: Int!
+  channel: RestrictedChannel!
+  parts: [ChannelVideoPart!]!
+  isPublic: Boolean!
+  visibility: Visibility!
+  playlists: [RestrictedChannelVideosOnPlaylists!]!
+  tags: [Tag!]!
+  type: ChannelVideoType!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedChannelVideoConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedChannelVideoEdge!]
+}
+
+type RestrictedChannelVideoEdge {
+  node: RestrictedChannelVideo!
+  cursor: String!
+}
+
+type RestrictedChannelVideosOnPlaylists {
+  position: Int!
+  channelVideo: RestrictedChannelVideo!
+  playlist: RestrictedChannelPlaylist!
+  assignedAt: DateTime!
+}
+
+type RestrictedContent {
+  id: ID!
+  state: ContentState!
+  name: String!
+  nameSlug: String!
+  difficulty: Difficulty
+  tags: [Tag!]
+  description: String
+  thumbnailUrl: String
+  wideSplashUrl: String
+  titleLogoUrl: String
+  wideSplashDescription: String
+  introVideo: Video
+  categories: [ContentCategory!]!
+  equipments: [ContentEquipment!]!
+  participants: [RestrictedCreator!]
+  duration: Int
+  durationUnit: TimeUnit
+  equipmentLevel: EquipmentLevel
+  averageRating: Float
+  ratingCount: Int!
+  publishDate: DateTime
+  prices: [Price!]
+  videoUploadLink: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedCreator {
+  id: ID!
+  displayName: String
+  displayNameSlug: String
+  aboutParagraph: String
+  socialNetworkLinks: SocialNetworkLinks
+  wallPaperUrl: String
+  profilePictureUrl: String
+  introVideo: Video
+  programCount: Int
+  membershipCount: Int
+  channel: Channel
+  tags: [Tag!]
+}
+
+type RestrictedCreatorConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedCreatorEdge!]
+}
+
+type RestrictedCreatorEdge {
+  node: RestrictedCreator!
+  cursor: String!
+}
+
+type RestrictedDeal {
+  id: ID!
+  offer: String
+  condition: String
+  description: String
+  promotionCode: String
+  url: String
+  brandName: String
+  brandLogoUrl: String
+  brandBannerUrl: String
+  brandDescription: String
+  createdAt: DateTime!
+}
+
+type RestrictedDealConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedDealEdge!]
+}
+
+type RestrictedDealEdge {
+  node: RestrictedDeal!
+  cursor: String!
+}
+
+type RestrictedDropin {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  user: RestrictedUser
+  fromMap: Boolean!
+  fromSEO: Boolean!
+  fromQuickSell: Boolean!
+  isTrial: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedLesson {
+  id: ID!
+  content: RestrictedContent!
+  parts: [LessonPart!]
+  free: Boolean!
+  creator: RestrictedCreator!
+  likeCount: Int
+  position: Int
+  plan: RestrictedPlan
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedLessonConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedLessonEdge!]
+}
+
+type RestrictedLessonEdge {
+  node: RestrictedLesson!
+  cursor: String!
+}
+
+type RestrictedPlan {
+  id: ID!
+  content: RestrictedContent!
+  frequency: Int
+  frequencyUnit: TimeUnit
+  demoLesson: Lesson
+  lessonCount: Int
+  type: PlanType!
+  category: PlanCategory!
+  coupon: Coupon
+  creator: RestrictedCreator!
+  lessons: [RestrictedLesson!]!
+  averageLessonDurationInSeconds: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedPlanConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedPlanEdge!]
+}
+
+type RestrictedPlanEdge {
+  node: RestrictedPlan!
+  cursor: String!
+}
+
+type RestrictedPlanLesson {
+  id: ID!
+  lesson: RestrictedLesson!
+  plan: Plan!
+  day: Int!
+  week: Int
+  weekOfYear: Int
+  year: Int
+}
+
+type RestrictedReservation {
+  id: ID!
+  user: RestrictedUser!
+  status: ReservationStatus!
+  userEnrollmentId: String
+  tag: ReservationTag
+  waitlistPosition: Int
+  onBehalfOf: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedSlot {
+  id: ID!
+  box: RestrictedBox!
+  slotType: RestrictedSlotType
+  workoutType: WorkoutType
+  alternativeTitle: String
+  description: String
+  coaches: [RestrictedUser!]!
+  reservation: [RestrictedReservation!]!
+  start: DateTime!
+  end: DateTime!
+  listSize: Int!
+  eventPrice: Int
+  fromMapListSize: Int
+  fromQuickSellListSize: Int
+  quickSellDropinLimit: Int
+  quickSellTrialLimit: Int
+  trialListSize: Int
+  showOnMap: Boolean!
+  isActive: Boolean!
+  isPublished: Boolean!
+  dropin: [RestrictedDropin!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedSlotConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedSlotEdge!]
+}
+
+type RestrictedSlotEdge {
+  node: RestrictedSlotExtended!
+  cursor: String!
+}
+
+type RestrictedSlotExtended {
+  id: ID!
+  box: RestrictedBox!
+  slotType: RestrictedSlotType
+  workoutType: WorkoutType
+  alternativeTitle: String
+  description: String
+  coaches: [RestrictedUser!]!
+  reservation: [RestrictedReservation!]!
+  numberOfReservation: Int!
+  numberOfWaiting: Int!
+  start: DateTime!
+  end: DateTime!
+  listSize: Int!
+  eventPrice: Int
+  fromMapListSize: Int
+  fromQuickSellListSize: Int
+  quickSellDropinLimit: Int
+  quickSellTrialLimit: Int
+  trialListSize: Int
+  showOnMap: Boolean!
+  isActive: Boolean!
+  isPublished: Boolean!
+  isEvent: Boolean!
+  dropin: [RestrictedDropin!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedSlotType {
+  id: ID!
+  name: String!
+  description: String
+  color: String
+  icon: String
+  multiplePrepaidCardReservationsAllowed: Boolean!
+  creditCost: Int!
+}
+
+type RestrictedUser {
+  id: ID
+  email: String
+  avatar: String
+  firstname: String
+  lastname: String
+  registrationType: RegisterType
+  alias: String
+  birthdate: String
+  role: UserRole
+  roleAlias: String
+  gender: UserGender
+  phone: String
+  diploma: String
+  description: String
+  isVisible: Boolean
+  metadata: JSON
+}
+
+type RestrictedVideo {
+  id: ID!
+  url: String
+  title: String!
+  titleSlug: String!
+  description: String
+  thumbnailUrl: String
+  state: VideoState!
+  creator: RestrictedCreator!
+  durationInSeconds: Int
+  isPublic: Boolean!
+  visiblity: Visibility!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedVideoConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedVideoEdge!]
+}
+
+type RestrictedVideoEdge {
+  node: RestrictedVideo!
+  cursor: String!
+}
+
+type RestrictedWorkout {
+  id: ID!
+  name: String!
+  slug: String!
+  box: Box
+  advice: String
+  category: WorkoutCategory
+  type: WorkoutType
+  slotType: SlotType
+  performanceType: PerformanceType
+  session: [Session!]!
+  blocks: [RestrictedWorkoutBlock!]
+  ranking: [Ranking!]!
+  wodDate: String
+  isPublished: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RestrictedWorkoutBlock {
+  id: ID!
+  title: String!
+  description: String!
+  performanceType: PerformanceType
+  unitLabel: String
+  position: Int!
+  color: String
+}
+
+type RestrictedWorkoutConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RestrictedWorkoutEdge!]
+}
+
+type RestrictedWorkoutEdge {
+  node: RestrictedWorkout!
+  cursor: String!
+}
+
+input RetryEnrollmentPaymentInput {
+  invoiceId: ID!
+  paymentIntentId: ID
+}
+
+input RetryMembershipPaymentInput {
+  membershipId: ID!
+  paymentIntentId: ID
+}
+
+type RetryMembershipPaymentOutput {
+  paymentIntent: PaymentIntent!
+  membership: Membership!
+}
+
+type Sanction {
+  id: ID!
+  suspensionPeriod: Int
+  amount: Float
+  category: SanctionCategory!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+enum SanctionCategory {
+  FINANCIAL
+  TEMPORAL
+}
+
+type ScalarStat {
+  value: Float!
+}
+
+type Schedule {
+  id: ID!
+  dayOfTheWeek: Int!
+  from: String!
+  to: String!
+}
+
+input ScheduleInput {
+  dayOfTheWeek: Int!
+  from: String!
+  to: String!
+}
+
+type SellCondition {
+  id: ID!
+  type: SellConditionType!
+  currentValue: Float
+  maxValue: Float
+  minValue: Float
+  maxDate: DateTime
+  minDate: DateTime
+  bindedOffer: Offer
+  offer: Offer!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+input SellConditionInput {
+  id: ID
+  type: SellConditionType!
+  maxValue: Float
+  minValue: Float
+  minDate: DateTime
+  maxDate: DateTime
+  bindedOfferId: ID
+}
+
+enum SellConditionType {
+  BINDED_OFFER
+  CLIENT_ONLY
+  PROSPECT_ONLY
+  QUANTITY_RANGE
+  DATE_RANGE
+}
+
+input SendMemberCommunicationInput {
+  boxId: ID!
+  recipientId: ID
+  prospectRecipientId: ID
+  type: MemberCommunicationType!
+  title: String
+  content: String!
+  replyTo: ID
+}
+
+type SendMemberCommunicationPayload {
+  message: Message!
+  logEventId: ID!
+}
+
+type SepaAutoDashboardStats {
+  expectedThisMonth: Int!
+  collected: Int!
+  pending: Int!
+  unpaid: Int!
+}
+
+type SepaAutoUnpaidInvoicesResponse {
+  invoices: [Invoice!]!
+}
+
+type SepaExport {
+  id: ID!
+  total: Float
+  transactionCount: Int
+  box: Box!
+  isResolved: Boolean!
+  closingDate: DateTime!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type SepaExportConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [SepaExportEdge!]
+}
+
+type SepaExportDownload {
+  xml: String
+  errors: [String!]
+}
+
+type SepaExportEdge {
+  node: SepaExport!
+  cursor: String!
+}
+
+type SepaInvoicesExtendedConnection {
+  counters: InvoiceCounters!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [InvoiceEdge!]
+}
+
+type SepaMandate {
+  id: ID!
+  stripeId: String!
+  acceptedAt: DateTime!
+  isActive: Boolean!
+  iban: Iban!
+  businessInfo: BusinessInfo!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Session {
+  id: ID!
+  difficulty: SessionDifficulty!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum SessionDifficulty {
+  BEGIN
+  INTER
+  RX
+  SCALE
+}
+
+input SessionInput {
+  difficulty: SessionDifficulty!
+  description: String!
+}
+
+type SetIbanAsDefaultOutput {
+  success: Boolean!
+  boxesWithoutMandates: [BoxWithoutMandate!]
+}
+
+type SetupEntry {
+  id: ID
+  maxPerDay: Int
+  frequency: Int
+  maxPerMonth: Int
+  maxPerBillingCycle: Int
+  max: Int
+}
+
+input SetupPaymentInput {
+  ibanId: ID
+  cardBrand: String
+  cardCountry: String
+  saveCard: Boolean
+}
+
+input SetupPlanPaymentInput {
+  promotionCodeId: ID
+  priceId: ID!
+  cardBrand: String!
+  cardCountry: String!
+  saveCard: Boolean
+}
+
+type ShopCategory {
+  id: ID!
+  name: String!
+  image: String
+  tva: Float
+  box: Box
+  isActive: Boolean!
+}
+
+type ShopItem {
+  id: ID!
+  name: String!
+  slug: String
+  category: ShopCategory
+  priceTTC: Float!
+  tva: Float!
+  stock: Int
+  image: String
+  description: String
+  isActive: Boolean!
+}
+
+type ShopItemEdge {
+  node: ShopItem!
+  cursor: String!
+}
+
+enum ShopItemExportStatus {
+  ACTIVE
+  INACTIVE
+  ACTIVE_AND_INACTIVE
+}
+
+type ShopItemsConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [ShopItemEdge!]
+}
+
+input ShopItemsWhereInput {
+  boxId: ID!
+  search: String
+  categories: [ID]
+  statuses: [Boolean]
+  withoutCategory: Boolean
+}
+
+type Slot {
+  id: ID!
+  box: Box!
+  workout: Workout
+  slotType: SlotType
+  workoutType: WorkoutType
+  alternativeTitle: String
+  description: String
+  coaches: [User!]!
+  reservation: [Reservation!]!
+  start: DateTime!
+  end: DateTime!
+  listSize: Int!
+  eventPrice: Int
+  showOnQuickSell: Boolean
+  fromQuickSellListSize: Int
+  quickSellDropinLimit: Int
+  quickSellTrialLimit: Int
+  fromMapListSize: Int
+  fromFitMarketListSize: Int
+  showOnFitMarket: Boolean
+  trialListSize: Int
+  showOnMap: Boolean!
+  isActive: Boolean!
+  isPublished: Boolean!
+  isEvent: Boolean!
+  dropin: [Dropin!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  recurrentSlot: RecurrentSlot
+}
+
+type SlotConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [SlotEdge!]
+}
+
+type SlotEdge {
+  node: SlotExtended!
+  cursor: String!
+}
+
+type SlotExtended {
+  id: ID!
+  box: Box!
+  workout: Workout
+  workoutType: WorkoutType
+  slotType: SlotType
+  alternativeTitle: String
+  description: String
+  coaches: [User!]!
+  reservation: [Reservation!]!
+  dropin: [Dropin!]!
+  numberOfReservation: Int!
+  numberOfWaiting: Int!
+  start: DateTime!
+  end: DateTime!
+  listSize: Int!
+  eventPrice: Int
+  showOnQuickSell: Boolean
+  fromQuickSellListSize: Int
+  quickSellDropinLimit: Int
+  quickSellTrialLimit: Int
+  fromMapListSize: Int
+  trialListSize: Int
+  showOnMap: Boolean
+  isPublished: Boolean!
+  isActive: Boolean!
+  isEvent: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  recurrentSlot: RecurrentSlot
+}
+
+enum SlotOrderBy {
+  start_ASC
+  start_DESC
+  end_ASC
+  end_DESC
+  listSize_ASC
+  listSize_DESC
+  isActive_ASC
+  isActive_DESC
+}
+
+type SlotRevenueStat {
+  recurrentSlotId: ID!
+  value: Float!
+  revenueTotal: Float!
+  revenueAverage: Float!
+  profitability: Float!
+  occurrenceCount: Int!
+  chargesTotal: Float!
+}
+
+input SlotSearchInput {
+  boxId: [ID!]
+  typesId: [ID!]
+  withTrial: Boolean
+  type: BookingType
+  start: DateTime!
+  end: DateTime!
+  coachId: ID
+  recurrentWeekId: ID
+}
+
+type SlotType {
+  id: ID!
+  box: Box
+  boxId: ID
+  name: String!
+  description: String
+  color: String
+  icon: String
+  multiplePrepaidCardReservationsAllowed: Boolean!
+  creditCost: Int!
+  entries: SetupEntry
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type SlotTypeLimit {
+  id: ID!
+  slotTypeId: ID!
+  slotType: SlotType!
+  entries: SetupEntry
+}
+
+input SlotTypeLimitInput {
+  slotTypeId: ID!
+  maxPerDay: Int
+  frequency: Int
+  maxPerMonth: Int
+  maxPerBillingCycle: Int
+}
+
+type SlotTypeRemainingCount {
+  slotTypeName: String!
+  boxId: ID!
+  maxPerDay: Int
+  usedPerDay: Int
+  maxPerWeek: Int
+  usedPerWeek: Int
+  maxPerMonth: Int
+  usedPerMonth: Int
+  maxPerBillingCycle: Int
+  usedPerBillingCycle: Int
+  billingCyclePeriodStart: DateTime
+  billingCyclePeriodEnd: DateTime
+}
+
+type SmsConfiguration {
+  id: ID!
+  box: Box!
+  organisationId: String!
+  channelId: String!
+  fromName: String
+}
+
+enum SocialAuthProvider {
+  FACEBOOK
+  GOOGLE
+  APPLE
+}
+
+type SocialNetworkLinks {
+  id: ID!
+  facebook: String
+  instagram: String
+  youtube: String
+  strava: String
+  twitter: String
+}
+
+input SocialNetworkLinksInput {
+  facebook: String
+  instagram: String
+  youtube: String
+  strava: String
+  twitter: String
+}
+
+type SpecialPrice {
+  id: ID!
+  price: Float!
+  note: String
+  start: DateTime
+  end: DateTime
+}
+
+type StatData {
+  startTime: DateTime!
+  endTime: DateTime!
+  value: Float!
+}
+
+input StatInput {
+  startDate: DateTime!
+  endDate: DateTime!
+  unit: StatUnit!
+}
+
+type StatOutput {
+  total: Float!
+  average: Float!
+  data: [StatData!]!
+  unit: StatUnit!
+}
+
+enum StatPeriod {
+  YEAR
+  MONTH
+  WEEK
+}
+
+enum StatUnit {
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
+type StatValue {
+  name: String!
+  value: Float!
+}
+
+type StripeBalance {
+  amount: Int!
+  currency: String!
+}
+
+type StripeBalances {
+  available: [StripeBalance!]
+  pending: [StripeBalance!]
+}
+
+type StripeBankAccount {
+  bank_name: String
+  last4: String
+  country: String
+}
+
+type StripeInvoice {
+  id: ID!
+  total: Int!
+  created: DateTime!
+  status: String!
+}
+
+type StripeInvoiceDiscount {
+  name: String!
+  percentOff: Float
+  amountOff: Float
+}
+
+type StripeInvoiceEdge {
+  node: StripeInvoice!
+  cursor: String!
+}
+
+type StripeInvoiceExtended {
+  totalTTC: Float!
+  subtotal: Float!
+  dueDate: DateTime
+  discount: StripeInvoiceDiscount
+  lines: [StripeInvoiceLineItem]
+  hasMoreLines: Boolean!
+}
+
+type StripeInvoiceLineItem {
+  description: String
+  totalTTC: Float!
+  quantity: Int!
+}
+
+type StripeInvoicesConnection {
+  pageInfo: PageInfo!
+  edges: [StripeInvoiceEdge!]
+}
+
+input StripeInvoicesSearchInput {
+  boxId: ID!
+  startingAfter: String
+}
+
+type StripePayout {
+  id: String!
+  amount: Int!
+  arrival_date: DateTime!
+  currency: String!
+  created: DateTime!
+  status: String!
+  destination: StripeBankAccount
+}
+
+type StripePayoutConnection {
+  rows: [StripePayout!]!
+  pageInfo: PageInfo!
+}
+
+input SubmitFormFieldInput {
+  formFieldId: ID!
+  valueString: String
+  valueNumber: Float
+  valueDate: DateTime
+  valueBoolean: Boolean
+  valueJson: JSON
+}
+
+input SubmitFormInput {
+  userId: ID
+  contactInfo: ContactInfoInput
+  fields: [SubmitFormFieldInput!]!
+}
+
+type Suspension {
+  id: ID
+  startDate: DateTime
+  endDate: DateTime
+}
+
+input SuspensionInput {
+  startDate: DateTime
+  endDate: DateTime
+}
+
+input SwitchEnrollmentInput {
+  fromId: String!
+  toOfferId: String!
+  priceId: String
+  switchDate: DateTime
+  withProrate: Boolean
+  customPrice: Float
+  endDateOption: EnrollmentSwitchEndDateOption
+}
+
+type Tag {
+  id: ID!
+  name: String!
+  slug: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type TagConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [TagEdge!]
+}
+
+type TagEdge {
+  node: Tag!
+  cursor: String!
+}
+
+input TagInput {
+  id: ID
+  name: String
+}
+
+input TempAddCardInput {
+  cardToken: String!
+  firstname: String
+  lastname: String
+}
+
+type Template {
+  id: ID!
+  name: String
+  subject: String
+  content: String
+  design: JSON
+  type: TemplateType
+  box: RestrictedBox
+  hidden: Boolean
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+type TemplateConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [TemplateEdge!]
+}
+
+type TemplateEdge {
+  node: Template!
+  cursor: String!
+}
+
+enum TemplateType {
+  EMAIL
+  SMS
+  NOTIFICATION
+}
+
+enum TimeUnit {
+  YEAR
+  MONTH
+  WEEK
+  DAY
+  HOUR
+  MINUTE
+  SECOND
+}
+
+type Todo {
+  id: ID!
+  description: String!
+  completed: Boolean!
+  deadline: DateTime
+  type: TodoType
+  assignee: User
+  metadata: JSON
+  box: Box
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type TodoConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [TodoEdge!]
+}
+
+type TodoEdge {
+  node: Todo!
+  cursor: String!
+}
+
+enum TodoType {
+  PHONE_CALL
+}
+
+enum UTMChannel {
+  APP
+  LINK
+  QR_CODE
+}
+
+enum UTMMedium {
+  QUICKSELL
+  FITMARKET
+  AD
+}
+
+enum UTMSource {
+  PEPPY
+  GYM
+  FACEBOOK
+  INSTAGRAM
+  GOOGLE
+  LINKTREE
+  TIKTOK
+  REFERRAL
+  DIRECT
+}
+
+type UTMTracking {
+  id: ID!
+  source: UTMSource
+  medium: UTMMedium
+  channel: UTMChannel!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input UTMTrackingInput {
+  source: UTMSource
+  medium: UTMMedium
+  channel: UTMChannel!
+}
+
+input UnpaidSepaInvoicesInput {
+  businessInfoId: ID!
+  closingDate: DateTime!
+  search: String
+  firstFetch: Boolean
+}
+
+type UnreadContact {
+  contactType: UnreadContactType!
+  contactId: ID!
+  unreadCount: Int!
+  lastUnreadAt: DateTime!
+  firstname: String
+  lastname: String
+  email: String
+  phone: String
+}
+
+type UnreadContactConnection {
+  totalCount: Int!
+  edges: [UnreadContactEdge!]!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+}
+
+type UnreadContactEdge {
+  node: UnreadContact!
+  cursor: String!
+}
+
+enum UnreadContactType {
+  USER
+  PROSPECT
+}
+
+input UpdateAddressInput {
+  line1: String
+  line2: String
+  city: String
+  zipCode: String
+  region: String
+  country: String
+}
+
+input UpdateBalanceOperationInput {
+  balance: Int
+  amountIn: Int
+  amountOff: Int
+  type: BalanceOperationType
+  description: String
+  balanceType: BalanceType
+  createdAt: DateTime
+}
+
+input UpdateBlockInput {
+  title: String
+  description: String
+  coachNotes: String
+  performanceType: PerformanceType
+  unitLabel: String
+  position: Int
+  color: String
+}
+
+input UpdateBlogPostInput {
+  title: String
+  content: String
+  metaDescription: String
+  thumbnail: Upload
+  timeToReadInMinutes: Int
+}
+
+input UpdateBoxTeamMemberInput {
+  firstname: String
+  lastname: String
+  avatar: Upload
+  alias: String
+  diploma: String
+  description: String
+  isVisible: Boolean
+  roleAlias: String
+}
+
+input UpdateBusinessInfoInput {
+  businessName: String!
+  legalEntityType: String!
+  capital: Float!
+  address: String!
+  city: String!
+  region: String!
+  zipCode: String!
+  countryCode: CountryCode
+  siren: String
+  rcsNumber: String
+  tvaNumber: String!
+}
+
+input UpdateBusinessPartnerInput {
+  firstname: String
+  lastname: String
+  address: UpdateAddressInput
+  birthdate: DateTime
+  ownershipPercent: Float
+  roles: [BusinessPartnerRole!]
+  title: String
+  tokenId: String!
+}
+
+input UpdateCampaignInput {
+  name: String
+  type: CampaignType
+  subject: String
+  status: CampaignStatus
+  offerIds: [ID!]
+  clientStatuses: [ClientStatus!]
+  publishDate: DateTime
+  template: CampaignTemplateInput
+  metadata: JSON
+}
+
+input UpdateChannelPlaylistInput {
+  name: String
+  description: String
+  visibility: Visibility
+  thumbnail: Upload
+  tags: [TagInput!]
+}
+
+input UpdateChannelVideoInput {
+  title: String
+  description: String
+  thumbnail: Upload
+  type: ChannelVideoType
+  isFree: Boolean
+  parts: [CreateChannelVideoPartInput!]
+  tags: [TagInput!]
+}
+
+input UpdateContentInput {
+  name: String
+  difficulty: Difficulty
+  description: String
+  tags: [TagInput!]
+  equipments: [EquipmentInput!]
+  categories: [ID!]
+  thumbnail: Upload
+  withCreateVideo: Boolean
+}
+
+input UpdateContractInput {
+  name: String
+  withRenewal: Boolean
+  renewalType: RenewalType
+  isActive: Boolean
+}
+
+input UpdateCreatorInput {
+  displayName: String
+  aboutParagraph: String
+  socialNetworkLinks: SocialNetworkLinksInput
+  wallPaper: Upload
+  profilePicture: Upload
+  tags: [TagInput!]
+}
+
+input UpdateDealInput {
+  offer: String
+  condition: String
+  description: String
+  promotionCode: String
+  url: String
+  brandName: String
+  brandLogo: Upload
+  brandBanner: Upload
+  brandDescription: String
+  brandContactEmail: String
+  isVisible: Boolean
+}
+
+input UpdateDraftContentInput {
+  name: String!
+  difficulty: Difficulty
+  description: String
+  participants: [ID!]
+  state: ContentState
+  introVideoId: ID
+  tags: [TagInput!]
+  duration: Int
+  durationUnit: TimeUnit
+  equipmentLevel: EquipmentLevel
+  prices: [CreatePriceInput!]
+  thumbnail: Upload
+}
+
+input UpdateDraftPlanInput {
+  creatorId: ID!
+  content: UpdateDraftContentInput!
+  frequency: Int
+  frequencyUnit: TimeUnit
+  demoLessonId: ID
+  type: PlanType!
+  lessonCount: Int
+  category: PlanCategory!
+  planLessons: [CreatePlanLessonInput!]
+}
+
+input UpdateDropinRequestInput {
+  status: DropinRequestStatus!
+  confirmedStartDate: DateTime
+  metadata: DropinMetadataInput
+}
+
+input UpdateEInvoiceStatusInput {
+  status: EInvoiceLifecycleAction!
+  reason: String
+  notes: String
+  attachment: Upload
+  approvedSubtotal: Int
+  approvedTotal: Int
+  transmittedAmount: Int
+}
+
+input UpdateFeaturePromotionInput {
+  title: String
+  description: String
+  publishDate: DateTime
+  pdf: Upload
+  picture: Upload
+  emailTemplateId: String
+  emailSubject: String
+  notificationTemplates: [NotificationTemplateUpdateInput!]
+}
+
+input UpdateFormInput {
+  name: String
+  description: String
+  isNominative: Boolean
+  isForMembers: Boolean
+  returnUrl: String
+  submissionEmail: String
+  shouldCreateProspect: Boolean
+  isActive: Boolean
+  fields: [FormFieldInput!]
+}
+
+input UpdateInvoiceInput {
+  debtor: ID
+  creditor: ID
+  enrollment: ID
+  lines: [CreateInvoiceLineInput!]
+  paymentMethod: PaymentMethod
+  dueDate: DateTime
+  description: String
+  paymentDate: DateTime
+  discounts: [ID!]
+  isRefund: Boolean
+}
+
+input UpdateLessonInput {
+  content: ContentInput!
+  parts: [CreateLessonPartInput!]!
+  free: Boolean!
+}
+
+input UpdateMembershipInput {
+  user: UserInput
+  membershipStart: DateTime!
+  commitment: Int!
+  renewal: Boolean!
+  price: Float
+  status: MembershipStatus!
+  discountPrice: Float
+  discountId: String
+  discountStart: DateTime
+  discountEnd: DateTime
+  iban: String
+  bic: String
+}
+
+input UpdateMyEnrollmentInput {
+  onBehalfOf: String
+}
+
+input UpdateNotificationTemplateInput {
+  title: String
+  content: String
+  status: NotificationTemplateStatus
+  clientStatuses: [ClientStatus!]
+  offerIds: [ID!]
+  publishDate: DateTime
+}
+
+input UpdateOfferAccessibilityInput {
+  accessRights: [AccessRightsInput!]
+  entries: EntriesInput
+}
+
+input UpdateOfferInput {
+  title: String
+  description: String
+  registrationFees: Float
+  maxNumberOfEntries: Int
+  isActive: Boolean
+  isInShop: Boolean
+  isOnQuickSell: Boolean
+  contractId: ID
+}
+
+input UpdatePenaltyInput {
+  period: Int
+  quantity: Int
+  category: PenaltyCategory
+  name: String
+}
+
+input UpdatePriceInput {
+  id: ID
+  numberOfPayments: Int
+  commitment: Int
+  commitmentUnit: TimeUnit
+  currency: Currency
+  amount: Int
+  interval: Int
+  intervalUnit: TimeUnit
+  isActive: Boolean
+  showOnQuickSell: Boolean
+  creditsPerRecharge: Int
+  creditRechargeMode: CreditRechargeMode
+}
+
+input UpdateProspectInput {
+  firstname: String!
+  lastname: String!
+  phone: String
+  email: String
+  isActive: Boolean
+}
+
+input UpdateQuickSellConfigurationInput {
+  logo: Upload
+  primaryColor: String
+  secondaryColor: String
+  pixelMetaId: String
+}
+
+input UpdateRankingInput {
+  performance: Float!
+  difficulty: SessionDifficulty!
+  feeling: FeelingType
+  isOfficial: Boolean
+  feedback: String
+}
+
+input UpdateRecurrentSlotInput {
+  type: ID
+  weekday: Int
+  startHour: String
+  endHour: String
+  listSize: Int
+  alternativeTitle: String
+  showOnMap: Boolean
+  fromMapListSize: Int
+  trialListSize: Int
+  showOnQuickSell: Boolean
+  fromQuickSellListSize: Int
+  quickSellTrialLimit: Int
+  quickSellDropinLimit: Int
+  showOnFitMarket: Boolean
+  fromFitMarketListSize: Int
+  slotType: ID
+  coachIds: [ID!]
+}
+
+input UpdateSlotInput {
+  start: DateTime
+  end: DateTime
+  workoutId: ID
+  listSize: Int
+  slotType: ID
+  coaches: [ID!]
+  isActive: Boolean
+  isPublished: Boolean
+  showOnQuickSell: Boolean
+  fromQuickSellListSize: Int
+  quickSellDropinLimit: Int
+  quickSellTrialLimit: Int
+  alternativeTitle: String
+  description: String
+  eventPrice: Int
+  isEvent: Boolean
+}
+
+input UpdateSlotInputAdmin {
+  start: DateTime
+  end: DateTime
+  workoutId: ID
+  slotType: ID
+  isActive: Boolean
+  listSize: Int
+  alternativeTitle: String
+  eventPrice: Int
+}
+
+input UpdateSlotTypeInput {
+  name: String!
+  description: String
+  color: String!
+  multiplePrepaidCardReservationsAllowed: Boolean
+  creditCost: Int
+  maxPerDay: Int
+  frequency: Int
+  maxPerMonth: Int
+  maxPerBillingCycle: Int
+}
+
+input UpdateTemplateInput {
+  name: String!
+  type: TemplateType!
+  subject: String
+  content: String
+  design: JSON
+}
+
+input UpdateTodoInput {
+  description: String
+  assigneeId: ID
+  deadline: DateTime
+}
+
+input UpdateWorkflowInput {
+  name: String
+  description: String
+  uniqueEntry: Boolean
+  goalEventType: WorkflowGoalEventType
+  expenseLimit: Int
+}
+
+input UpdateWorkflowStepInput {
+  metadata: JSON
+  templateId: ID
+  template: WorkflowStepTemplateInput
+  branches: [WorkflowBranchInput!]
+}
+
+input UpdateWorkflowTriggerInput {
+  eventType: WorkflowTriggerEventType!
+  filters: JSON
+  branches: [WorkflowBranchInput!]
+}
+
+input UpdateWorkout {
+  name: String
+  performanceType: PerformanceType
+  box: ID
+  session: [SessionInput!]
+  advice: String
+  wodDate: String
+  slotTypeId: ID
+  isPublished: Boolean
+}
+
+scalar Upload
+
+type Upsell {
+  id: ID!
+  code: String!
+  price: Int!
+  trialType: UpsellTrialType!
+  trialConfig: JSON
+  hidden: Boolean!
+}
+
+enum UpsellTrialType {
+  NONE
+  USAGE_COUNT
+  DAYS
+}
+
+type User {
+  id: ID
+  paymentDetail: PaymentDetail
+  email: String
+  stripeId: String
+  avatar: String
+  firstname: String
+  lastname: String
+  slug: String
+  alias: String
+  password: String
+  birthdate: String
+  token: String
+  resetPasswordToken: String
+  role: UserRole
+  roleAlias: String
+  registrationType: RegisterType
+  registrationCode: String
+  registrationDone: Boolean
+  gender: UserGender
+  phone: String
+  diploma: String
+  description: String
+  zipcode: String
+  address: String
+  city: String
+  country: String
+  lastLogin: DateTime
+  iban: String
+  bic: String
+  rum: String
+  magicToggle: Boolean
+  pushToken: String
+  settings: UserSetting
+  active: Boolean
+  hasUnseenNotification: Boolean
+  channelCreditAmount: Int
+  referralCode: String
+  isVisible: Boolean
+  metadata: JSON
+  expenses: [Expense!]
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input UserAdminLoginInput {
+  email: String!
+  password: String!
+}
+
+type UserAdminWithToken {
+  user: User!
+  token: String!
+  boxes: [Box!]
+}
+
+input UserCheckEmailInput {
+  email: String!
+}
+
+input UserCheckInput {
+  user: String!
+  boxId: ID
+}
+
+type UserConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [UserEdge!]
+}
+
+input UserCreateAdminInput {
+  email: String!
+  firstname: String!
+  lastname: String!
+  avatar: Upload
+  password: String!
+  diploma: String
+  address: String
+  city: String
+  country: String
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+input UserEnrollmentsWhereInput {
+  boxId: ID
+  userId: ID
+  fromOtherBox: Boolean
+  withExpired: Boolean
+}
+
+input UserForgetPasswordInput {
+  email: String!
+  redirectUrl: String!
+}
+
+enum UserGender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+type UserInBox {
+  user: User
+  isInBox: Boolean
+}
+
+input UserInput {
+  email: String
+  avatar: Upload
+  firstname: String
+  lastname: String
+  gender: UserGender
+  phone: String
+  birthdate: String
+  address: String
+  city: String
+  country: String
+  zipcode: String
+  iban: String
+  bic: String
+  metadata: JSON
+}
+
+input UserLoginInput {
+  email: String!
+  password: String!
+  pushToken: String
+}
+
+enum UserOrderByInput {
+  firstname_ASC
+  lastname_ASC
+  firstname_DESC
+  lastname_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type UserPaymentDetail {
+  expMonth: Int!
+  expYear: Int!
+  lastFour: String!
+  lastname: String
+  firstname: String
+  brand: String
+}
+
+type UserPlans {
+  programs: UserPrograms!
+  subscriptions: UserSubscriptions!
+}
+
+type UserPrograms {
+  items: [PlanPurchase!]!
+  hasMore: Boolean!
+  totalCount: Int!
+}
+
+type UserRanking {
+  position: Int!
+  ranking: Ranking!
+}
+
+type UserRankingStats {
+  workoutsCount: Int!
+  workoutCategoriesCounters: [StatValue]!
+  feelingsCounters: [StatValue]!
+  workoutTypesCounters: [StatValue]!
+  levelsCounters: [StatValue]!
+}
+
+input UserRegisterInput {
+  email: String!
+  password: String!
+  confirmPassword: String!
+  firstname: String!
+  lastname: String!
+  gender: String!
+  birthdate: String!
+  phone: String
+  avatar: Upload
+  pushToken: String
+  referralParentId: ID
+}
+
+input UserResetPasswordInput {
+  resetPasswordToken: String!
+  password: String!
+  confirmPassword: String!
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  SUBMANAGER
+  CLIENT
+  COACH
+}
+
+input UserSearchInput {
+  search: String
+  userId: ID
+}
+
+type UserSetting {
+  notificationWod: Boolean!
+  notificationSlotCancel: Boolean!
+  hasRatedApp: Boolean!
+  lastRateAppRequest: DateTime
+}
+
+type UserState {
+  hasUnseenNotification: Boolean!
+  hasPendingReservations: Boolean!
+  hasEnrollments: Boolean!
+  hasPendingRankings: Boolean!
+  hasPendingForms: Boolean!
+  settings: UserSetting
+  createdAt: DateTime
+}
+
+type UserSubscriptions {
+  items: [PlanSubscription!]!
+  hasMore: Boolean!
+  totalCount: Int!
+}
+
+input UserUpdateAdminInput {
+  firstname: String
+  lastname: String
+  email: String
+  gender: UserGender
+  phone: String
+  birthdate: String
+  diploma: String
+  address: String
+  city: String
+  country: String
+  zipcode: String
+  iban: String
+  bic: String
+  role: UserRole
+  registrationType: RegisterType
+  registrationCode: String
+  registrationDone: Boolean
+  active: Boolean
+  metadata: JSON
+}
+
+input UserUpdateInput {
+  firstname: String
+  lastname: String
+  alias: String
+  email: String
+  avatar: Upload
+  oldPassword: String
+  password: String
+  confirmPassword: String
+  gender: UserGender
+  phone: String
+  birthdate: String
+  diploma: String
+  address: String
+  city: String
+  country: String
+  zipcode: String
+  iban: String
+  bic: String
+  rum: String
+  metadata: JSON
+}
+
+input UserUpdatePasswordInput {
+  newPassword: String!
+  confirmNewPassword: String!
+}
+
+input UserWhereUniqueInput {
+  id: ID
+  email: String
+  username: String
+}
+
+type UserWithAccessToken {
+  user: User!
+  accessToken: String!
+  expiresIn: Int!
+}
+
+type UserWithBoxes {
+  user: User!
+  boxes: [Box!]
+}
+
+type UserWithEnrollment {
+  user: User!
+  token: String
+  enrollments: [Enrollment!]
+  hasPendingReservations: Boolean
+  hasEnrollments: Boolean!
+}
+
+type UserWithEnrollmentAndAccessToken {
+  user: User!
+  enrollments: [Enrollment!]
+  hasPendingReservations: Boolean
+  accessToken: String
+  expiresIn: Int
+}
+
+type UserWithMembership {
+  user: User!
+  token: String!
+  memberships: [Membership!]!
+}
+
+type UserWithToken {
+  user: User!
+  token: String!
+}
+
+type UserWithVodBusinessSubscriptions {
+  user: User!
+  vodBusinessSubscriptions: [VodBusinessSubscription!]!
+}
+
+type UserWithVodBusinessSubscriptionsAndAccessToken {
+  user: User!
+  vodBusinessSubscriptions: [VodBusinessSubscription!]!
+  accessToken: String
+  expiresIn: Int
+}
+
+input ValueForRange {
+  range: Int
+  value: Float!
+  date: DateTime
+}
+
+type Video {
+  id: ID!
+  url: String
+  title: String!
+  titleSlug: String!
+  description: String
+  thumbnailUrl: String
+  state: VideoState!
+  creator: Creator!
+  durationInSeconds: Int
+  isPublic: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type VideoConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [VideoEdge!]
+}
+
+type VideoEdge {
+  node: Video!
+  cursor: String!
+}
+
+input VideoFiltersInput {
+  creatorId: ID
+  search: String
+}
+
+enum VideoState {
+  UPLOADING
+  TRANSCODING
+  AVAILABLE
+}
+
+type VideoWithUploadLink {
+  video: Video!
+  uploadLink: String!
+}
+
+enum Visibility {
+  HIDDEN
+  PUBLISHED
+  PROGRAMMED
+}
+
+type VodBusinessSubscription {
+  id: ID!
+  debitDay: Int
+  admin: User!
+  startDate: DateTime
+  terminationDate: DateTime
+  lastPaymentDate: DateTime
+  status: VodBusinessSubscriptionStatus!
+  unpaidSince: DateTime
+  unpaidErrorCode: String
+  unpaidAmount: Int
+  stripeSubId: String
+  stripeClientId: String
+  businessInfo: BusinessInfo
+  activeSubCount: Int!
+  referralCreator: Creator
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type VodBusinessSubscriptionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [VodBusinessSubscriptionEdge!]
+}
+
+type VodBusinessSubscriptionEdge {
+  node: VodBusinessSubscription!
+  cursor: String!
+}
+
+enum VodBusinessSubscriptionStatus {
+  CALIBRATING
+  ONGOING
+  UNPAID
+  CANCELED
+  CANCELING
+}
+
+type VodSubscription {
+  id: ID!
+  debitDay: Int!
+  user: User!
+  startDate: DateTime!
+  terminationDate: DateTime
+  lastPaymentDate: DateTime
+  trialPeriodEndDate: DateTime
+  status: VodSubscriptionStatus!
+  unpaidSince: DateTime
+  unpaidErrorCode: String
+  unpaidAmount: Int
+  stripeId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type VodSubscriptionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [VodSubscriptionEdge!]
+}
+
+type VodSubscriptionEdge {
+  node: VodSubscription!
+  cursor: String!
+}
+
+enum VodSubscriptionStatus {
+  ONGOING
+  UNPAID
+  CANCELED
+  CANCELING
+}
+
+input WodSchedulingInput {
+  notified: Boolean
+  publicationInterval: Int
+}
+
+type Workflow {
+  id: ID!
+  name: String
+  description: String
+  goalEventType: WorkflowGoalEventType
+  trigger: WorkflowTrigger
+  firstStepId: ID
+  firstStep: WorkflowStep
+  isActive: Boolean!
+  uniqueEntry: Boolean!
+  steps: [WorkflowStep!]!
+  expenseLimit: Int
+  expenseLimitReached: Boolean!
+  firstActivatedAt: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type WorkflowActivationCaveat {
+  isError: Boolean!
+  code: String!
+  stepId: ID
+}
+
+type WorkflowBranch {
+  id: ID!
+  name: String
+  priority: Int
+  filters: JSON
+  firstStepId: ID
+  firstStep: WorkflowStep
+  stepId: ID
+}
+
+input WorkflowBranchInput {
+  id: ID
+  name: String
+  priority: Int!
+  filters: JSON
+  firstStepId: ID
+  stepId: ID
+}
+
+type WorkflowConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [WorkflowEdge!]
+}
+
+type WorkflowEdge {
+  node: Workflow!
+  cursor: String!
+}
+
+type WorkflowExecution {
+  id: ID!
+  metadata: JSON
+  user: User
+  prospect: Prospect
+  pendingStep: WorkflowStep
+  pendingStepId: ID
+  createdAt: DateTime
+  terminatedAt: DateTime
+  goalReached: Boolean
+}
+
+type WorkflowExecutionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [WorkflowExecutionEdge!]
+}
+
+type WorkflowExecutionEdge {
+  node: WorkflowExecution!
+  cursor: String!
+}
+
+enum WorkflowExecutionStatus {
+  PENDING
+  TERMINATED
+  CANCELLED
+}
+
+input WorkflowExecutionsOnPeriodInput {
+  status: WorkflowExecutionStatus
+  goalReached: Boolean
+  workflowId: ID!
+  periodStart: DateTime!
+  periodEnd: DateTime!
+}
+
+type WorkflowGoal {
+  id: ID!
+}
+
+enum WorkflowGoalEventType {
+  OFFER_PURCHASED
+  INVOICE_PAID
+  BOOKING
+  CARD_SAVED
+  OFFER_ACCEPTED
+}
+
+type WorkflowStep {
+  id: ID!
+  type: WorkflowStepType
+  metadata: JSON
+  description: String
+  previousStepId: ID
+  previousStep: WorkflowStep
+  nextStepId: ID
+  nextStep: WorkflowStep
+  templateId: ID
+  template: Template
+  branches: [WorkflowBranch!]
+}
+
+input WorkflowStepTemplateInput {
+  subject: String
+  content: String!
+  design: JSON
+  type: TemplateType!
+}
+
+enum WorkflowStepType {
+  DELAY
+  BRANCH
+  EXTERN_COMMUNICATION
+  INTERN_COMMUNICATION
+  TASK
+  PHONE_CALL
+}
+
+type WorkflowTrigger {
+  id: ID!
+  eventType: WorkflowTriggerEventType
+  filters: JSON
+}
+
+enum WorkflowTriggerEventType {
+  MEMBER_BOOKING
+  MEMBER_BOOKING_CANCELLED
+  PROSPECT_BOOKING
+  PROSPECT_MANUALLY_ADDED
+  PROSPECT_BOOKING_CANCELLED
+  NEW_MEMBER
+  NEW_ENROLLMENT
+  NEW_CASHLESS_INVOICE
+  ENROLLMENT_SUSPENDED
+  ENROLLMENT_SUSPENSION_LIFTED
+  ENROLLMENT_EXPIRING
+  MONTHLY_PAYMENT_FAILED
+  MEMBER_BECOMES_GHOST
+  MEMBER_BIRTHDAY
+  FORM_SUBMITTED
+}
+
+type Workout {
+  id: ID!
+  name: String!
+  slug: String!
+  box: Box
+  advice: String
+  category: WorkoutCategory
+  type: WorkoutType
+  slotType: SlotType
+  performanceType: PerformanceType
+  session: [Session!]!
+  blocks: [WorkoutBlock!]
+  ranking: [Ranking!]!
+  wodDate: String
+  isPublished: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type WorkoutBlock {
+  id: ID!
+  title: String!
+  description: String!
+  coachNotes: String
+  performanceType: PerformanceType
+  unitLabel: String
+  position: Int!
+  color: String
+}
+
+type WorkoutCategory {
+  id: ID!
+  name: String!
+  type: WorkoutCategoryType!
+}
+
+type WorkoutCategoryConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [WorkoutCategoryEdge!]
+}
+
+type WorkoutCategoryEdge {
+  node: WorkoutCategory!
+  cursor: String!
+}
+
+enum WorkoutCategoryType {
+  GLOBAL
+  BOX
+  USER
+}
+
+type WorkoutConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [WorkoutEdge!]
+}
+
+type WorkoutEdge {
+  node: Workout!
+  cursor: String!
+}
+
+input WorkoutInputAdmin {
+  name: String!
+  categoryId: ID!
+  performanceType: PerformanceType
+  session: [SessionInput!]!
+  isPublished: Boolean
+  advice: String
+}
+
+enum WorkoutOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  advice_ASC
+  advice_DESC
+  performanceType_ASC
+  performanceType_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type WorkoutRank {
+  workout: Workout!
+  ranking: [Ranking!]!
+  best: Ranking!
+}
+
+type WorkoutRankConnection {
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [WorkoutRankEdge!]
+}
+
+type WorkoutRankEdge {
+  node: WorkoutRank!
+  cursor: String!
+}
+
+input WorkoutSearchInput {
+  search: String
+  categoryId: ID
+  boxId: ID
+  wodDateFrom: DateTime
+  wodDateTo: DateTime
+  slotTypeId: ID
+  withBlocksOnly: Boolean
+}
+
+type WorkoutType {
+  id: ID
+  name: String
+  icon: String
+}
+
+input createGlobalShopCategoryInput {
+  name: String!
+  tva: Float!
+}
+
+input createShopCategoryInput {
+  boxId: ID!
+  image: Upload
+  tva: Float
+  name: String!
+}
+
+input createShopItemInput {
+  boxId: ID!
+  categoryId: ID
+  name: String!
+  image: Upload
+  priceTTC: Float!
+  tva: Float!
+  stock: Int
+  description: String
+}
+
+input updateSettingsInput {
+  notificationWod: Boolean
+  notificationSlotCancel: Boolean
+}
+
+input updateShopCategoryInput {
+  tva: Float
+  name: String
+  isActive: Boolean
+}
+
+input updateShopCategoryStatusInput {
+  isActive: Boolean
+  archiveAllItems: Boolean
+}
+
+input updateShopItemInput {
+  categoryId: ID
+  name: String
+  priceTTC: Float
+  tva: Float
+  stock: Int
+  description: String
+  isActive: Boolean
+  image: Upload
+}
