@@ -1,0 +1,4 @@
+# En ligne (Cloudflare Static Assets) : le navigateur revérifie l'interface à chaque chargement,
+# pour qu'une mise à jour soit visible tout de suite. Les fichiers inchangés restent en cache (304).
+/*
+  Cache-Control: no-cache

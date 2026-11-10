@@ -75,7 +75,12 @@ createServer(async (req, res) => {
   if (!path.startsWith(ROOT)) return res.writeHead(403).end();
   try {
     const body = await readFile(path);
-    res.writeHead(200, { 'content-type': TYPES[extname(path)] || 'application/octet-stream' });
+    // L'interface change à chaque mise à jour : le navigateur doit revérifier à chaque chargement
+    // (no-cache) ; l'ETag lui permet de garder sa copie (304) tant que le fichier n'a pas changé.
+    const etag = `"${createHash('sha1').update(body).digest('base64url')}"`;
+    const headers = { 'content-type': TYPES[extname(path)] || 'application/octet-stream', 'cache-control': 'no-cache', etag };
+    if (req.headers['if-none-match'] === etag) return res.writeHead(304, headers).end();
+    res.writeHead(200, headers);
     res.end(body);
   } catch {
     res.writeHead(404).end('Not found');

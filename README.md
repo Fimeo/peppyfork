@@ -34,6 +34,7 @@ Les données (planning, réservations, inscrits, perfs, factures) sont redemand�
 | `public/stats.js` | Calcul et rendu des statistiques. |
 | `public/perfs.js` | Records, scores de WOD, formulaire d'ajout et calcul des charges. |
 | `public/styles.css` | Styles. |
+| `public/_headers` | En ligne : demande au navigateur de revérifier l'interface à chaque chargement (`Cache-Control: no-cache`), pour voir une mise à jour tout de suite. `server.mjs` fait de même en local. |
 | `docs/peppy-schema.graphql` | Schéma de l'API Peppy, lisible (types, requêtes, mutations). |
 | `docs/peppy-schema.json` | Le même schéma brut (introspection GraphQL), pour les outils. |
 
