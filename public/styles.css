@@ -14,6 +14,9 @@
   --amber-dim: rgb(255 178 62 / .14);
   --red: #ff5d5d;
   --red-dim: rgb(255 93 93 / .14);
+  --blue: #9db4ff;
+  --blue-dim: rgb(143 168 255 / .10);
+  --blue-line: rgb(143 168 255 / .22);
   --viz-1: #56661c;
   --viz-2: #9cbf24;
   --viz-3: #d8ff3e;
@@ -107,19 +110,19 @@ input, select { font: inherit; color: inherit; }
 .cd-box.over > svg { color: var(--muted); }
 .cd-box.over b { font-size: 20px; text-transform: uppercase; letter-spacing: .04em; }
 
-/* ---------- Suggestions ---------- */
-.sugg-box { margin-top: 14px; padding: 4px 6px 4px 14px; }
-.sugg-top { display: flex; align-items: center; gap: 7px; padding: 10px 0 4px; }
-.sugg-top svg { width: 14px; height: 14px; color: var(--volt); }
-.sugg-top b { font: 700 14px/1 var(--display); text-transform: uppercase; letter-spacing: .12em; }
-.sugg-top small { color: var(--muted); font-size: 12px; margin-left: auto; padding-right: 8px; }
-.sugg-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); cursor: pointer; }
-.sugg-top + .sugg-row { border-top: 0; }
+/* ---------- Suggestions : encadré bleuté, une carte par cours proposé ---------- */
+.sugg-box { margin-top: 14px; padding: 12px; border-radius: var(--radius); background: var(--blue-dim); border: 1px solid var(--blue-line); display: flex; flex-direction: column; gap: 8px; }
+.sugg-top { display: flex; align-items: center; gap: 9px; padding: 0 2px 2px; }
+.sugg-top svg { width: 16px; height: 16px; color: var(--blue); flex: none; }
+.sugg-top b { display: block; font: 700 15px/1.1 var(--display); text-transform: uppercase; letter-spacing: .08em; color: var(--blue); }
+.sugg-top small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.sugg-row { display: flex; align-items: center; gap: 12px; padding: 9px 6px 9px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); cursor: pointer; }
+.sugg-row:hover { border-color: var(--surface-3); }
 .sugg-when { width: 62px; flex: none; font: 700 12px/1 var(--display); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 .sugg-when b { display: block; margin-top: 2px; font: 800 20px/1 var(--display); color: var(--text); letter-spacing: 0; }
 .sugg-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .sugg-info b { font: 700 16px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sugg-info small { color: var(--muted); font-size: 12px; }
+.sugg-info small { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .btn.sm { padding: 8px 12px; font-size: 14px; border-radius: 10px; }
 .sugg-skip { width: 28px; height: 28px; flex: none; border: 0; border-radius: 8px; background: none; color: var(--muted); font-size: 18px; line-height: 1; }
 .sugg-skip:hover { background: var(--surface-2); color: var(--text); }

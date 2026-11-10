@@ -24,6 +24,8 @@ Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre d
 
 ### Suggestions de cours pour s'inscrire en un clic
 
+- Bloc bien séparé du planning : encadré bleuté « Suggestions pour toi », avec l'explication, et chaque cours proposé sur sa propre carte.
+
 - Peppy+ repère tes habitudes sur les 8 dernières semaines : même jour, même type de cours, à 1 h près, au moins 2 semaines sur 8.
 - Il propose **2 cours à la fois** sur les 2 semaines à venir, avec un bouton Réserver ou « + Attente » direct.
 - Les suggestions se renouvellent au fil de l'eau : dès que tu réserves ou que tu passes une suggestion (×), la suivante prend la place.

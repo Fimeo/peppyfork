@@ -844,8 +844,8 @@ function suggestions() {
 function viewSuggestions() {
   const list = suggestions();
   if (!list.length) return '';
-  return `<section class="card sugg-box">
-    <div class="sugg-top">${ICONS.spark}<b>Suggestions</b><small>d'après tes ${HABIT_WEEKS} dernières semaines</small></div>
+  return `<section class="sugg-box" aria-label="Suggestions">
+    <div class="sugg-top">${ICONS.spark}<div><b>Suggestions pour toi</b><small>D'après tes habitudes des ${HABIT_WEEKS} dernières semaines</small></div></div>
     ${list.map(({ s, weeks }) => {
       const n = s.numberOfReservation ?? 0;
       const full = n >= s.listSize;
