@@ -19,7 +19,7 @@ Puis ouvrir http://localhost:5173 et se connecter avec son compte Peppy.
 Peppy+ n'a ni base de données, ni compte, ni outil de suivi. Tout transite par l'API Peppy :
 
 - **Identifiants** : envoyés uniquement à `api.peppy.cool`, via le petit relais (`server.mjs` en local, `worker.mjs` en ligne) qui transmet les requêtes sans rien enregistrer.
-- **Dans ton navigateur** (`localStorage`) : le jeton de session Peppy, ton prénom, la salle choisie, le filtre « Places dispo », les suggestions écartées, tes pourcentages favoris et la liste des mouvements où tu as des records (pour les charger plus vite). La déconnexion efface la session.
+- **Dans ton navigateur** (`localStorage`) : le jeton de session Peppy, ton prénom, la salle choisie, les suggestions écartées, tes pourcentages favoris et la liste des mouvements où tu as des records (pour les charger plus vite). La déconnexion efface la session.
 - **En cache** : seulement les photos et logos publics du CDN Peppy, pour ne pas les retélécharger. En local, ils sont dans `.cache/img` (supprimable à tout moment) ; en ligne, dans le cache de Cloudflare.
 
 Les données (planning, réservations, inscrits, perfs, factures) sont redemandées à l'API à chaque fois et restent en mémoire le temps de la session.

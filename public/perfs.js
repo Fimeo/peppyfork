@@ -7,6 +7,9 @@ const fmtDate = (d, o = { day: 'numeric', month: 'short', year: 'numeric' }) => 
 export const norm = (s) => String(s || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 
 export const LEVELS = { SCALE: 'Scale', BEGIN: 'Débutant', INTER: 'Inter', RX: 'RX' };
+// Ressenti après un WOD (FeelingType de l'API).
+export const FEELINGS = { GRINNING: ['😁', 'Au top'], SMILY: ['🙂', 'Bien'], NEUTRAL: ['😐', 'Moyen'], FROWNING: ['🙁', 'Difficile'], SKULL: ['💀', 'Détruit'] };
+const feelingIcon = (f) => (FEELINGS[f] ? `<span class="feel" title="${FEELINGS[f][1]}">${FEELINGS[f][0]}</span>` : '');
 const TYPE_LABEL = { WEIGHT: 'Charge', REPETITION: 'Reps', TIME: 'Temps', ROUNDS: 'Tours', DISTANCE: 'Distance', CALORIE: 'Calories', WATTS: 'Watts', UNIT: 'Valeur' };
 export const PRESETS = [50, 60, 65, 70, 75, 80, 85, 90, 95];
 const REPS = [1, 2, 3, 5, 10];
@@ -150,8 +153,10 @@ function viewWods(rankings) {
     <section class="card wod-list">${groups.map((g) => {
       const last = g.items[0];
       const t = g.workout.performanceType;
+      const note = g.items.find((r) => r.feedback?.trim());
       return `<div class="wod-row" data-action="open-wod" data-id="${g.workout.id}">
-        <b class="wod-name">${esc(g.workout.name.trim())}</b>
+        <span class="wod-main"><b class="wod-name">${esc(g.workout.name.trim())}</b>${feelingIcon(last.feeling)}
+          ${note ? `<small class="wod-note">« ${esc(note.feedback.trim())} »</small>` : ''}</span>
         <span class="wod-score">${fmtPerf(last.performance, t)}<small>${LEVELS[last.difficulty] || ''} · ${fmtDate(last.date)}</small></span>
         ${g.items.length > 1 ? `<span class="wod-best">record ${fmtPerf(g.best.performance, t)}<small>${g.items.length} fois</small></span>` : '<span class="wod-best"></span>'}
       </div>`;
@@ -199,7 +204,11 @@ export function viewWod(g, info, level) {
     <div class="ex-hero"><div><b>${fmtPerf(g.best.performance, t)}</b><small>record · ${LEVELS[g.best.difficulty] || ''}</small></div></div>
     ${wodDescription(g, info, level)}
     <div class="section-title">Historique · ${g.items.length}</div>
-    <ul class="invoices">${g.items.map((r) => `<li><span class="grow">${fmtDate(r.date, { day: 'numeric', month: 'long', year: 'numeric' })}</span><b>${fmtPerf(r.performance, t)}</b><span class="tag neutral">${LEVELS[r.difficulty] || r.difficulty || ''}</span></li>`).join('')}</ul>
+    <ul class="scores">${g.items.map((r) => `<li>
+      <div class="score-top"><span class="grow">${fmtDate(r.date, { day: 'numeric', month: 'long', year: 'numeric' })}</span>${feelingIcon(r.feeling)}<b>${fmtPerf(r.performance, t)}</b><span class="tag neutral">${LEVELS[r.difficulty] || r.difficulty || ''}</span></div>
+      ${r.feedback?.trim() ? `<p class="score-note">${esc(r.feedback.trim())}</p>` : ''}
+      <button class="link-btn" data-action="edit-score" data-id="${r.id}">${r.feedback?.trim() || r.feeling ? 'Modifier le commentaire' : '+ Ajouter un commentaire'}</button>
+    </li>`).join('')}</ul>
     <div class="sheet-actions">
       <button class="btn block primary" data-action="add-perf" data-kind="wod" data-id="${g.workout.id}">+ Nouveau score</button>
       <button class="btn block ghost" data-action="close">Fermer</button>
@@ -266,5 +275,25 @@ function viewSelected(sel) {
       <input class="chip-in" name="rangeOther" type="number" inputmode="numeric" min="1" placeholder="autre"></div></div>` : ''}
     ${sel.kind === 'wod' ? `<div class="field">Niveau
       <div class="chips">${Object.entries(LEVELS).map(([k, l]) => `<label class="chip"><input type="radio" name="level" value="${k}" ${k === 'RX' ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>` : ''}
-    <label class="field">Date<input name="date" type="date" value="${today()}" max="${today()}" required></label>`;
+    <label class="field">Date<input name="date" type="date" value="${today()}" max="${today()}" required></label>
+    ${sel.kind === 'wod' ? feedbackFields() : ''}`;
+}
+
+function feedbackFields(r = {}) {
+  return `<div class="field">Ressenti
+      <div class="chips feelings">${Object.entries(FEELINGS).map(([k, [icon, label]]) => `<label class="chip"><input type="radio" name="feeling" value="${k}" ${r.feeling === k ? 'checked' : ''}><span title="${label}">${icon}<small>${label}</small></span></label>`).join('')}</div></div>
+    <label class="field">Commentaire<textarea name="feedback" rows="3" maxlength="500" placeholder="Stratégie, charges utilisées, sensations…">${esc(r.feedback || '')}</textarea></label>`;
+}
+
+// Modifier le ressenti et le commentaire d'un score déjà enregistré.
+export function viewEditScore(r) {
+  return `<form class="sheet-body" id="score-form" data-id="${r.id}" autocomplete="off">
+    <h3>${esc(r.workout?.name?.trim() || 'WOD')}</h3>
+    <p class="muted" style="margin:4px 0 0">${fmtDate(r.date, { day: 'numeric', month: 'long', year: 'numeric' })} · ${fmtPerf(r.performance, r.workout?.performanceType)} · ${LEVELS[r.difficulty] || r.difficulty || ''}</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">${feedbackFields(r)}</div>
+    <div class="sheet-actions">
+      <button class="btn block primary" type="submit">Enregistrer</button>
+      <button class="btn block ghost" type="button" data-action="open-wod" data-id="${r.workout?.id}">Retour</button>
+    </div>
+  </form>`;
 }
