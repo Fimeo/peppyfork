@@ -79,9 +79,9 @@ input, select { font: inherit; color: inherit; }
 .hero {
   margin-top: 14px; padding: 10px 12px; border-radius: 16px; cursor: pointer;
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 12px;
-  background: var(--surface); border: 1px solid var(--line); box-shadow: inset 4px 0 0 var(--volt);
+  background: var(--surface); border: 1px solid var(--line);
 }
-.hero.is-wait { box-shadow: inset 4px 0 0 var(--amber); }
+.hero:hover { border-color: var(--surface-3); }
 .hero-date { width: 44px; text-align: center; padding: 5px 0; border-radius: 10px; background: var(--volt); color: var(--ink); }
 .hero.is-wait .hero-date { background: var(--amber); }
 .hero-date small { display: block; font: 700 11px/1 var(--display); text-transform: uppercase; letter-spacing: .08em; }
