@@ -1,6 +1,6 @@
 // Peppy+ — interface alternative pour réserver ses cours via l'API Peppy.
 import { computeStats, viewStats } from './stats.js';
-import { viewPerfs, viewExercise, viewWod as viewWodScores, viewAdd, viewResults, calcGrid, groupRankings, roundKg, norm } from './perfs.js';
+import { viewPerfs, viewExercise, viewWod as viewWodScores, viewEditScore, viewAdd, viewResults, calcGrid, groupRankings, roundKg, norm } from './perfs.js';
 
 // ---------------------------------------------------------------- utils
 const $ = (s, el = document) => el.querySelector(s);
@@ -140,13 +140,16 @@ const Q = {
   // Les records ne se lisent qu'exercice par exercice (exerciseId obligatoire).
   myPerfs: `query getMyPerformances($id: ID!) { getMyPerformances(exerciseId: $id, page: 1, pageSize: 200) { edges { node { id value range createdAt } } } }`,
   rankings: `query getRankings($w: RankingWhereInput) {
-    getRankings(where: $w, orderBy: date_DESC, page: 1, pageSize: 200) { edges { node { id performance date difficulty workout { id name performanceType } } } }
+    getRankings(where: $w, orderBy: date_DESC, page: 1, pageSize: 200) { edges { node { id performance date difficulty feeling feedback workout { id name performanceType } } } }
   }`,
   workout: `query getRestrictedWorkout($id: ID!) { getRestrictedWorkout(where: $id) { id advice session { difficulty description } } }`,
   searchWods: `query getRestrictedWorkouts($w: WorkoutSearchInput) { getRestrictedWorkouts(where: $w, page: 1, pageSize: 12) { edges { node { id name performanceType } } } }`,
   savePerf: `mutation savePerformanceForRange($d: CreatePerformanceForRangeInput!) { savePerformanceForRange(data: $d) { id } }`,
   saveRanking: `mutation createRanking($w: ID!, $d: CreateRankingInput!) {
-    createRanking(where: $w, data: $d) { id performance date difficulty workout { id name performanceType } }
+    createRanking(where: $w, data: $d) { id performance date difficulty feeling feedback workout { id name performanceType } }
+  }`,
+  updateRanking: `mutation updateRanking($w: ID!, $d: UpdateRankingInput!) {
+    updateRanking(where: $w, data: $d) { id performance date difficulty feeling feedback workout { id name performanceType } }
   }`,
   confirm: `mutation confirmReservation($where: ID!, $data: ConfirmReservationInput) { confirmReservation(where: $where, data: $data) { id status } }`,
   book: `mutation makeReservation($where: ID!) { makeReservation(where: $where) { id status waitlistPosition } }`,
@@ -164,6 +167,34 @@ const jwtExp = (t) => { try { return JSON.parse(atob(t.split('.')[1].replace(/-/
 let session = 0;
 const STALE = 'session terminée';
 const staleError = () => new Error(STALE);
+
+// L'API Peppy répond en anglais (ou avec un code) : on traduit les refus courants.
+// Le texte comparé réunit le code d'erreur et le message (« MAX_PENDING_RESERVATIONS » → « max pending reservations »).
+const ERRORS_FR = [
+  [/pending.?reservation|max(imum)?.{0,20}reservations?|too many.{0,20}(reservation|booking)|reservations?.{0,20}(limit|exceed|reached)/i, 'Tu as atteint le nombre maximum de réservations en cours. Annule une séance à venir pour en réserver une autre.'],
+  [/per.?week|weekly|week.{0,20}(quota|limit)/i, 'Quota de la semaine atteint pour ton abonnement.'],
+  [/per.?month|monthly|month.{0,20}(quota|limit)/i, 'Quota du mois atteint pour ton abonnement.'],
+  [/per.?day|daily|same.?day|day.{0,20}(quota|limit)/i, 'Tu as déjà atteint le nombre de séances autorisées ce jour-là.'],
+  [/quota|limit.{0,20}reached/i, 'Quota de ton abonnement atteint pour ce cours.'],
+  [/credit/i, 'Plus assez de crédits sur ton abonnement.'],
+  [/already.{0,30}(booked|reserved|registered|reservation)/i, 'Tu es déjà inscrit à ce cours.'],
+  [/waiting.?list.{0,20}(full|closed|disabled)/i, 'La liste d\'attente de ce cours est fermée.'],
+  [/(slot|class|lesson).{0,20}(is )?full|no.{0,10}(more )?(place|spot|seat)/i, 'Ce cours est complet.'],
+  [/cancel.{0,40}(too late|not allowed|impossible|forbidden|closed)|late.?cancel/i, 'Annulation impossible : le délai d\'annulation est dépassé.'],
+  [/(reservation|booking|registration).{0,20}(closed|not open)|too late|not (yet )?(open|published)/i, 'Les inscriptions à ce cours sont fermées.'],
+  [/enrol+ment|subscription|membership|no valid offer/i, 'Aucun abonnement valide pour réserver ce cours.'],
+  [/not found/i, 'Élément introuvable : il a peut-être été supprimé. Rafraîchis la page.'],
+  [/forbidden|not allowed|permission/i, 'Action refusée par ta salle.'],
+];
+function frError(err, status) {
+  const raw = err?.message || '';
+  const text = `${err?.extensions?.code || ''} ${raw}`.replace(/_/g, ' ');
+  const hit = ERRORS_FR.find(([re]) => re.test(text));
+  if (hit) return hit[1];
+  if (!raw) return status >= 500 ? 'Peppy ne répond pas pour le moment, réessaie dans un instant.' : `Erreur ${status}`;
+  // Message inconnu : on le garde, mais on dit d'où il vient.
+  return /[éèàùç]/i.test(raw) ? raw : `Refusé par Peppy : ${raw}`;
+}
 
 let refreshing = null;
 function refreshToken() {
@@ -200,7 +231,7 @@ async function gql(query, variables = {}, { retry = true } = {}) {
       }
       logout('Session expirée, reconnecte-toi.');
     }
-    throw new Error(errors[0]?.message || `Erreur ${res.status}`);
+    throw new Error(frError(errors[0], res.status));
   }
   if (errors.length) console.warn('GraphQL (partiel)', errors);
   return json.data;
@@ -236,9 +267,10 @@ const accountState = () => ({
   loading: false,
   pending: new Set(),
 });
-// Clés du navigateur propres au compte ; les préférences de l'appareil (filtre, % favoris) restent.
+// Clés du navigateur propres au compte ; les préférences de l'appareil (% favoris) restent.
 const ACCOUNT_KEYS = ['peppy.token', 'peppy.user', 'peppy.box', 'peppy.skipped', 'peppy.perfEx'];
 store.del('peppy.filters'); // ancien filtre par type de cours, retiré
+store.del('peppy.onlyFree'); // ancien filtre « Places dispo », retiré
 
 const state = {
   ...accountState(),
@@ -250,7 +282,6 @@ const state = {
   day: startOfDay(new Date()),
   weekStart: startOfWeek(new Date()),
   pctFav: new Set(store.get('peppy.pctFav') || [70, 80, 90]),
-  onlyFree: !!store.get('peppy.onlyFree'),
 };
 
 function logout(message) {
@@ -448,10 +479,27 @@ function myReservationFor(slotId) {
 }
 
 // ---------------------------------------------------------------- actions
+// Raison probable d'un refus, d'après les quotas connus (plus précise que le message de l'API).
+function bookBlocker(s) {
+  if (!s) return '';
+  const p = params();
+  const e = activeEntries() || {};
+  const pending = state.upcoming.filter((r) => ACTIVE.includes(r.status) && new Date(r.slot.start) > new Date()).length;
+  if (p.maxPendingReservations && pending >= p.maxPendingReservations) {
+    return `Tu as déjà ${pending} réservations à venir, le maximum autorisé par ta salle (${p.maxPendingReservations}). Annule une séance pour réserver celle-ci.`;
+  }
+  const week = state.upcoming.filter((r) => isBooked(r) && startOfWeek(r.slot.start).getTime() === startOfWeek(s.start).getTime()).length;
+  if (e.frequency && week >= e.frequency) return `Quota de la semaine atteint : ${week}/${e.frequency} séances réservées.`;
+  return '';
+}
+
 async function book(slotId) {
   const slot = findSlot(slotId);
   await withPending(slotId, async () => {
-    const { makeReservation: r } = await gql(Q.book, { where: slotId });
+    const { makeReservation: r } = await gql(Q.book, { where: slotId }).catch((e) => {
+      const why = e.message !== STALE && bookBlocker(slot);
+      throw why ? new Error(why) : e;
+    });
     toast(r.status === 'WAITING'
       ? `Ajouté à la liste d'attente${r.waitlistPosition ? ` (position ${r.waitlistPosition})` : ''}`
       : `Réservé ✓ ${slot ? `${fmtDay(slot.start, { weekday: 'long' })} ${fmtTime(slot.start)}` : ''}`);
@@ -520,6 +568,7 @@ function weekName(ws) {
 }
 
 // Résumé de la semaine affichée : séances réservées vs abonnement, résas en cours vs limite de la salle.
+// Compteurs de la semaine affichée, en une ligne discrète sous son titre.
 function weekSummary() {
   const ws = state.weekStart;
   const we = addDays(ws, 7);
@@ -528,10 +577,8 @@ function weekSummary() {
   const freq = (state.enrollments || []).find((e) => e.status === 'VALIDATED')?.offer?.entries?.frequency;
   const active = state.upcoming.filter((r) => ACTIVE.includes(r.status) && new Date(r.slot.start) > now).length;
   const max = params().maxPendingReservations;
-  const chip = (label, n, m) => `<span class="sum ${m && n >= m ? 'full' : ''}">${label} <b>${n}${m ? `/${m}` : ''}</b></span>`;
-  const upcoming = state.upcoming.filter((r) => new Date(r.slot.end) > now).length;
-  return `<div class="summary">${chip(`Séances ${weekName(ws)}`, inWeek, freq)}${max ? chip('Résas en cours', active, max) : ''}
-    <button class="sum link" data-action="tab" data-tab="resas">${ICONS.ticket}Mes résas${upcoming ? `<span class="badge">${upcoming}</span>` : ''}<span class="arrow">›</span></button></div>`;
+  const item = (n, m, label) => `<span class="${m && n >= m ? 'full' : ''}"><b>${n}${m ? `/${m}` : ''}</b> ${label}</span>`;
+  return `<div class="week-sum">${item(inWeek, freq, `séance${(freq || inWeek) > 1 ? 's' : ''}`)}${max ? item(active, max, 'résas en cours') : ''}</div>`;
 }
 
 const activeEntries = () => (state.enrollments || []).find((e) => e.status === 'VALIDATED')?.offer?.entries;
@@ -677,9 +724,11 @@ function viewHeader() {
   const boxName = state.boxes.length > 1
     ? `<select data-action="box" aria-label="Salle">${state.boxes.map((b) => `<option value="${b.id}" ${b.id === state.boxId ? 'selected' : ''}>${esc(b.name)}</option>`).join('')}</select>`
     : `<b>${esc(box?.name || 'Peppy+')}</b>`;
+  const upcoming = state.upcoming.filter((r) => new Date(r.slot.end) > new Date()).length;
   return `<header class="top"><div class="top-inner">
     <div class="logo">${box?.logo ? `<img src="${esc(img(box.logo))}" alt="">` : 'P+'}</div>
     <div class="top-title">${boxName}<small>Salut ${esc(cap(state.user?.firstname?.trim()))} 👋</small></div>
+    <button class="icon-btn resa-btn" data-action="tab" data-tab="resas" title="Mes réservations" aria-label="Mes réservations${upcoming ? ` (${upcoming} à venir)` : ''}">${ICONS.ticket}${upcoming ? `<span class="badge">${upcoming}</span>` : ''}</button>
     <button class="icon-btn" data-action="refresh" title="Rafraîchir">${ICONS.refresh}</button>
     <button class="icon-btn" data-action="logout" title="Se déconnecter">${ICONS.logout}</button>
   </div></header>`;
@@ -697,28 +746,33 @@ function viewTabs() {
   </nav>`;
 }
 
+// Prochaine séance : une ligne compacte (date, heure, cours, délai, minuteur), pour laisser
+// la place au programme du jour juste en dessous.
 function viewHero() {
   const next = state.upcoming.find((r) => new Date(r.slot.end) > new Date() && r.status !== 'CANCELLED');
   if (!next) return '';
   const d = new Date(next.slot.start);
-  return `<div class="hero" data-action="goto-slot" data-slot="${next.slot.id}" data-start="${next.slot.start}">
-    <div class="hero-k">${next.status === 'WAITING' ? 'Liste d\'attente' : 'Prochaine séance'}</div>
-    <div class="hero-when"><span>${fmtDay(d, { weekday: 'short' }).replace('.', '')} ${d.getDate()}</span><span>${fmtTime(d)}</span></div>
-    <div class="hero-row">
-      <span class="hero-type">${esc(slotTitle(next.slot))}</span>
-      <span class="hero-rel">${esc(relative(d))}</span>
+  const wod = sameDay(d, state.day) && state.wods.some((w) => w.wodDate && sameDay(parseWodDate(w.wodDate), d));
+  return `<section class="hero ${next.status === 'WAITING' ? 'is-wait' : ''}" data-action="goto-slot" data-slot="${next.slot.id}" data-start="${next.slot.start}">
+    <div class="hero-date"><small>${fmtDay(d, { weekday: 'short' }).replace('.', '')}</small><b>${d.getDate()}</b></div>
+    <div class="hero-main">
+      <span class="hero-k">${next.status === 'WAITING' ? `Liste d'attente${next.waitlistPosition ? ` #${next.waitlistPosition}` : ''}` : 'Prochaine séance'} · ${esc(relative(d))}</span>
+      <b class="hero-title">${fmtTime(d)} · ${esc(slotTitle(next.slot))}</b>
     </div>
     ${heroTimer(next)}
-    ${canConfirm(next.slot, next) ? `<button class="btn dark block" data-action="confirm" data-res="${next.id}" data-slot="${next.slot.id}">Je suis à la salle — confirmer</button>` : ''}
-  </div>`;
+    <div class="hero-actions">
+      ${canConfirm(next.slot, next) ? `<button class="btn primary sm" data-action="confirm" data-res="${next.id}" data-slot="${next.slot.id}">Je suis là</button>` : ''}
+      <button class="btn ghost sm" data-action="goto-wod" data-day="${dayKey(d)}">${wod ? 'Voir le WOD' : 'Programme du jour'} ›</button>
+    </div>
+  </section>`;
 }
 
 function heroTimer(r) {
   const deadline = cancelDeadline(r);
   if (!deadline || !sameDay(r.slot.start, new Date()) || new Date(r.slot.start) < new Date()) return '';
   return deadline > Date.now()
-    ? `<div class="hero-cd">${ICONS.hourglass}${countdown(deadline, 'annulation fermée')}<span>pour annuler</span></div>`
-    : `<div class="hero-cd over">${ICONS.hourglass}<span>${lateRefused() ? 'Annulation fermée' : 'Annulation tardive'}</span></div>`;
+    ? `<div class="hero-cd" title="Temps restant pour annuler">${ICONS.hourglass}${countdown(deadline, 'fermée')}</div>`
+    : `<div class="hero-cd over" title="${lateRefused() ? 'Annulation fermée' : 'Annulation tardive'}">${ICONS.hourglass}<span>${lateRefused() ? 'fermée' : 'tardive'}</span></div>`;
 }
 
 // ---------------------------------------------------------------- suggestions
@@ -800,8 +854,7 @@ function viewPlanning() {
   for (const r of state.upcoming) (resByDay[dayKey(r.slot.start)] ||= []).push(r);
 
   const daySlots = state.slots
-    .filter((s) => sameDay(s.start, state.day))
-    .filter((s) => !state.onlyFree || myReservationFor(s.id) || (s.numberOfReservation ?? 0) < s.listSize);
+    .filter((s) => sameDay(s.start, state.day));
 
   const dayWods = state.wods
     .filter((w) => w.wodDate && sameDay(parseWodDate(w.wodDate), state.day));
@@ -810,20 +863,19 @@ function viewPlanning() {
 
   let list;
   if (state.loading || !state.slotsWeek) list = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
-  else if (!daySlots.length) list = `<div class="empty"><b>Aucun cours</b>${state.slots.length ? 'Rien ce jour-là avec ce filtre.' : `Le planning n'est pas encore publié${params().slotPublicationInterval ? ` (ouverture ${params().slotPublicationInterval} jours à l'avance)` : ''}.`}</div>`;
+  else if (!daySlots.length) list = `<div class="empty"><b>Aucun cours</b>${state.slots.length ? 'Rien ce jour-là.' : `Le planning n'est pas encore publié${params().slotPublicationInterval ? ` (ouverture ${params().slotPublicationInterval} jours à l'avance)` : ''}.`}</div>`;
   else list = daySlots.map(viewSlot).join('');
 
   return `${viewHero()}
     ${viewSuggestions()}
     <div class="week-nav">
-      <h2>${weekLabel}</h2>
+      <div><h2>${weekLabel}</h2>${weekSummary()}</div>
       <div class="nav">
         <button class="chip-btn" data-action="week" data-dir="-1" aria-label="Semaine précédente">←</button>
         <button class="chip-btn" data-action="today">Aujourd'hui</button>
         <button class="chip-btn" data-action="week" data-dir="1" aria-label="Semaine suivante">→</button>
       </div>
     </div>
-    ${weekSummary()}
     <div class="days">
       ${days.map((d) => {
         const res = resByDay[dayKey(d)] || [];
@@ -832,9 +884,6 @@ function viewPlanning() {
           <span class="dots">${res.slice(0, 3).map((r) => `<i class="${r.status === 'WAITING' ? 'wait' : ''}"></i>`).join('')}</span>
         </button>`;
       }).join('')}
-    </div>
-    <div class="filters">
-      <button class="filter toggle" data-action="only-free" aria-pressed="${state.onlyFree}">Places dispo</button>
     </div>
     <div class="section-title">${fmtDay(state.day)}</div>
     <div class="list">
@@ -1183,12 +1232,34 @@ async function submitPerf(form) {
         rememberPerfExercises(state.perfs);
       }
     } else {
-      const { createRanking } = await gql(Q.saveRanking, { w: sel.id, d: { performance: value, date, difficulty: f.get('level') || 'RX' } });
+      const feedback = String(f.get('feedback') || '').trim();
+      const feeling = f.get('feeling') || undefined;
+      const { createRanking } = await gql(Q.saveRanking, { w: sel.id, d: { performance: value, date, difficulty: f.get('level') || 'RX', ...(feeling ? { feeling } : {}), ...(feedback ? { feedback } : {}) } });
       state.rankings = [createRanking, ...(state.rankings || [])];
     }
     toast('Perf enregistrée ✓');
     render();
     if (sel.kind === 'ex') openExercise(sel.id); else openWodScores(sel.id);
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    btn.classList.remove('busy');
+  }
+}
+
+// Ressenti et commentaire d'un score existant (updateRanking redemande le score et le niveau).
+async function submitScore(form) {
+  const r = state.rankings?.find((x) => x.id === form.dataset.id);
+  if (!r) return;
+  const f = new FormData(form);
+  const btn = form.querySelector('[type=submit]');
+  btn.classList.add('busy');
+  try {
+    const { updateRanking } = await gql(Q.updateRanking, { w: r.id, d: { performance: r.performance, difficulty: r.difficulty || 'RX', feeling: f.get('feeling') || null, feedback: String(f.get('feedback') || '').trim() } });
+    state.rankings = state.rankings.map((x) => (x.id === r.id ? { ...x, ...updateRanking } : x));
+    toast('Commentaire enregistré ✓');
+    render();
+    openWodScores(r.workout.id);
   } catch (e) {
     toast(e.message, true);
   } finally {
@@ -1255,6 +1326,19 @@ async function gotoSlot(slotId, start) {
   openSlot(slotId);
 }
 
+// Programme du jour de la prochaine séance : on affiche ce jour et on descend jusqu'au WOD.
+async function gotoProgram(d) {
+  if (state.tab !== 'planning') setTab('planning');
+  state.day = startOfDay(d);
+  if (startOfWeek(d).getTime() !== state.weekStart.getTime()) {
+    state.weekStart = startOfWeek(d);
+    await loadWeek();
+  } else render();
+  const target = $('.list .wod') || $('.list');
+  target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (target?.tagName === 'DETAILS') target.open = true;
+}
+
 function goToDay(d) {
   state.day = startOfDay(d);
   const ws = startOfWeek(d);
@@ -1280,8 +1364,10 @@ document.addEventListener('click', (e) => {
     case 'day': return goToDay(new Date(`${el.dataset.day}T00:00`));
     case 'week': return changeWeek(Number(el.dataset.dir));
     case 'today': return goToDay(new Date());
+    case 'goto-wod': return gotoProgram(new Date(`${el.dataset.day}T00:00`));
     case 'open-ex': return openExercise(el.dataset.id);
     case 'open-wod': return openWodScores(el.dataset.id);
+    case 'edit-score': { const r = state.rankings?.find((x) => x.id === el.dataset.id); if (r) showSheet(viewEditScore(r)); return; }
     case 'wod-level': return openWodScores(el.dataset.id, el.dataset.level);
     case 'add-perf': return openAdd(el.dataset.kind, el.dataset.id);
     case 'pick': state.addSel = lastResults.get(el.dataset.kind + el.dataset.id) || null; return renderAdd();
@@ -1294,7 +1380,6 @@ document.addEventListener('click', (e) => {
       store.set('peppy.skipped', [...state.skipped].filter((id) => state.nextSlots?.some((x) => x.id === id)));
       return render();
     }
-    case 'only-free': state.onlyFree = !state.onlyFree; store.set('peppy.onlyFree', state.onlyFree); return render();
     case 'book': return book(slot);
     case 'ask-cancel': return askCancel(res, slot);
     case 'cancel': return cancel(res, slot);
@@ -1325,6 +1410,7 @@ document.addEventListener('change', (e) => {
 
 document.addEventListener('submit', async (e) => {
   if (e.target.id === 'perf-form') { e.preventDefault(); return submitPerf(e.target); }
+  if (e.target.id === 'score-form') { e.preventDefault(); return submitScore(e.target); }
   if (e.target.id !== 'login-form') return;
   e.preventDefault();
   const form = e.target;

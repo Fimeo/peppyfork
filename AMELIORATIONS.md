@@ -6,15 +6,16 @@ Ce que Peppy+ ajoute à l'application Peppy, et les problèmes rencontrés en ro
 
 ### Navigation
 
-Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre depuis le planning, avec une pastille indiquant le nombre de séances à venir.
+Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre depuis l'icône ticket de l'en-tête, avec une pastille indiquant le nombre de séances à venir.
 
 ### Planning (accueil)
 
-- **Prochaine séance en tête de page** : jour, heure, type de cours et délai (« dans 4 jours »). Un clic ouvre la fiche du cours.
-- **Minuteur d'annulation** : le jour de la séance, un sablier affiche le temps restant pour annuler (« 1:19 pour annuler »), seconde par seconde, puis « Annulation fermée ». L'heure limite vient des règles de la salle (2 h avant le cours chez Primal Athletic).
-- **Compteurs de la semaine affichée** : séances réservées par rapport au quota de l'abonnement (« Séances semaine prochaine 0/3 ») et réservations en cours par rapport à la limite de la salle (« Résas en cours 1/4 »).
+- **Prochaine séance en tête de page**, sur une seule ligne compacte : jour, heure, type de cours et délai (« dans 4 jours »). Un clic ouvre la fiche du cours, le bouton « Voir le WOD » / « Programme du jour » affiche ce jour-là et descend jusqu'au WOD.
+- **Minuteur d'annulation** : le jour de la séance, une petite pastille affiche le temps restant pour annuler, seconde par seconde, puis « fermée ». L'heure limite vient des règles de la salle (2 h avant le cours chez Primal Athletic).
+- **Compteurs de la semaine affichée**, en une ligne discrète sous le titre de la semaine : séances réservées par rapport au quota de l'abonnement (« 1/3 séances ») et réservations en cours par rapport à la limite de la salle (« 2/4 résas en cours »).
 - **Jauge de remplissage** : une case par place, qui change de couleur quand le cours se remplit. Elle indique les places restantes, la liste d'attente et le surbooking (« Complet · 1 en surnombre »).
-- Interface volontairement sobre : pas de pastilles de couleur par type de cours. Un seul filtre, « Places dispo », mémorisé d'une visite à l'autre.
+- Interface volontairement sobre : pas de pastilles de couleur par type de cours, pas de filtre (la jauge suffit à repérer les places libres).
+- **Erreurs en français** : les refus de l'API Peppy (en anglais) sont traduits. Quand une réservation est refusée et que le quota connu est atteint, le message le dit avec les chiffres (« Tu as déjà 4 réservations à venir, le maximum autorisé par ta salle (4)… »).
 - **Journée déjà prise** : si tu as déjà une séance réservée ce jour-là, les autres cours sont atténués et sans bouton Réserver.
 - **Boutons clairs** : Réserver, « + Liste d'attente » (action) distinct du statut « Attente #2 », et Annuler en rouge.
 - **WOD du jour** affiché au-dessus des cours, en blocs repliables.
@@ -38,9 +39,9 @@ Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre d
 ### Perfs
 
 - **Records des mouvements que tu pratiques uniquement** : meilleure charge (1RM, ou 1RM estimé avec la formule d'Epley), meilleures charges par nombre de répétitions (3RM, 5RM…), petite courbe de progression et gain depuis la première perf (« +37 kg depuis juil. 2024 »).
-- **Scores sur les WOD** (Helen, Grace…) : dernier score, niveau et record. La fiche d'un WOD affiche sa description pour chaque niveau (RX, Inter, Débutant), au niveau de ton dernier score par défaut, et les conseils.
+- **Scores sur les WOD** (Helen, Grace…) : dernier score, niveau, record, ressenti (😁 à 💀) et dernier commentaire. La fiche d'un WOD affiche sa description pour chaque niveau (RX, Inter, Débutant), au niveau de ton dernier score par défaut, les conseils, et chaque score avec son commentaire, modifiable.
 - **Fiche d'un mouvement** : historique complet et **calcul des charges** à partir du 1RM (modifiable). Les préréglages vont de 50 à 95 %, on peut saisir un pourcentage libre, et ★ ajoute un pourcentage aux favoris, affichés en premier.
-- **Ajout d'une perf** sans liste déroulante : un champ de recherche (sans correction automatique) parmi les 95 mouvements et les WOD (les tiens, puis ceux de l'API). On y saisit la charge et les répétitions, le temps (min:s) ou les reps, le niveau pour un WOD, et la date. Entrée choisit le premier résultat.
+- **Ajout d'une perf** sans liste déroulante : un champ de recherche (sans correction automatique) parmi les 95 mouvements et les WOD (les tiens, puis ceux de l'API). On y saisit la charge et les répétitions, le temps (min:s) ou les reps, le niveau, le ressenti et un commentaire pour un WOD, et la date. Entrée choisit le premier résultat.
 
 ### Mes réservations
 
