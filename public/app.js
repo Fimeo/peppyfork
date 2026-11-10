@@ -689,17 +689,30 @@ function fillBar(s) {
   return `<div class="fill">${gauge}<span class="fill-lbl"><b>${n}/${max}</b> ${label}</span></div>`;
 }
 
-function slotAction(s, r) {
-  const busy = state.pending.has(s.id) ? ' busy' : '';
+// Jauge de la liste : cases + libellé court à largeur fixe (les cases gardent la même taille).
+function fillCompact(s) {
+  const n = s.numberOfReservation ?? 0;
+  const max = s.listSize || 0;
+  const full = n >= max;
+  const left = Math.max(0, max - n);
+  const label = full ? (s.numberOfWaiting ? `${s.numberOfWaiting} en att.` : 'Complet') : `${left} libre${left > 1 ? 's' : ''}`;
+  const gauge = max && max <= 30
+    ? `<div class="ticks ${full ? 'full' : n / max >= 0.8 ? 'almost' : ''}">${[...Array(max)].map((_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div>`
+    : `<div class="bar ${full ? 'full' : ''}"><span style="width:${max ? Math.min(100, (n / max) * 100) : 0}%"></span></div>`;
+  return `<div class="fill-row" title="${n}/${max} inscrits">${gauge}<span class="fill-short">${label}</span></div>`;
+}
+
+function slotAction(s, r, compact = false) {
+  const busy = `${state.pending.has(s.id) ? ' busy' : ''}${compact ? ' sm' : ''}`;
   if (new Date(s.end) < new Date()) return '';
   if (canConfirm(s, r)) return `<button class="btn primary${busy}" data-action="confirm" data-res="${r.id}" data-slot="${s.id}">Je suis là</button>`;
   if (r) return `<button class="btn cancel${busy}" data-action="ask-cancel" data-res="${r.id}" data-slot="${s.id}">${r.status === 'WAITING' ? 'Quitter' : 'Annuler'}</button>`;
   const closing = (params().slotClosingReservationInterval || 0) * 60000;
   if (new Date(s.start) - closing < new Date()) return '<span class="muted" style="font-size:13px">Fermé</span>';
-  if (bookedOnDay(s)) return '<span class="muted" style="font-size:13px">Tu as déjà une séance ce jour-là</span>';
+  if (bookedOnDay(s)) return compact ? '' : '<span class="muted" style="font-size:13px">Tu as déjà une séance ce jour-là</span>';
   const full = (s.numberOfReservation ?? 0) >= s.listSize;
   return full
-    ? `<button class="btn join-wait${busy}" data-action="book" data-slot="${s.id}" title="M'inscrire sur la liste d'attente"><i>+</i> Liste d'attente</button>`
+    ? `<button class="btn join-wait${busy}" data-action="book" data-slot="${s.id}" title="M'inscrire sur la liste d'attente"><i>+</i> ${compact ? 'Attente' : 'Liste d\'attente'}</button>`
     : `<button class="btn primary${busy}" data-action="book" data-slot="${s.id}">Réserver</button>`;
 }
 
@@ -906,17 +919,15 @@ function viewWod(w) {
 function viewSlot(s) {
   const r = myReservationFor(s.id);
   const past = new Date(s.end) < new Date();
-  const coaches = s.coaches || [];
   const taken = !r && !past && bookedOnDay(s); // journée déjà prise : cours atténué, sans bouton
+  // Carte compacte sur 2 lignes : coach, inscrits, délais et quotas sont dans la fiche du cours.
   return `<article class="card slot ${past ? 'is-past' : ''} ${taken ? 'taken' : ''} ${isBooked(r) ? 'mine' : ''} ${r?.status === 'WAITING' ? 'waiting' : ''}" data-action="open-slot" data-slot="${s.id}">
     <div class="time"><b>${fmtTime(s.start)}</b><small>${minutes(s.start, s.end)}′</small></div>
     <div class="info">
       <div class="name">${esc(slotTitle(s))} ${statusTag(r)}</div>
-      ${coaches.length ? `<div class="meta"><span class="avatars">${coaches.map(avatar).join('')}</span> ${esc(coaches.map((c) => c.firstname).join(', '))}</div>` : ''}
-      ${fillBar(s)}
-      ${past ? '' : r ? cancelInfo({ ...r, slot: s }) : limitNote(s)}
+      ${fillCompact(s)}
     </div>
-    <div class="act">${taken ? '' : slotAction(s, r)}</div>
+    <div class="act">${taken ? '' : slotAction(s, r, true)}</div>
   </article>`;
 }
 

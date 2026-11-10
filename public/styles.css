@@ -158,21 +158,27 @@ input, select { font: inherit; color: inherit; }
 /* ---------- Cartes ---------- */
 .section-title { font: 700 14px/1 var(--display); color: var(--muted); text-transform: uppercase; letter-spacing: .14em; margin: 26px 0 10px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.list { display: flex; flex-direction: column; gap: 10px; }
+.list { display: flex; flex-direction: column; gap: 8px; }
 
-.slot { display: grid; grid-template-columns: 76px 1fr auto; gap: 14px; padding: 14px; align-items: center; position: relative; overflow: hidden; cursor: pointer; transition: border-color .15s; }
+.slot { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; padding: 10px 12px; align-items: center; position: relative; overflow: hidden; cursor: pointer; transition: border-color .15s; }
 .slot:hover { border-color: var(--surface-3); }
 .slot.is-past { opacity: .42; }
 .slot.taken { opacity: .55; }
 .slot.taken:hover { opacity: .8; }
 .slot.mine { border-color: var(--volt); background: linear-gradient(90deg, var(--volt-dim), transparent 60%), var(--surface); }
 .slot.waiting { border-style: dashed; border-color: var(--muted); }
-.time b { display: block; font: 800 34px/.95 var(--display); letter-spacing: -.01em; }
-.time small { color: var(--muted); font: 600 14px/1 var(--display); letter-spacing: .04em; }
+.time b { display: block; font: 800 26px/.95 var(--display); letter-spacing: -.01em; }
+.time small { color: var(--muted); font: 600 13px/1 var(--display); letter-spacing: .04em; }
 .info { min-width: 0; }
-.info .name { font: 700 19px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.info .name { font: 700 17px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .info .meta { color: var(--muted); font-size: 13px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* Liste : jauge et libellé court sur une ligne, libellé à largeur fixe. */
+.fill-row { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+.fill-row .ticks { flex: 1; width: auto; max-width: 260px; }
+.fill-row .ticks i { height: 10px; max-width: 16px; border-radius: 2px; }
+.fill-row .bar { flex: 1; height: 10px; }
+.fill-short { width: 62px; flex: none; font-size: 12px; color: var(--muted); white-space: nowrap; }
 .fill { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 9px; }
 /* Les cases occupent toute la largeur (libellé en dessous), jusqu'à 20 px chacune. */
 .ticks { display: flex; gap: 3px; width: 100%; }
@@ -471,10 +477,8 @@ dialog#sheet::backdrop { background: rgb(0 0 0 / .65); backdrop-filter: blur(3px
 .error { color: var(--red); font-size: 14px; min-height: 20px; }
 
 @media (max-width: 480px) {
-  .slot { grid-template-columns: 62px 1fr; }
-  .slot .act:not(:empty) { grid-column: 1 / -1; }
-  .slot .act .btn { width: 100%; }
-  .time b { font-size: 30px; }
+  .slot { grid-template-columns: 50px 1fr auto; gap: 10px; }
+    .time b { font-size: 24px; }
   .day b { font-size: 22px; }
   .week-nav h2 { font-size: 24px; }
   .two { grid-template-columns: 1fr; }
