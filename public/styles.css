@@ -176,8 +176,8 @@ input, select { font: inherit; color: inherit; }
 /* Liste : jauge et libellé court sur une ligne, libellé à largeur fixe. */
 .fill-row { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
 .fill-row .ticks { flex: 1; width: auto; max-width: 260px; }
-.fill-row .ticks i { height: 10px; max-width: 16px; border-radius: 2px; }
-.fill-row .bar { flex: 1; height: 10px; }
+.fill-row .ticks i { height: 12px; max-width: 20px; border-radius: 3px; }
+.fill-row .bar { flex: 1; height: 12px; }
 .fill-short { width: 62px; flex: none; font-size: 12px; color: var(--muted); white-space: nowrap; }
 .fill { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 9px; }
 /* Les cases occupent toute la largeur (libellé en dessous), jusqu'à 20 px chacune. */
@@ -477,7 +477,10 @@ dialog#sheet::backdrop { background: rgb(0 0 0 / .65); backdrop-filter: blur(3px
 .error { color: var(--red); font-size: 14px; min-height: 20px; }
 
 @media (max-width: 480px) {
-  .slot { grid-template-columns: 50px 1fr auto; gap: 10px; }
+  .slot { grid-template-columns: 50px 1fr; gap: 8px 10px; }
+  /* Bouton sous la carte, pleine largeur : la jauge garde toute la place. */
+  .slot .act:not(:empty) { grid-column: 1 / -1; }
+  .slot .act .btn { width: 100%; padding: 9px 14px; font-size: 15px; }
     .time b { font-size: 24px; }
   .day b { font-size: 22px; }
   .week-nav h2 { font-size: 24px; }
