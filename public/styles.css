@@ -75,26 +75,28 @@ input, select { font: inherit; color: inherit; }
 .tabs button[aria-current="page"] { background: var(--volt); color: var(--ink); }
 .tabs .badge { position: absolute; top: 4px; right: calc(50% - 22px); background: var(--red); color: #fff; border-radius: 9px; font: 700 10px/16px var(--body); padding: 0 5px; }
 
-/* ---------- Hero : prochaine séance (compact) ---------- */
+/* ---------- Hero : prochaine séance (compact, fond jaune) ---------- */
 .hero {
   margin-top: 14px; padding: 10px 12px; border-radius: 16px; cursor: pointer;
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 12px;
-  background: var(--surface); border: 1px solid var(--line);
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px 12px;
+  background: var(--volt); color: var(--ink);
 }
-.hero:hover { border-color: var(--surface-3); }
-.hero-date { width: 44px; text-align: center; padding: 5px 0; border-radius: 10px; background: var(--volt); color: var(--ink); }
-.hero.is-wait .hero-date { background: var(--amber); }
+.hero.is-wait { background: var(--amber); }
+.hero-date { width: 44px; text-align: center; padding: 5px 0; border-radius: 10px; background: var(--ink); color: var(--volt); }
+.hero.is-wait .hero-date { color: var(--amber); }
 .hero-date small { display: block; font: 700 11px/1 var(--display); text-transform: uppercase; letter-spacing: .08em; }
 .hero-date b { display: block; font: 800 22px/1 var(--display); }
 .hero-main { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.hero-k { font-size: 12px; color: var(--muted); }
-.hero-title { font: 700 19px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hero-cd { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px 4px 7px; border-radius: 999px; background: var(--volt-dim); color: var(--volt); font-size: 12px; font-weight: 600; }
+.hero-k { font-size: 12px; font-weight: 600; opacity: .75; }
+.hero-title { font: 800 20px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hero-cd { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px 4px 7px; border-radius: 999px; background: rgb(11 11 12 / .1); font-size: 12px; font-weight: 600; }
 .hero-cd svg { width: 13px; height: 13px; }
-.hero-cd .cd-v { font: 700 15px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-.hero-cd.over { background: var(--red-dim); color: var(--red); }
+.hero-cd .cd-v { font: 800 16px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.hero-cd.over { background: var(--ink); color: var(--volt); }
 .hero-actions { grid-column: 2 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
 .hero-actions .btn.sm { padding: 6px 10px; font-size: 13px; }
+.hero-actions .btn.ghost { background: var(--ink); color: var(--volt); box-shadow: none; }
+.hero-actions .btn.primary { background: var(--ink); color: var(--volt); }
 
 /* ---------- Minuteur d'annulation (fiche cours) ---------- */
 .cd-box { display: flex; gap: 12px; align-items: center; margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
