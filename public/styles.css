@@ -474,6 +474,7 @@ dialog#sheet::backdrop { background: rgb(0 0 0 / .65); backdrop-filter: blur(3px
 .login h1 { margin: 0; font: 800 56px/.9 var(--display); text-transform: uppercase; }
 .login h1 span { color: var(--volt); }
 .login p { margin: 0 0 8px; color: var(--muted); }
+.login .version { margin: 8px 0 0; font-size: 11px; text-align: center; opacity: .6; font-variant-numeric: tabular-nums; }
 .field { display: flex; flex-direction: column; gap: 6px; font: 700 13px/1 var(--display); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
 .field input { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 14px; font: 16px var(--body); letter-spacing: 0; text-transform: none; color: var(--text); }
 .field input:focus { outline: 2px solid var(--volt); outline-offset: -1px; }

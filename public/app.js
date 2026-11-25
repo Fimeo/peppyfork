@@ -2,6 +2,9 @@
 import { computeStats, viewStats } from './stats.js';
 import { viewPerfs, viewExercise, viewWod as viewWodScores, viewEditScore, viewAdd, viewResults, calcGrid, groupRankings, roundKg, norm } from './perfs.js';
 
+// Affichée sous le formulaire de connexion : à augmenter à chaque mise en ligne.
+const VERSION = '1.1.0';
+
 // ---------------------------------------------------------------- utils
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -747,6 +750,7 @@ function viewLogin() {
       <div class="error" id="login-error"></div>
       <button class="btn primary block" type="submit">Se connecter</button>
       <p class="muted" style="font-size:12px;margin-top:4px">Tes identifiants sont envoyés uniquement à l'API Peppy, via le relais Peppy+, qui ne les enregistre pas.</p>
+      <p class="version">Version ${VERSION}</p>
     </form>
   </main>`;
 }
