@@ -10,7 +10,7 @@ Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre d
 
 ### Planning (accueil)
 
-- **Prochaine séance en tête de page**, sur une seule ligne compacte : jour, heure, type de cours et délai (« dans 4 jours »). Un clic ouvre la fiche du cours, le bouton « Voir le WOD » / « Programme du jour » affiche ce jour-là et descend jusqu'au WOD. Le bouton « Voir le WOD » n'apparaît que si le WOD de ce jour-là est publié (vérifié même quand la séance tombe une autre semaine que celle affichée).
+- **Prochaine séance en tête de page**, sur une seule ligne compacte : jour, heure, type de cours et délai (« dans 4 jours »). Un clic ouvre la fiche du cours, le bouton « Voir le WOD » affiche ce jour-là et descend jusqu'au WOD. Il n'apparaît que si le WOD de ce jour-là est publié (vérifié même quand la séance tombe une autre semaine que celle affichée).
 - **Minuteur d'annulation** : le jour de la séance, une petite pastille affiche le temps restant pour annuler, seconde par seconde, puis « fermée ». L'heure limite vient des règles de la salle (2 h avant le cours chez Primal Athletic). Les jours précédents, un petit « ⏳ Annulation 4 j 17 h » reste visible sur la ligne du bouton, sans agrandir la carte.
 - **Compteurs de la semaine affichée**, en une ligne discrète sous le titre de la semaine : séances réservées par rapport au quota de l'abonnement (« 1/3 séances ») et réservations en cours par rapport à la limite de la salle (« 2/4 résas en cours »).
 - **Liste de cours compacte**, pour en voir le plus possible à l'écran : heure et durée, type de cours, jauge, puis le bouton (Réserver, Annuler…) en pleine largeur dessous sur mobile. Le coach, les inscrits, les invités, les délais et les quotas sont dans la fiche du cours.
