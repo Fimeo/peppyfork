@@ -3,7 +3,7 @@ import { computeStats, viewStats } from './stats.js';
 import { viewPerfs, viewExercise, viewWod as viewWodScores, viewEditScore, viewAdd, viewResults, calcGrid, groupRankings, roundKg, norm } from './perfs.js';
 
 // Affichée sous le formulaire de connexion : à augmenter à chaque mise en ligne.
-const VERSION = '1.1.0';
+const VERSION = '1.2.2';
 
 // ---------------------------------------------------------------- utils
 const $ = (s, el = document) => el.querySelector(s);
@@ -57,6 +57,9 @@ const ICONS = {
   doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
   spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></svg>',
   dumbbell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12"/><circle cx="12" cy="9" r="2.5"/></svg>',
   chev: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>',
 };
 
@@ -114,13 +117,27 @@ const Q = {
       } }
     }
   }`,
+  messages: `query getMyNotifications($page: Int, $pageSize: Int) {
+    getMyNotifications(page: $page, pageSize: $pageSize) { edges { node { id title content hasBeenSeen createdAt } } }
+  }`,
+  // Fiche publique de la salle (getBox est réservé aux gérants).
+  boxInfo: `query getRestrictedBox($where: ID!) {
+    getRestrictedBox(where: $where) {
+      id name email phone address latitude longitude description images dropinPrice
+      schedule { dayOfTheWeek from to }
+      coaches { id firstname lastname avatar }
+    }
+  }`,
   enrollments: `query getMyEnrollments($statuses: [EnrollmentStatus!], $page: Int, $pageSize: Int) {
     getMyEnrollments(statuses: $statuses, page: $page, pageSize: $pageSize) {
       edges { node {
         id status startDate endDate creditBalance nextCreditRechargeDate lastUse
+        renewal renewalType debitDay paymentMethod upfrontPayment
+        suspension { startDate endDate }
+        unpaidInvoices { id total currency dueDate }
         contract { name url }
-        offer { id title type price currency box { id name } entries { frequency maxPerDay maxPerMonth max } contract { name url } }
-        counters { totalCount weekCount lateCancellationCount noShowCount }
+        offer { id title type price currency duration durationUnit box { id name } entries { frequency maxPerDay maxPerMonth max } contract { name url } }
+        counters { totalCount weekCount lateCancellationCount noShowCount unpaidCount }
       } }
     }
   }`,
@@ -260,11 +277,14 @@ const nodes = (conn) => (conn?.edges || []).map((e) => e?.node).filter(Boolean);
 const accountState = () => ({
   user: null,
   boxes: [],
+  messages: null, // annonces de la salle (getMyNotifications)
+  boxInfo: {}, // fiche publique de chaque salle, par id
   boxId: null,
   slots: [],
   slotsWeek: null,
   nextSlots: null,
   wods: [],
+  heroWod: null, // { day, has } : WOD publié ou non pour le jour de la prochaine séance
   upcoming: [],
   history: null,
   enrollments: null,
@@ -284,7 +304,7 @@ const accountState = () => ({
   pending: new Set(),
 });
 // Clés du navigateur propres au compte ; les préférences de l'appareil (% favoris) restent.
-const ACCOUNT_KEYS = ['peppy.token', 'peppy.user', 'peppy.box', 'peppy.skipped', 'peppy.perfEx'];
+const ACCOUNT_KEYS = ['peppy.token', 'peppy.user', 'peppy.box', 'peppy.skipped', 'peppy.perfEx', 'peppy.msgSeen'];
 store.del('peppy.filters'); // ancien filtre par type de cours, retiré
 store.del('peppy.onlyFree'); // ancien filtre « Places dispo », retiré
 
@@ -385,6 +405,27 @@ async function loadWeek({ silent = false } = {}) {
   state.wods = wods.status === 'fulfilled' ? nodes(wods.value.getRestrictedWorkouts) : [];
   state.loading = false;
   render();
+  loadHeroWod().catch((e) => console.warn('wod prochaine séance', e));
+}
+
+const nextSession = () => state.upcoming.find((r) => new Date(r.slot.end) > new Date() && r.status !== 'CANCELLED');
+const hasWodOn = (list, d) => list.some((w) => w.wodDate && sameDay(parseWodDate(w.wodDate), d));
+
+// Le WOD du jour de la prochaine séance est-il publié ? (souvent la veille : revérifié à chaque rafraîchissement)
+async function loadHeroWod() {
+  const next = nextSession();
+  if (!next) return;
+  const d = startOfDay(next.slot.start);
+  if (startOfWeek(d).getTime() === state.weekStart.getTime()) {
+    state.heroWod = { day: dayKey(d), has: hasWodOn(state.wods, d), at: Date.now() };
+    return render();
+  }
+  if (state.heroWod?.day === dayKey(d) && Date.now() - state.heroWod.at < 5 * 60000) return;
+  const sid = session;
+  const data = await gql(Q.wods, { where: { boxId: state.boxId, wodDateFrom: d.toISOString(), wodDateTo: addDays(d, 1).toISOString() }, page: 1, pageSize: 10 });
+  if (sid !== session) return;
+  state.heroWod = { day: dayKey(d), has: hasWodOn(nodes(data.getRestrictedWorkouts), d), at: Date.now() };
+  render();
 }
 
 async function loadHistory() {
@@ -481,6 +522,18 @@ async function loadEnrollments() {
   render();
 }
 
+// Annonces de la salle. Peppy n'offre pas de moyen de les marquer comme lues :
+// « non lu » = pas encore vu dans l'appli Peppy (hasBeenSeen) ni ouvert ici depuis.
+async function loadMessages() {
+  state.messages = nodes((await gql(Q.messages, { page: 1, pageSize: 30 })).getMyNotifications)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  render();
+}
+function unreadMessages() {
+  const seen = store.get('peppy.msgSeen');
+  return (state.messages || []).filter((m) => !m.hasBeenSeen && (!seen || new Date(m.createdAt) > new Date(seen)));
+}
+
 async function loadNextSlots() {
   if (!state.boxId) return;
   const now = new Date();
@@ -553,7 +606,7 @@ async function withPending(id, fn) {
   try {
     await fn();
     closeSheet();
-    await Promise.all([loadWeek({ silent: true }), loadNextSlots().catch(() => {})]);
+    await Promise.all([loadWeek({ silent: true }), loadNextSlots().catch(() => {}), loadMessages().catch(() => {})]);
   } catch (e) {
     toast(e.message, true);
   } finally {
@@ -631,6 +684,7 @@ const lateRefused = () => params().allowLateReservationCancelling === false;
 const fmtCountdown = (ms) => {
   const t = Math.max(0, Math.floor(ms / 1000));
   const h = Math.floor(t / 3600);
+  if (h >= 24) return `${Math.floor(h / 24)} j ${h % 24} h ${pad(Math.floor((t % 3600) / 60))}`;
   return `${h ? `${h}:` : ''}${h ? pad(Math.floor((t % 3600) / 60)) : Math.floor((t % 3600) / 60)}:${pad(t % 60)}`;
 };
 // Compte à rebours mis à jour chaque seconde (voir tickCountdowns) ; `over` remplace le contenu à l'échéance.
@@ -761,8 +815,9 @@ function viewHeader() {
     ? `<select data-action="box" aria-label="Salle">${state.boxes.map((b) => `<option value="${b.id}" ${b.id === state.boxId ? 'selected' : ''}>${esc(b.name)}</option>`).join('')}</select>`
     : `<b>${esc(box?.name || 'Peppy+')}</b>`;
   const upcoming = state.upcoming.filter((r) => new Date(r.slot.end) > new Date()).length;
+  const unread = unreadMessages().length;
   return `<header class="top"><div class="top-inner">
-    <div class="logo">${box?.logo ? `<img src="${esc(img(box.logo))}" alt="">` : 'P+'}</div>
+    <button class="logo-btn" data-action="box-info" title="Ta salle : messages et infos" aria-label="${esc(box?.name || 'Ta salle')} : messages et infos${unread ? ` (${unread} message${unread > 1 ? 's' : ''} non lu${unread > 1 ? 's' : ''})` : ''}"><span class="logo">${box?.logo ? `<img src="${esc(img(box.logo))}" alt="">` : 'P+'}</span>${unread ? '<span class="dot"></span>' : ''}</button>
     <div class="top-title">${boxName}<small>Salut ${esc(cap(state.user?.firstname?.trim()))} 👋</small></div>
     <button class="icon-btn resa-btn" data-action="tab" data-tab="resas" title="Mes réservations" aria-label="Mes réservations${upcoming ? ` (${upcoming} à venir)` : ''}">${ICONS.ticket}${upcoming ? `<span class="badge">${upcoming}</span>` : ''}</button>
     <button class="icon-btn" data-action="refresh" title="Rafraîchir">${ICONS.refresh}</button>
@@ -785,22 +840,33 @@ function viewTabs() {
 // Prochaine séance : une ligne compacte (date, heure, cours, délai, minuteur), pour laisser
 // la place au programme du jour juste en dessous.
 function viewHero() {
-  const next = state.upcoming.find((r) => new Date(r.slot.end) > new Date() && r.status !== 'CANCELLED');
+  const next = nextSession();
   if (!next) return '';
   const d = new Date(next.slot.start);
-  const wod = sameDay(d, state.day) && state.wods.some((w) => w.wodDate && sameDay(parseWodDate(w.wodDate), d));
+  // Bouton WOD seulement si on sait qu'il est publié (semaine affichée, ou vérification à part).
+  const wod = startOfWeek(d).getTime() === state.weekStart.getTime() ? hasWodOn(state.wods, d) : state.heroWod?.day === dayKey(d) && state.heroWod.has;
+  const today = heroTimer(next);
+  const small = today ? '' : heroCountdown(next);
   return `<section class="hero ${next.status === 'WAITING' ? 'is-wait' : ''}" data-action="goto-slot" data-slot="${next.slot.id}" data-start="${next.slot.start}">
     <div class="hero-date"><small>${fmtDay(d, { weekday: 'short' }).replace('.', '')}</small><b>${d.getDate()}</b></div>
     <div class="hero-main">
       <span class="hero-k">${next.status === 'WAITING' ? `Liste d'attente${next.waitlistPosition ? ` #${next.waitlistPosition}` : ''}` : 'Prochaine séance'} · ${esc(relative(d))}</span>
       <b class="hero-title">${fmtTime(d)} · ${esc(slotTitle(next.slot))}</b>
     </div>
-    ${heroTimer(next)}
-    <div class="hero-actions">
+    ${today}
+    ${small || wod || canConfirm(next.slot, next) ? `<div class="hero-actions">
       ${canConfirm(next.slot, next) ? `<button class="btn primary sm" data-action="confirm" data-res="${next.id}" data-slot="${next.slot.id}">Je suis là</button>` : ''}
-      <button class="btn ghost sm" data-action="goto-wod" data-day="${dayKey(d)}">${wod ? 'Voir le WOD' : 'Programme du jour'} ›</button>
-    </div>
+      ${wod ? `<button class="btn ghost sm" data-action="goto-wod" data-day="${dayKey(d)}">Voir le WOD ›</button>` : ''}
+      ${small}
+    </div>` : ''}
   </section>`;
+}
+
+// Avant le jour J : temps restant pour annuler, en petit sur la ligne des boutons.
+function heroCountdown(r) {
+  const deadline = cancelDeadline(r);
+  if (!deadline || deadline <= Date.now()) return '';
+  return `<span class="hero-cd-sm" title="Annulable jusqu'au ${esc(fmtDay(deadline))} à ${fmtTime(deadline)}">${ICONS.hourglass}Annulation ${countdown(deadline, 'fermée')}</span>`;
 }
 
 function heroTimer(r) {
@@ -1034,6 +1100,34 @@ function enrollDocs(e) {
   </div>`;
 }
 
+const PAY_METHOD = { SEPA: 'Prélèvement SEPA', SEPA_AUTO: 'Prélèvement SEPA', CARD: 'Carte bancaire', VIAPEPPY: 'Paiement via Peppy', CASH: 'Espèces', CHEQUE: 'Chèque' };
+const UNIT = { YEAR: ['an', 'ans'], MONTH: ['mois', 'mois'], WEEK: ['semaine', 'semaines'], DAY: ['jour', 'jours'] };
+const fmtPeriod = (n, unit) => (n && UNIT[unit] ? `${n} ${UNIT[unit][n > 1 ? 1 : 0]}` : '');
+
+// Renouvellement, paiement, suspension et impayés d'un abonnement en cours.
+function renewalInfo(e) {
+  const now = new Date();
+  const rows = [];
+  const susp = e.suspension;
+  if (susp?.startDate && (!susp.endDate || new Date(susp.endDate) > now)) {
+    rows.push(['Suspension', susp.endDate ? `du ${fmtDate(susp.startDate)} au ${fmtDate(susp.endDate)}` : `depuis le ${fmtDate(susp.startDate)}`]);
+  }
+  if (e.endDate && new Date(e.endDate) > now) {
+    const period = e.renewalType === 'COMMITMENT_DURATION' ? fmtPeriod(e.offer?.duration, e.offer?.durationUnit) : '';
+    rows.push(e.renewal
+      ? ['Renouvellement', `automatique le ${fmtDate(e.endDate)}${period ? `, pour ${period}` : ''}`]
+      : ['Fin', `le ${fmtDate(e.endDate)}, sans renouvellement`]);
+  }
+  const method = PAY_METHOD[e.paymentMethod];
+  if (e.upfrontPayment) rows.push(['Paiement', `${method ? `${method}, ` : ''}payé d'avance`]);
+  else if (method) rows.push(['Paiement', `${method}${e.debitDay && e.offer?.type === 'MEMBERSHIP' ? ` le ${e.debitDay === 1 ? '1er' : e.debitDay} de chaque mois` : ''}`]);
+  const unpaid = e.unpaidInvoices || [];
+  const unpaidCount = Math.max(unpaid.length, e.counters?.unpaidCount || 0);
+  const unpaidTotal = unpaid.reduce((a, i) => a + (i.total || 0), 0);
+  return `${unpaidCount ? `<div class="alert">${unpaidCount} paiement${unpaidCount > 1 ? 's' : ''} impayé${unpaidCount > 1 ? 's' : ''}${unpaidTotal ? ` · ${money(unpaidTotal, unpaid[0]?.currency)}` : ''}. Rapproche-toi de ta salle pour régulariser.</div>` : ''}
+    ${rows.length ? `<dl class="kv renewal">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}`;
+}
+
 function viewAbo() {
   if (state.enrollments == null) return '<div class="section-title">Abonnements</div><div class="skeleton" style="height:180px"></div>';
   const current = state.enrollments.filter((e) => e.status !== 'EXPIRED');
@@ -1054,7 +1148,8 @@ function viewAbo() {
     const c = e.counters || {};
     return `<article class="card enroll">
       <div class="row" style="justify-content:space-between"><h3>${esc(e.offer?.title)}</h3><span class="tag ${cls}">${label}</span></div>
-      <div class="muted" style="font-size:13px">${esc(e.offer?.box?.name || '')} · depuis le ${fmtDate(e.startDate)}${e.endDate ? ` · jusqu'au ${fmtDate(e.endDate)}` : ''}</div>
+      <div class="muted" style="font-size:13px">${esc(e.offer?.box?.name || '')} · depuis le ${fmtDate(e.startDate)}${e.endDate && !e.renewal ? ` · jusqu'au ${fmtDate(e.endDate)}` : ''}</div>
+      ${renewalInfo(e)}
       <div class="stats">
         ${e.creditBalance != null ? `<div class="stat"><b>${e.creditBalance}</b><small>crédits restants</small></div>` : ''}
         <div class="stat"><b>${bookedThisWeek()}${e.offer?.entries?.frequency ? `/${e.offer.entries.frequency}` : ''}</b><small>réservées cette semaine</small></div>
@@ -1171,6 +1266,78 @@ function askCancel(resId, slotId) {
     </div>
   </div>`;
   if (!sheet.open) sheet.showModal();
+}
+
+// ---------------------------------------------------------------- messages et fiche de la salle
+// Messages de la salle, en tête de sa fiche : les deux plus récents ouverts, les autres repliés.
+function viewMessages() {
+  const list = state.messages;
+  if (list == null) return '<div class="skeleton" style="height:80px;margin-bottom:18px"></div>';
+  if (!list.length) return '';
+  const unread = new Set(unreadMessages().map((m) => m.id));
+  const item = (m) => `<li class="${unread.has(m.id) ? 'unread' : ''}">
+      <div class="msg-head"><b>${esc(m.title.trim())}</b><small>${esc(fmtDay(m.createdAt, { day: 'numeric', month: 'long', year: new Date(m.createdAt).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }))}</small></div>
+      <div class="rich">${richText(m.content)}</div>
+    </li>`;
+  const shown = list.filter((m, i) => i < 2 || unread.has(m.id));
+  const older = list.filter((m) => !shown.includes(m));
+  return `<div class="section-title" style="margin-top:0">Messages${unread.size ? ` <span class="tag danger">${unread.size} nouveau${unread.size > 1 ? 'x' : ''}</span>` : ''}</div>
+    <ul class="messages">${shown.map(item).join('')}</ul>
+    ${older.length ? `<details class="older-msgs"><summary>Messages plus anciens · ${older.length}<span class="chev">${ICONS.chev}</span></summary><ul class="messages">${older.map(item).join('')}</ul></details>` : ''}`;
+}
+
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; // dayOfTheWeek : 0 = lundi
+function viewSchedule(schedule) {
+  if (!schedule?.length) return '';
+  const today = (new Date().getDay() + 6) % 7;
+  const now = `${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`;
+  const open = schedule.some((h) => h.dayOfTheWeek === today && h.from <= now && now < h.to);
+  return `<div class="section-title" style="margin-top:18px">Horaires <span class="tag ${open ? 'ok' : 'neutral'}">${open ? 'Ouvert' : 'Fermé'}</span></div>
+    <dl class="hours">${DAYS.map((d, i) => {
+      const slots = schedule.filter((h) => h.dayOfTheWeek === i).sort((a, b) => a.from.localeCompare(b.from));
+      return `<dt class="${i === today ? 'today' : ''}">${d}</dt><dd class="${i === today ? 'today' : ''}">${slots.length ? slots.map((h) => `${h.from.replace(':', 'h')} – ${h.to.replace(':', 'h')}`).join(', ') : '<span class="muted">Fermé</span>'}</dd>`;
+    }).join('')}</dl>`;
+}
+
+async function openBoxInfo() {
+  const id = state.boxId;
+  if (!id) return;
+  const view = (b) => {
+    const maps = b.latitude != null ? `https://www.google.com/maps/search/?api=1&query=${b.latitude},${b.longitude}` : b.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.address)}` : '';
+    const coaches = b.coaches || [];
+    return `<div class="sheet-body box-info">
+      ${msgs}
+      ${b.images?.length ? `<div class="photos">${b.images.map((u) => `<img src="${esc(img(u))}" alt="" loading="lazy" onerror="this.remove()">`).join('')}</div>` : ''}
+      <h3>${esc(b.name)}</h3>
+      ${b.address ? `<div class="muted">${esc(b.address)}</div>` : ''}
+      <div class="contact">
+        ${maps ? `<a class="btn ghost sm" href="${esc(maps)}" target="_blank" rel="noopener">${ICONS.pin}Itinéraire</a>` : ''}
+        ${b.phone ? `<a class="btn ghost sm" href="tel:${esc(b.phone.replace(/\s/g, ''))}">${ICONS.phone}Appeler</a>` : ''}
+        ${b.email ? `<a class="btn ghost sm" href="mailto:${esc(b.email)}">${ICONS.mail}E-mail</a>` : ''}
+      </div>
+      ${viewSchedule(b.schedule)}
+      ${coaches.length ? `<div class="section-title" style="margin-top:18px">Coachs · ${coaches.length}</div>
+        <div class="coaches">${coaches.map((c) => `<div class="coach">${avatar(c)}<span>${esc(`${c.firstname ?? ''} ${c.lastname ?? ''}`.trim())}</span></div>`).join('')}</div>` : ''}
+      ${b.description ? `<div class="section-title" style="margin-top:18px">La salle</div><div class="rich">${richText(b.description)}</div>` : ''}
+      ${b.dropinPrice ? `<p class="muted" style="font-size:13px;margin-top:14px">Séance à l'unité : ${money(b.dropinPrice)}</p>` : ''}
+      <div class="sheet-actions"><button class="btn block ghost" data-action="close" autofocus>Fermer</button></div>
+    </div>`;
+  };
+  // Les messages sont affichés avec leur état « non lu », puis marqués comme vus.
+  const msgs = viewMessages();
+  if (state.messages?.length) store.set('peppy.msgSeen', state.messages[0].createdAt);
+  render(); // retire le point rouge du logo
+  const cached = state.boxInfo[id];
+  const box = state.boxes.find((b) => b.id === id) || {};
+  showSheet(cached ? view(cached) : `<div class="sheet-body box-info">${msgs}<h3>${esc(box.name || 'Ta salle')}</h3><div class="skeleton" style="height:220px;margin-top:16px"></div></div>`);
+  if (cached) return;
+  try {
+    const b = (await gql(Q.boxInfo, { where: id })).getRestrictedBox;
+    state.boxInfo[id] = b;
+    if (sheet.open && state.boxId === id) showSheet(view(b));
+  } catch (e) {
+    if (sheet.open) showSheet(`<div class="sheet-body box-info">${msgs}<h3>${esc(box.name || 'Ta salle')}</h3><p class="muted">${esc(e.message)}</p><div class="sheet-actions"><button class="btn block ghost" data-action="close" autofocus>Fermer</button></div></div>`);
+  }
 }
 
 // ---------------------------------------------------------------- perfs : fiches, ajout, calcul
@@ -1421,6 +1588,7 @@ document.addEventListener('click', (e) => {
     case 'open-slot': return openSlot(slot);
     case 'goto-slot': return gotoSlot(slot, new Date(el.dataset.start));
     case 'close': return closeSheet();
+    case 'box-info': return openBoxInfo();
     case 'refresh': if (state.tab === 'perfs' && !perfsLoading) { state.perfs = null; state.rankings = undefined; } state.history = null; state.enrollments = null; state.stats = undefined; Promise.all([loadWeek({ silent: true }), loadNextSlots().catch(() => {})]).then(() => toast('À jour')); if (state.tab !== 'planning') setTab(state.tab); return;
     case 'logout': return logout();
   }
@@ -1547,6 +1715,7 @@ async function boot() {
     loadNextSlots().catch((e) => console.warn('suggestions', e));
     if (state.tab !== 'planning') setTab(state.tab);
     if (state.enrollments == null) loadEnrollments().catch((e) => console.warn('enrollments', e));
+    loadMessages().catch((e) => console.warn('messages', e));
   } catch (e) {
     if (state.token) toast(e.message, true);
   }

@@ -1,4 +1,4 @@
-# Schéma de l'API Peppy (https://api.peppy.cool/graphql), obtenu par introspection le 2026-10-06.
+# Schéma de l'API Peppy (https://api.peppy.cool/graphql), obtenu par introspection le 2026-11-25.
 # Généré depuis peppy-schema.json : types, champs et arguments uniquement (l'API ne fournit pas de descriptions).
 
 type Query {
@@ -19,11 +19,11 @@ type Query {
   getMyState: UserState!
   getMyCards: [Card!]!
   getCardDetail: UserPaymentDetail!
-  getEmptySetupIntent: PartialSetupIntent!
   getUserCancellation(where: CancellationInput!, page: Int, pageSize: Int): ReservationConnection!
   getMyHasUnseenNotification: Boolean!
   findUsersFrom(boxId: ID!, firstname: String!, lastname: String!): [RestrictedUser!]!
   getMyIbans: [Iban!]!
+  getUserExtendedSanctions(where: UserSanctionFilterInput!, page: Int, pageSize: Int): ExtendedSanctionConnection!
   getWorkouts(where: WorkoutSearchInput, orderBy: WorkoutOrderByInput, page: Int, pageSize: Int): WorkoutConnection!
   getRestrictedWorkouts(where: WorkoutSearchInput, orderBy: WorkoutOrderByInput, page: Int, pageSize: Int): RestrictedWorkoutConnection!
   getWorkout(where: ID!): Workout
@@ -92,15 +92,16 @@ type Query {
   testGhostMembersWorkflowCron: Boolean!
   testWorkflowExpenseLimitCron: Boolean!
   testStartFutureEnrollmentsCron: Boolean!
+  testSyncAgentKnowledgeCron: Boolean!
   testMailingConfiguration(boxId: ID!): Boolean!
   setConnectedAccountRefundFeature: Boolean!
   recalculateBoxBalanceFromDate(boxId: ID!, date: DateTime!, balanceType: BalanceType!): Boolean!
   getEnrollmentsAdmin(where: EnrollmentWhereInputAdmin, page: Int, pageSize: Int): EnrollmentConnection!
-  getEnrollments(where: EnrollmentWhereInput, page: Int, pageSize: Int): EnrollmentConnection!
+  getEnrollments(where: EnrollmentWhereInput!, page: Int, pageSize: Int): EnrollmentConnection!
+  getEnrollmentSanctions(where: EnrollmentSanctionFilterInput!, page: Int, pageSize: Int): ExtendedSanctionConnection!
   getUserEnrollments(data: UserEnrollmentsWhereInput!): [Enrollment!]!
   getUserExpiredEnrollments(data: UserEnrollmentsWhereInput!, page: Int, pageSize: Int): EnrollmentConnection!
   getMyEnrollments(statuses: [EnrollmentStatus!], page: Int, pageSize: Int): EnrollmentConnection!
-  getEnrollmentSanctions(where: EnrollmentSanctionFilterInput!, page: Int, pageSize: Int): ExtendedSanctionConnection!
   getEnrollmentReservationQuotas(enrollmentId: ID!, boxId: ID!, at: DateTime): EnrollmentReservationQuotas!
   getOffer(where: ID!): Offer!
   getOffers(where: OfferWhereInput, page: Int, pageSize: Int): OfferConnection!
@@ -197,7 +198,7 @@ type Query {
   downloadSepaExport(where: ID!, collectionDate: DateTime!): SepaExportDownload!
   downloadSepaExportCsv(where: ID!): String!
   getInvoice(where: ID!): Invoice!
-  getInvoices(where: InvoicesWhereInput, page: Int, pageSize: Int, orderBy: String): InvoicesConnection!
+  getInvoices(where: InvoicesWhereInput!, page: Int, pageSize: Int, orderBy: String): InvoicesConnection!
   getMyInvoices(page: Int, pageSize: Int, orderBy: String): InvoicesConnection!
   getUserEnrollmentInvoices(data: GetUserEnrollmentInvoicesInput!, page: Int, pageSize: Int): InvoicesConnection!
   getUserUnpaidEnrollmentInvoices(data: GetUserUnpaidEnrollmentInvoicesInput!, page: Int, pageSize: Int): InvoicesConnection!
@@ -248,7 +249,7 @@ type Query {
   getDiscoveries(where: GetDiscoveriesInput!): Discoveries!
   getCreatorShopDiscoveries(where: ID!): CreatorShopDiscoveries!
   getPromotionCode(planId: ID, boxId: ID, code: String!, forFitMarket: Boolean): PromotionCode!
-  getPromotionCodes(planId: ID, boxId: ID): [PromotionCode!]!
+  getPromotionCodes(planId: ID, boxId: ID!): [PromotionCode!]!
   getPromotionCodeGroups(boxId: ID): [PromotionCodeGroup!]!
   downloadPromotionCodeGroupCsv(where: ID!): String!
   getBalances(stripeAccountId: String!): StripeBalances!
@@ -259,6 +260,7 @@ type Query {
   getPlanFeedbacks(where: ID!, page: Int!, pageSize: Int): FeedbackConnection!
   getBoxFeedbacksAverages(where: ID!): BoxFeedbackAverages!
   getBoxFeedbacksWithComments(where: ID!, page: Int!, pageSize: Int): FeedbackConnection!
+  getProspect(prospectId: ID!): Prospect
   getProspects(where: ProspectWhereInput!, page: Int!, pageSize: Int!): ProspectConnection!
   getFlattenedProspects(where: FlattenedProspectWhereInput!, page: Int!, pageSize: Int!): FlattenedProspectConnection!
   getChannel(where: ID!): RestrictedChannel!
@@ -283,6 +285,7 @@ type Query {
   getComments(where: ID!, page: Int!, pageSize: Int): CommentConnection!
   getMyComment(where: ID!): Comment
   getHangingComments(creatorId: ID!, page: Int!, pageSize: Int): CommentConnection!
+  _empty: Boolean
   getEquipments(search: String, page: Int!, pageSize: Int): EquipmentConnection!
   getBlogPost(where: ID!): BlogPost!
   getBlogPosts(slug: String, page: Int, pageSize: Int): BlogPostConnection!
@@ -293,8 +296,9 @@ type Query {
   getDeals(page: Int!, pageSize: Int): RestrictedDealConnection!
   getMyVodSubscriptions: [VodSubscription!]!
   getMyVodSubscriptionCookies: Boolean!
-  getTodos(boxId: ID!, completed: Boolean, page: Int, pageSize: Int): TodoConnection!
-  getTodayTodos(boxId: ID!, page: Int, pageSize: Int): TodoConnection!
+  getTodos(boxId: ID!, completed: Boolean, assigneeId: ID, page: Int, pageSize: Int): TodoConnection!
+  getTodayTodos(boxId: ID!, assigneeId: ID, page: Int, pageSize: Int): TodoConnection!
+  getRecurrentTodos(boxId: ID!, assigneeId: ID, page: Int, pageSize: Int): RecurrentTodoConnection!
   getFeaturePromotion(where: ID!): FeaturePromotion!
   getFeaturePromotionsAdmin(status: FeaturePromotionStatus!, page: Int!, pageSize: Int): FeaturePromotionConnection!
   getFeaturePromotions(page: Int!, pageSize: Int): FeaturePromotionConnection!
@@ -312,8 +316,6 @@ type Query {
   getTemplate(id: ID!): Template!
   getTemplates(boxId: ID!, workflowRelated: Boolean, type: TemplateType, page: Int!, pageSize: Int): TemplateConnection!
   getAllTemplates(boxId: ID!): [Template!]!
-  getNotificationTemplates(where: ID!, status: NotificationTemplateStatus!, page: Int, pageSize: Int): NotificationTemplatesConnection!
-  getNotificationTemplateRecipientCount(where: ID!, data: NotificationTemplateRecipientCountInput!): Int!
   getWorkflow(where: ID!): Workflow!
   getWorkflows(where: ID!, page: Int!, pageSize: Int): WorkflowConnection!
   getAllPendingWorkflowExecutions(where: ID!): [WorkflowExecution!]!
@@ -336,11 +338,14 @@ type Query {
   getFormSubmissionFields(formFieldId: ID!, page: Int!, pageSize: Int): FormSubmissionFieldConnection!
   getFormFieldSubmissionCountByOption(formFieldId: ID!): [FormSubmissionFieldCountByOption!]!
   getPendingForms: [Form!]!
-  getPrices(where: ID!): [Price!]!
   forceAppUpdate(appVersion: String!): Boolean!
   forceMobileProAppUpdate(appVersion: String!): Boolean!
   getUpsell(code: String!): Upsell!
   getUpsells: [Upsell!]!
+  getDailyAgentBrief(boxId: ID!): AgentBrief
+  getWeeklyAgentBrief(boxId: ID!): AgentBrief
+  getWeeklyAgentWindow(boxId: ID!): AgentWeeklyWindow!
+  getAgentOnboardingFinanceGates(boxId: ID!, openedAt: DateTime!): AgentOnboardingFinanceGates!
 }
 
 type Mutation {
@@ -394,6 +399,7 @@ type Mutation {
   initializeBoxCalibration(where: ID!): Box!
   updatePaymentInfo(where: ID!, data: PaymentInfoInput!): Box
   updateBoxParameters(where: ID!, data: BoxParametersInput!): Box
+  updateAgentBoxPolicy(where: ID!, data: AgentBoxPolicyInput!): Box
   updateBoxClientInfos(where: ID!, data: UserUpdateInput): User!
   updateBoxBusinessInfo(where: ID!, data: UpdateBusinessInfoInput!): Box!
   updateBoxTeamMember(where: ID!, data: UpdateBoxTeamMemberInput!): User!
@@ -427,11 +433,11 @@ type Mutation {
   removeSlots(boxId: ID!, filters: RemoveSlotsInput, manuallyAddedSlotIdsForDeletion: [ID!], manuallyRemovedSlotIdsForDeletion: [ID!]): Boolean!
   updateReservation(where: ID!, data: ReservationStatus!): Reservation!
   removeReservation(where: ID!): Boolean!
-  createReservation(where: ID!, userId: ID!, enrollmentId: ID, forceMainList: Boolean, isRecurrent: Boolean, forceAfterCreditLimit: Boolean): Slot!
+  createReservation(where: ID!, userId: ID!, enrollmentId: ID, forceMainList: Boolean, isRecurrent: Boolean, forceAfterCreditLimit: Boolean, onBehalfOf: String): Slot!
   createEventReservation(slotId: ID!, data: ManagerEventReservationCreationInput!): Slot!
   confirmReservation(where: ID!, data: ConfirmReservationInput): Reservation!
   confirmSlotReservations(where: ID!, reservationIds: [ID!]!, dropinIds: [ID!]!): Slot
-  cancelReservation(where: ID!): Reservation!
+  cancelReservation(where: ID!, acceptPenalty: Boolean): Reservation!
   cancelEventReservations(reservationIds: [ID!]!): [Reservation!]!
   makeReservation(where: ID!, calendarEventId: String, enrollmentId: ID, onBehalfOf: String): Reservation!
   makeEventReservation(slotId: ID!, onlyGuests: Boolean, guests: [String!], calendarEventId: String): [Reservation!]!
@@ -505,7 +511,6 @@ type Mutation {
   savePerformance(data: CreatePerformanceInput!): Boolean!
   savePerformanceForRange(data: CreatePerformanceForRangeInput!): Performance!
   deletePerformance(where: ID!): Boolean!
-  createNotification(data: CreateNotificationInput!): Notification!
   createSepaExport(data: CreateSepaExportInput!): SepaExport!
   deleteSepaExport(where: ID!): Boolean!
   changeSepaExportState(where: ID!, isResolved: Boolean!): SepaExport!
@@ -521,7 +526,6 @@ type Mutation {
   resolveInvoice(where: ID!, data: ResolveInvoiceInput!): Invoice!
   refundInvoice(where: ID!, refundByPaymentMethod: [RefundInput!]!): Invoice!
   createEnrollmentInvoice(where: ID!, data: CreateEnrollmentInvoiceInput!): Invoice!
-  deleteEnrollmentInvoice(where: ID!): Boolean!
   switchEnrollmentInvoiceToUnpaid(where: ID!): Invoice!
   voidInvoice(where: ID!): Invoice!
   createEInvoiceOnboardingURL(businessInfoId: ID!): EInvoiceOnboardingURLCreationResult!
@@ -634,9 +638,12 @@ type Mutation {
   setupVodSubscriptionRetryPayment(where: ID!): PaymentSetup!
   cancelVodSubscription(where: ID!): VodSubscription!
   createTodo(data: CreateTodoInput!): Todo!
+  createRecurrentTodo(data: CreateRecurrentTodoInput!): RecurrentTodo!
   updateTodo(where: ID!, data: UpdateTodoInput!): Todo!
+  updateRecurrentTodo(where: ID!, data: UpdateRecurrentTodoInput!): RecurrentTodo!
   completeTodo(where: ID!, data: CompleteTodoInput!): Todo!
   deleteTodo(where: ID!): Boolean!
+  deleteRecurrentTodo(where: ID!): Boolean!
   createFeaturePromotion(title: String!): FeaturePromotion!
   updateFeaturePromotion(where: ID!, data: UpdateFeaturePromotionInput!): FeaturePromotion!
   publishFeaturePromotion(where: ID!): FeaturePromotion!
@@ -676,6 +683,13 @@ type Mutation {
   createPrice(offerId: ID!, data: CreatePriceInput!): Price!
   updatePrice(where: ID!, data: UpdatePriceInput!): Price!
   deletePrice(where: ID!): Boolean!
+  createDailyAgentBrief(boxId: ID!): AgentBrief!
+  createWeeklyAgentBrief(boxId: ID!): AgentBrief!
+  confirmAgentRecommendedAction(data: ConfirmAgentRecommendedActionInput!): AgentRecommendedAction!
+  refuseAgentRecommendedAction(data: AgentRecommendedActionRefuseInput!): AgentRecommendedAction!
+  submitAgentBriefFeedback(data: SubmitAgentBriefFeedbackInput!): Boolean!
+  markAgentBriefRead(briefId: ID!): AgentBrief!
+  runAgentOnboardingAudit(data: RunAgentOnboardingAuditInput!): AgentOnboardingAuditResult!
 }
 
 type AccessRights {
@@ -743,6 +757,285 @@ type Address {
   zipCode: String!
   region: String
   country: String
+}
+
+type AgentAuditKpiHighlight {
+  name: String!
+  pillar: AgentAuditPillar!
+  value: Float
+  previousValue: Float
+  target: Float!
+  score: Float!
+  weight: Int!
+}
+
+enum AgentAuditPillar {
+  ACQUISITION
+  RETENTION
+  PROFITABILITY
+  VISITS
+}
+
+type AgentAuditPillarScore {
+  pillar: AgentAuditPillar!
+  score: Float!
+}
+
+type AgentBoxPolicy {
+  personalization: String
+}
+
+input AgentBoxPolicyInput {
+  personalization: String
+}
+
+type AgentBrief {
+  id: ID!
+  boxId: ID!
+  type: AgentBriefType!
+  periodStart: DateTime!
+  periodEnd: DateTime!
+  content: String!
+  promptVersion: String!
+  model: String!
+  generatedAt: DateTime!
+  readAt: DateTime
+  actions: [AgentRecommendedAction!]!
+  steps: [AgentBriefStep!]!
+  weekScore: AgentWeekScore
+  weekPrep: AgentWeekPrep
+}
+
+enum AgentBriefFeedbackRating {
+  UP
+  DOWN
+}
+
+type AgentBriefStep {
+  index: Int!
+  title: String!
+  subtitle: String
+  content: String!
+  actions: [AgentRecommendedAction!]!
+}
+
+enum AgentBriefType {
+  DAILY
+  WEEKLY
+}
+
+enum AgentFeedbackMotive {
+  FALSE_FACT
+  WRONG_PRIORITY
+  WRONG_TONE
+  ALREADY_HANDLED
+  WRONG_RECIPIENT
+  OTHER
+}
+
+input AgentOnboardingAnswer {
+  questionIndex: Int!
+  choice: AgentOnboardingAnswerChoice!
+}
+
+enum AgentOnboardingAnswerChoice {
+  A
+  B
+  C
+  D
+}
+
+type AgentOnboardingAuditResult {
+  ownerCategory: AgentOwnerCategory!
+  priorityPillar: AgentAuditPillar!
+  pillarScores: [AgentAuditPillarScore!]!
+  kpiHighlights: [AgentAuditKpiHighlight!]!
+  summary: String!
+  plan: AgentOnboardingPlan!
+  profile: AgentOnboardingProfile!
+}
+
+type AgentOnboardingFinanceGates {
+  needCharges: Boolean!
+  needRevenue: Boolean!
+  ageMonths: Int!
+}
+
+type AgentOnboardingPlan {
+  title: String!
+  focusPillar: AgentAuditPillar!
+  phases: [AgentOnboardingPlanPhase!]!
+}
+
+type AgentOnboardingPlanPhase {
+  id: String!
+  label: String!
+  title: String!
+  description: String!
+  focusPoints: [String!]!
+}
+
+type AgentOnboardingProfile {
+  id: ID!
+  boxId: ID!
+  userId: ID!
+  ownerCategory: AgentOwnerCategory!
+  answers: JSON
+  auditResult: JSON!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum AgentOwnerCategory {
+  OPERATOR
+  PRODUCT_POWER_USER
+  BUSINESS_MINDED
+  STRATEGIST
+}
+
+enum AgentReachPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+type AgentRecommendedAction {
+  id: ID!
+  briefId: ID!
+  type: AgentRecommendedActionType!
+  title: String!
+  explanation: String!
+  content: String!
+  recipients: JSON!
+  sourceData: JSON
+  stepIndex: Int
+  reachPriority: AgentReachPriority
+  status: AgentRecommendedActionStatus!
+  errorMessage: String
+  executedAt: DateTime
+}
+
+input AgentRecommendedActionRefuseInput {
+  actionId: ID!
+  motive: AgentFeedbackMotive
+  comment: String
+}
+
+enum AgentRecommendedActionStatus {
+  PENDING
+  CONFIRMED
+  REFUSED
+  EXECUTED
+  FAILED
+}
+
+enum AgentRecommendedActionType {
+  SEND_MESSAGE
+  FEED_POST
+  OPEN_WEEKLY
+  OVERBOOK
+}
+
+type AgentScoreLineAbsolute {
+  key: AgentWeekMetricKey!
+  state: AgentScoreLineState!
+  weight: Int!
+  polarity: AgentWeekKpiPolarity!
+  current: Float!
+  points: Int
+  displayCurrent: String!
+}
+
+type AgentScoreLineCompared {
+  key: AgentWeekMetricKey!
+  state: AgentScoreLineState!
+  weight: Int!
+  polarity: AgentWeekKpiPolarity!
+  current: Float!
+  prior: Float!
+  points: Int!
+  share: Float!
+  priorShare: Float!
+  displayCurrent: String!
+  displayPrior: String!
+}
+
+type AgentScoreLineMissing {
+  key: AgentWeekMetricKey!
+  state: AgentScoreLineState!
+  weight: Int!
+  polarity: AgentWeekKpiPolarity!
+}
+
+enum AgentScoreLineState {
+  missing
+  absolute
+  compared
+}
+
+enum AgentVoiceAmbition {
+  STABILIZE
+  PERFORM
+}
+
+enum AgentWeekKpiPolarity {
+  up
+  down
+}
+
+enum AgentWeekMetricKey {
+  conversions
+  trials
+  workflowGoalsReached
+  workflowGoalsMissed
+  unpaid
+  attendancy
+  expirations
+}
+
+type AgentWeekPrep {
+  items: [AgentWeekPrepItem!]!
+  counts: AgentWeekPrepCounts!
+}
+
+type AgentWeekPrepCounts {
+  trials: Int!
+  expirations: Int!
+  followups: Int!
+}
+
+type AgentWeekPrepItem {
+  key: String!
+  who: String!
+  meta: String!
+  href: String
+  kind: AgentWeekPrepKind!
+  at: String
+}
+
+enum AgentWeekPrepKind {
+  trial
+  expiration
+  followup
+}
+
+type AgentWeekScore {
+  value: Int
+  previous: Int
+  lines: [AgentScoreLine!]!
+}
+
+type AgentWeeklyWindow {
+  phase: AgentWeeklyWindowPhase!
+  busy: Boolean!
+  locksAt: DateTime!
+  nextOpensAt: DateTime!
+  generationDue: Boolean!
+}
+
+enum AgentWeeklyWindowPhase {
+  open
+  softRegen
 }
 
 type Aggregate {
@@ -898,6 +1191,7 @@ type Box {
   quickSellConfiguration: QuickSellConfiguration
   smsConfiguration: SmsConfiguration
   upsells: [BoxUpsell!]
+  agentBoxPolicy: AgentBoxPolicy
   createdAt: DateTime
   updatedAt: DateTime
 }
@@ -954,7 +1248,7 @@ enum BoxClientsOrderByInput {
 }
 
 input BoxClientsWhereInput {
-  box: ID
+  box: ID!
   search: String
   withNextShowUp: Boolean
   withUnpaidTotal: Boolean
@@ -1183,7 +1477,7 @@ type BusinessInfo {
   creator: Creator
   type: BusinessType
   bankAccount: BankAccount
-  taxRate: Int
+  taxRate: Float
   businessPartners: [BusinessPartner!]!
   stripeId: String
   hasStripeRequirements: Boolean
@@ -1627,6 +1921,12 @@ input CompleteLessonInput {
 input CompleteTodoInput {
   phoneCallTaskStatus: PhoneCallTaskStatus
   note: String
+}
+
+input ConfirmAgentRecommendedActionInput {
+  actionId: ID!
+  content: String
+  channel: MessageType
 }
 
 input ConfirmReservationInput {
@@ -2137,6 +2437,18 @@ input CreateRecurrentSlotInput {
   coachIds: [ID!]
 }
 
+input CreateRecurrentTodoInput {
+  boxId: ID!
+  description: String!
+  activationDate: DateTime
+  daysToComplete: Int
+  desactivationDate: DateTime
+  recurrenceType: TodoRecurrenceType!
+  metadata: JSON!
+  assigneeId: ID
+  isActive: Boolean
+}
+
 input CreateSanctionInput {
   suspensionPeriod: Int
   amount: Float
@@ -2220,6 +2532,7 @@ input CreateTodoInput {
   description: String!
   assigneeId: ID
   deadline: DateTime
+  recurrentTodoId: String
 }
 
 input CreateUserBalanceOperationInput {
@@ -2832,7 +3145,7 @@ input EnrollmentUpdateInputAdmin {
 }
 
 input EnrollmentWhereInput {
-  box: ID
+  box: ID!
   search: String
   filters: [FilterStatus]
   fromOtherBox: Boolean
@@ -3130,6 +3443,7 @@ enum FilterStatus {
   LAST_14_DAYS_NEW_CLIENTS
   LAST_14_DAYS_EXPIRED_CLIENTS
   NEXT_7_DAYS_EXPIRING_CLIENTS
+  PENALYZED
 }
 
 type FitMarketBox {
@@ -3490,6 +3804,7 @@ enum InvoiceLineType {
   DROPIN
   REGULARISATION
   EVENT
+  PENALTY
 }
 
 enum InvoiceStatus {
@@ -3505,6 +3820,7 @@ enum InvoiceStatus {
 enum InvoiceType {
   SHOP
   OFFER
+  PENALTY
 }
 
 type InvoicesConnection {
@@ -4308,6 +4624,7 @@ enum PenaltyCategory {
   NO_SHOW
   UNPAID
   LATE_CANCELLATION
+  NO_SHOW_OR_LATE_CANCELLATION
 }
 
 type PenaltyConnection {
@@ -4800,6 +5117,33 @@ type RecurrentSlot {
   recurrentWeekId: ID
 }
 
+type RecurrentTodo {
+  id: ID!
+  description: String
+  assignee: User
+  isActive: Boolean
+  activationDate: DateTime
+  desactivationDate: DateTime
+  recurrenceType: TodoRecurrenceType
+  daysToComplete: Int
+  metadata: JSON
+  boxId: ID!
+  todos: [Todo!]
+  nextRunAt: DateTime
+}
+
+type RecurrentTodoConnection {
+  totalCount: Int
+  pageInfo: PageInfo!
+  aggregate: Aggregate!
+  edges: [RecurrentTodoEdge!]
+}
+
+type RecurrentTodoEdge {
+  node: RecurrentTodo!
+  cursor: String!
+}
+
 type RecurrentWeek {
   id: ID!
   name: String!
@@ -4947,6 +5291,7 @@ type RestrictedBox {
   id: ID!
   name: String!
   nameSlug: String
+  stripeId: String
   email: String
   phone: String
   address: String
@@ -5422,6 +5767,15 @@ type RetryMembershipPaymentOutput {
   membership: Membership!
 }
 
+input RunAgentOnboardingAuditInput {
+  boxId: ID!
+  toneLevel: Int!
+  ambition: AgentVoiceAmbition!
+  openedAt: DateTime!
+  reportedMonthlyCharges: Int
+  reportedMonthlyRevenue: Int
+}
+
 type Sanction {
   id: ID!
   suspensionPeriod: Int
@@ -5461,6 +5815,7 @@ type SellCondition {
   minValue: Float
   maxDate: DateTime
   minDate: DateTime
+  offerStartDate: DateTime
   bindedOffer: Offer
   offer: Offer!
   updatedAt: DateTime!
@@ -5475,6 +5830,7 @@ input SellConditionInput {
   minDate: DateTime
   maxDate: DateTime
   bindedOfferId: ID
+  offerStartDate: DateTime
 }
 
 enum SellConditionType {
@@ -5483,6 +5839,7 @@ enum SellConditionType {
   PROSPECT_ONLY
   QUANTITY_RANGE
   DATE_RANGE
+  OFFER_START
 }
 
 input SendMemberCommunicationInput {
@@ -5596,6 +5953,8 @@ input SetupPaymentInput {
   cardBrand: String
   cardCountry: String
   saveCard: Boolean
+  isWallet: Boolean
+  idempotencyKey: String
 }
 
 input SetupPlanPaymentInput {
@@ -5956,6 +6315,13 @@ type StripePayoutConnection {
   pageInfo: PageInfo!
 }
 
+input SubmitAgentBriefFeedbackInput {
+  briefId: ID!
+  rating: AgentBriefFeedbackRating!
+  motive: AgentFeedbackMotive
+  comment: String
+}
+
 input SubmitFormFieldInput {
   formFieldId: ID!
   valueString: String
@@ -6087,6 +6453,18 @@ type TodoConnection {
 type TodoEdge {
   node: Todo!
   cursor: String!
+}
+
+enum TodoIntervalType {
+  DAYS
+  WEEKS
+  MONTHS
+}
+
+enum TodoRecurrenceType {
+  DAY_OF_YEAR
+  INTERVAL
+  DAYS_OF_WEEK
 }
 
 enum TodoType {
@@ -6505,6 +6883,11 @@ input UpdateRecurrentSlotInput {
   coachIds: [ID!]
 }
 
+input UpdateRecurrentTodoInput {
+  description: String
+  assigneeId: ID
+}
+
 input UpdateSlotInput {
   start: DateTime
   end: DateTime
@@ -6700,7 +7083,7 @@ type UserEdge {
 }
 
 input UserEnrollmentsWhereInput {
-  boxId: ID
+  boxId: ID!
   userId: ID
   fromOtherBox: Boolean
   withExpired: Boolean
@@ -6815,6 +7198,13 @@ enum UserRole {
   SUBMANAGER
   CLIENT
   COACH
+}
+
+input UserSanctionFilterInput {
+  id: ID!
+  boxId: ID!
+  status: ExtendedSanctionStatus!
+  category: SanctionCategory
 }
 
 input UserSearchInput {

@@ -6,12 +6,12 @@ Ce que Peppy+ ajoute à l'application Peppy, et les problèmes rencontrés en ro
 
 ### Navigation
 
-Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre depuis l'icône ticket de l'en-tête, avec une pastille indiquant le nombre de séances à venir.
+Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre depuis l'icône ticket de l'en-tête, avec une pastille indiquant le nombre de séances à venir. Le logo de la salle ouvre sa fiche et ses messages ; un point rouge signale un message non lu.
 
 ### Planning (accueil)
 
-- **Prochaine séance en tête de page**, sur une seule ligne compacte : jour, heure, type de cours et délai (« dans 4 jours »). Un clic ouvre la fiche du cours, le bouton « Voir le WOD » / « Programme du jour » affiche ce jour-là et descend jusqu'au WOD.
-- **Minuteur d'annulation** : le jour de la séance, une petite pastille affiche le temps restant pour annuler, seconde par seconde, puis « fermée ». L'heure limite vient des règles de la salle (2 h avant le cours chez Primal Athletic).
+- **Prochaine séance en tête de page**, sur une seule ligne compacte : jour, heure, type de cours et délai (« dans 4 jours »). Un clic ouvre la fiche du cours, le bouton « Voir le WOD » affiche ce jour-là et descend jusqu'au WOD. Il n'apparaît que si le WOD de ce jour-là est publié (vérifié même quand la séance tombe une autre semaine que celle affichée).
+- **Minuteur d'annulation** : le jour de la séance, une petite pastille affiche le temps restant pour annuler, seconde par seconde, puis « fermée ». L'heure limite vient des règles de la salle (2 h avant le cours chez Primal Athletic). Les jours précédents, un petit « ⏳ Annulation 4 j 17 h » reste visible sur la ligne du bouton, sans agrandir la carte.
 - **Compteurs de la semaine affichée**, en une ligne discrète sous le titre de la semaine : séances réservées par rapport au quota de l'abonnement (« 1/3 séances ») et réservations en cours par rapport à la limite de la salle (« 2/4 résas en cours »).
 - **Liste de cours compacte**, pour en voir le plus possible à l'écran : heure et durée, type de cours, jauge, puis le bouton (Réserver, Annuler…) en pleine largeur dessous sur mobile. Le coach, les inscrits, les invités, les délais et les quotas sont dans la fiche du cours.
 - **Jauge de remplissage** : une case par place, de taille constante d'un cours à l'autre, qui change de couleur quand le cours se remplit, avec un libellé court (« 10 libres », « Complet », « 2 en att. »). La fiche du cours détaille le surbooking (« Complet · 1 en surnombre »).
@@ -38,6 +38,10 @@ Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre d
 - **Invités** : les drop-in et séances d'essai, comptés par la salle mais invisibles pour les membres, apparaissent en « +1 invité · drop-in / essai ».
 - **Photo agrandie au survol** d'un avatar, avec le nom complet.
 - Bouton « Je suis là » pour confirmer sa présence sur place (géolocalisation), dans la fenêtre prévue par la salle.
+
+### Ta salle
+
+- **Fiche de la salle** au clic sur son logo, en haut à gauche. En tête, les **messages de la salle** (fermetures, cours annulés…) : les deux plus récents et les non lus ouverts, les autres repliés. Un point rouge sur le logo signale un message non lu. Ensuite : photos, adresse et boutons Itinéraire, Appeler et E-mail, horaires de la semaine (jour en cours mis en avant, « Ouvert » ou « Fermé » en ce moment), coachs avec leur photo, présentation de la salle et prix de la séance à l'unité.
 
 ### Perfs
 
@@ -71,6 +75,7 @@ Calculées sur **toutes les séances, tous abonnements confondus** :
 ### Abonnement
 
 - Abonnement en cours : séances de la semaine, quotas, séances faites avec cet abonnement.
+- **Renouvellement et paiement** : date de renouvellement automatique (ou de fin, sans renouvellement), durée du réengagement, moyen de paiement et jour de prélèvement, paiement d'avance, suspension en cours. Une alerte rouge signale les paiements impayés, avec le montant.
 - **Documents** : contrat adhérent (PDF) et historique des paiements de chaque abonnement, avec le total payé.
 - **Règles de la salle** en clair : quotas, délai d'annulation, fin des inscriptions, ouverture du planning, confirmation sur place, liste d'attente.
 - **Anciens abonnements** (expirés) dans un bloc repliable.
@@ -98,6 +103,10 @@ Calculées sur **toutes les séances, tous abonnements confondus** :
 | Un abonnement « expiré » de 3 minutes, sans séance (erreur de saisie de la salle). | Bruit dans la liste des abonnements. | Les abonnements expirés de moins d'un jour sans séance sont masqués. |
 | Les coachs ne sont pas renseignés sur les cours de cette salle. | Pas de stat « coach préféré ». | Non exploité. |
 | Les records ne se lisent qu'exercice par exercice (`getMyPerformances` exige un `exerciseId`, sur 95 exercices) et `getMyPRsOnExercise` renvoie une liste vide. | Pas de vue « tous mes records ». Interroger les mouvements un par un fait 95 requêtes, et 10 requêtes simultanées font renvoyer une page HTML d'erreur par l'API. | Une seule requête avec un alias GraphQL par mouvement (environ 2,5 s), mémorisation de ceux qui ont des records, calcul des records côté client. |
+| `getBox` (règles de la salle) est réservé aux gérants depuis novembre 2026 et répond `unauthorized`, comme un jeton expiré. | L'app déconnectait juste après la connexion. | Déconnexion seulement si `me` est refusé ; règles lues via `getSlot { box { parameters } }` (vides dans la liste `getSlots`). |
+| Aucune mutation pour marquer un message de la salle comme lu. | Pas de « lu » partagé avec l'appli Peppy. | Non lu = `hasBeenSeen` faux et plus récent que le dernier message ouvert dans Peppy+ (mémorisé dans le navigateur). |
+| Aucun des 95 mouvements n'a de vidéo ni de description (`Exercise.videoLink`, `description`). | Pas de vidéo de démonstration. | Non exploité. |
+| Certaines photos de coach renvoient 403 sur le CDN Peppy. | Image manquante. | Initiales affichées à la place. |
 | Les erreurs de l'API exposent ses détails internes (requêtes Prisma, chemins de fichiers du serveur). | Messages d'erreur illisibles pour l'utilisateur. | Non traité : à signaler à Peppy. |
 | Les performances n'ont pas de champ « date » : seule `createdAt` existe, alors que l'enregistrement accepte une date. | Date des perfs à lire dans `createdAt`. | `createdAt` utilisée comme date de la perf. |
 | `getMyRankingStats` renvoie des compteurs à zéro alors que des scores existent (`getRankings` avec `user`). | Stats de WOD trompeuses. | Utiliser `getRankings` directement. |

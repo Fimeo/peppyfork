@@ -96,7 +96,10 @@ input, select { font: inherit; color: inherit; }
 .hero-cd svg { width: 13px; height: 13px; }
 .hero-cd .cd-v { font: 800 16px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
 .hero-cd.over { background: var(--ink); color: var(--volt); }
-.hero-actions { grid-column: 2 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.hero-actions { grid-column: 2 / -1; display: flex; align-items: center; gap: 6px 10px; flex-wrap: wrap; }
+.hero-cd-sm { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; opacity: .75; white-space: nowrap; }
+.hero-cd-sm svg { width: 12px; height: 12px; }
+.hero-cd-sm .cd-v { font-variant-numeric: tabular-nums; font-weight: 700; }
 .hero-actions .btn.sm { padding: 6px 10px; font-size: 13px; }
 .hero-actions .btn.ghost { background: var(--ink); color: var(--volt); box-shadow: none; }
 .hero-actions .btn.primary { background: var(--ink); color: var(--volt); }
@@ -513,3 +516,42 @@ dialog#sheet::backdrop { background: rgb(0 0 0 / .65); backdrop-filter: blur(3px
 .feelings .chip input:checked + span small { color: var(--ink); }
 .field textarea { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; font: 15px/1.4 var(--body); letter-spacing: 0; text-transform: none; color: var(--text); resize: vertical; }
 .field textarea:focus { outline: 2px solid var(--volt); outline-offset: -1px; }
+
+/* ---------- Logo cliquable, messages de la salle ---------- */
+.logo-btn { position: relative; flex: none; padding: 0; border: 0; background: none; border-radius: 11px; }
+.logo-btn .dot { position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 2px var(--bg, #0b0b0c); }
+.older-msgs { margin-top: 10px; }
+.older-msgs summary { list-style: none; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 600; }
+.older-msgs summary::-webkit-details-marker { display: none; }
+.older-msgs[open] .chev svg { transform: rotate(180deg); }
+.box-info .messages + .older-msgs, .box-info .messages:last-of-type { margin-bottom: 0; }
+.box-info .photos:not(:first-child) { margin-top: 22px; }
+.messages { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.messages li { padding: 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); }
+.messages li.unread { border-color: var(--volt); }
+.msg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.msg-head b { font-size: 15px; }
+.msg-head small { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.messages .rich { font-size: 14px; white-space: pre-line; color: var(--muted); }
+.messages li.unread .rich { color: var(--text); }
+
+/* ---------- Fiche de la salle ---------- */
+.box-info .photos { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; margin: -4px -20px 16px; padding: 0 20px; scrollbar-width: none; }
+.box-info .photos::-webkit-scrollbar { display: none; }
+.box-info .photos img { flex: none; width: 82%; max-width: 360px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 14px; scroll-snap-align: start; background: var(--surface-2); }
+.box-info .photos img:only-child { width: 100%; max-width: none; }
+.contact { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.contact .btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.contact svg { width: 16px; height: 16px; }
+.section-title .tag { margin-left: 6px; vertical-align: middle; }
+.hours { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 8px 0 0; font-size: 14px; }
+.hours dt { color: var(--muted); }
+.hours dd { margin: 0; font-variant-numeric: tabular-nums; }
+.hours .today { color: var(--volt); font-weight: 700; }
+.coaches { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 8px; }
+.coach { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.box-info .rich { font-size: 14px; white-space: pre-line; color: var(--muted); }
+
+/* ---------- Abonnement : renouvellement, impayés ---------- */
+.kv.renewal { margin-top: 10px; font-size: 13px; }
+.alert { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgb(255 93 93 / .12); border: 1px solid rgb(255 93 93 / .4); color: var(--text); font-size: 13px; }
