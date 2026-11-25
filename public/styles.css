@@ -513,3 +513,40 @@ dialog#sheet::backdrop { background: rgb(0 0 0 / .65); backdrop-filter: blur(3px
 .feelings .chip input:checked + span small { color: var(--ink); }
 .field textarea { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; font: 15px/1.4 var(--body); letter-spacing: 0; text-transform: none; color: var(--text); resize: vertical; }
 .field textarea:focus { outline: 2px solid var(--volt); outline-offset: -1px; }
+
+/* ---------- Logo cliquable, messages de la salle ---------- */
+button.logo { padding: 0; border: 0; cursor: pointer; }
+button.logo:has(img) { border: 1px solid var(--line); }
+.msg-btn { position: relative; }
+.msg-btn .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: #fff; border-radius: 9px; font: 700 10px/16px var(--body); padding: 0 5px; }
+.messages { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.messages li { padding: 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); }
+.messages li.unread { border-color: var(--volt); }
+.msg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.msg-head b { font-size: 15px; }
+.msg-head small { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.messages .rich { font-size: 14px; white-space: pre-line; color: var(--muted); }
+.messages li.unread .rich { color: var(--text); }
+
+/* ---------- Fiche de la salle ---------- */
+.box-info .photos { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; margin: -4px -20px 16px; padding: 0 20px; scrollbar-width: none; }
+.box-info .photos::-webkit-scrollbar { display: none; }
+.box-info .photos img { flex: none; width: 82%; max-width: 360px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 14px; scroll-snap-align: start; background: var(--surface-2); }
+.box-info .photos img:only-child { width: 100%; max-width: none; }
+.contact { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.contact .btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+/* Quatre boutons dans l'en-tête : on les resserre pour laisser de la place au nom de la salle. */
+.top-inner .icon-btn + .icon-btn { margin-left: -4px; }
+.contact svg { width: 16px; height: 16px; }
+.section-title .tag { margin-left: 6px; vertical-align: middle; }
+.hours { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 8px 0 0; font-size: 14px; }
+.hours dt { color: var(--muted); }
+.hours dd { margin: 0; font-variant-numeric: tabular-nums; }
+.hours .today { color: var(--volt); font-weight: 700; }
+.coaches { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 8px; }
+.coach { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.box-info .rich { font-size: 14px; white-space: pre-line; color: var(--muted); }
+
+/* ---------- Abonnement : renouvellement, impayés ---------- */
+.kv.renewal { margin-top: 10px; font-size: 13px; }
+.alert { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgb(255 93 93 / .12); border: 1px solid rgb(255 93 93 / .4); color: var(--text); font-size: 13px; }
