@@ -210,6 +210,15 @@ function refreshToken() {
   return refreshing;
 }
 
+// Le jeton est-il encore accepté ? En cas de doute (réseau), on considère que oui.
+async function sessionAlive() {
+  try {
+    const res = await fetch('/graphql', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `JWT ${state.token}` }, body: JSON.stringify({ query: 'query alive { me { user { id } } }' }) });
+    const json = await res.json();
+    return !!json.data?.me?.user?.id || !(res.status === 401 || (json.errors || []).some(isAuthError));
+  } catch { return true; }
+}
+
 async function gql(query, variables = {}, { retry = true } = {}) {
   const sid = session;
   if (state.token && retry) {
@@ -226,10 +235,11 @@ async function gql(query, variables = {}, { retry = true } = {}) {
   const empty = !json.data || Object.values(json.data).every((v) => v == null);
   if (empty) {
     if (state.token && (res.status === 401 || errors.some(isAuthError))) {
-      if (retry) {
-        try { await refreshToken(); return gql(query, variables, { retry: false }); } catch {}
-      }
-      logout('Session expirée, reconnecte-toi.');
+      if (retry && await refreshToken().then(() => true, () => false)) return gql(query, variables, { retry: false });
+      // Peppy répond « unauthorized » aussi quand une requête est simplement interdite à un membre :
+      // on ne déconnecte que si le jeton lui-même n'est plus accepté.
+      if (sid === session && !(await sessionAlive())) logout('Session expirée, reconnecte-toi.');
+      else console.warn('GraphQL refusé', query.match(/^\s*\w+\s+(\w+)/)?.[1], errors);
     }
     throw new Error(frError(errors[0], res.status));
   }
