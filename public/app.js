@@ -3,7 +3,7 @@ import { computeStats, viewStats } from './stats.js';
 import { viewPerfs, viewExercise, viewWod as viewWodScores, viewEditScore, viewAdd, viewResults, calcGrid, groupRankings, roundKg, norm } from './perfs.js';
 
 // Affichée sous le formulaire de connexion : à augmenter à chaque mise en ligne.
-const VERSION = '1.2.0';
+const VERSION = '1.2.1';
 
 // ---------------------------------------------------------------- utils
 const $ = (s, el = document) => el.querySelector(s);
@@ -285,6 +285,7 @@ const accountState = () => ({
   slotsWeek: null,
   nextSlots: null,
   wods: [],
+  heroWod: null, // { day, has } : WOD publié ou non pour le jour de la prochaine séance
   upcoming: [],
   history: null,
   enrollments: null,
@@ -404,6 +405,27 @@ async function loadWeek({ silent = false } = {}) {
   }
   state.wods = wods.status === 'fulfilled' ? nodes(wods.value.getRestrictedWorkouts) : [];
   state.loading = false;
+  render();
+  loadHeroWod().catch((e) => console.warn('wod prochaine séance', e));
+}
+
+const nextSession = () => state.upcoming.find((r) => new Date(r.slot.end) > new Date() && r.status !== 'CANCELLED');
+const hasWodOn = (list, d) => list.some((w) => w.wodDate && sameDay(parseWodDate(w.wodDate), d));
+
+// Le WOD du jour de la prochaine séance est-il publié ? (souvent la veille : revérifié à chaque rafraîchissement)
+async function loadHeroWod() {
+  const next = nextSession();
+  if (!next) return;
+  const d = startOfDay(next.slot.start);
+  if (startOfWeek(d).getTime() === state.weekStart.getTime()) {
+    state.heroWod = { day: dayKey(d), has: hasWodOn(state.wods, d), at: Date.now() };
+    return render();
+  }
+  if (state.heroWod?.day === dayKey(d) && Date.now() - state.heroWod.at < 5 * 60000) return;
+  const sid = session;
+  const data = await gql(Q.wods, { where: { boxId: state.boxId, wodDateFrom: d.toISOString(), wodDateTo: addDays(d, 1).toISOString() }, page: 1, pageSize: 10 });
+  if (sid !== session) return;
+  state.heroWod = { day: dayKey(d), has: hasWodOn(nodes(data.getRestrictedWorkouts), d), at: Date.now() };
   render();
 }
 
@@ -663,6 +685,7 @@ const lateRefused = () => params().allowLateReservationCancelling === false;
 const fmtCountdown = (ms) => {
   const t = Math.max(0, Math.floor(ms / 1000));
   const h = Math.floor(t / 3600);
+  if (h >= 24) return `${Math.floor(h / 24)} j ${h % 24} h ${pad(Math.floor((t % 3600) / 60))}`;
   return `${h ? `${h}:` : ''}${h ? pad(Math.floor((t % 3600) / 60)) : Math.floor((t % 3600) / 60)}:${pad(t % 60)}`;
 };
 // Compte à rebours mis à jour chaque seconde (voir tickCountdowns) ; `over` remplace le contenu à l'échéance.
@@ -819,22 +842,33 @@ function viewTabs() {
 // Prochaine séance : une ligne compacte (date, heure, cours, délai, minuteur), pour laisser
 // la place au programme du jour juste en dessous.
 function viewHero() {
-  const next = state.upcoming.find((r) => new Date(r.slot.end) > new Date() && r.status !== 'CANCELLED');
+  const next = nextSession();
   if (!next) return '';
   const d = new Date(next.slot.start);
-  const wod = sameDay(d, state.day) && state.wods.some((w) => w.wodDate && sameDay(parseWodDate(w.wodDate), d));
+  // Bouton WOD seulement si on sait qu'il est publié (semaine affichée, ou vérification à part).
+  const wod = startOfWeek(d).getTime() === state.weekStart.getTime() ? hasWodOn(state.wods, d) : state.heroWod?.day === dayKey(d) && state.heroWod.has;
+  const today = heroTimer(next);
+  const small = today ? '' : heroCountdown(next);
   return `<section class="hero ${next.status === 'WAITING' ? 'is-wait' : ''}" data-action="goto-slot" data-slot="${next.slot.id}" data-start="${next.slot.start}">
     <div class="hero-date"><small>${fmtDay(d, { weekday: 'short' }).replace('.', '')}</small><b>${d.getDate()}</b></div>
     <div class="hero-main">
       <span class="hero-k">${next.status === 'WAITING' ? `Liste d'attente${next.waitlistPosition ? ` #${next.waitlistPosition}` : ''}` : 'Prochaine séance'} · ${esc(relative(d))}</span>
       <b class="hero-title">${fmtTime(d)} · ${esc(slotTitle(next.slot))}</b>
     </div>
-    ${heroTimer(next)}
-    <div class="hero-actions">
+    ${today}
+    ${small || wod || canConfirm(next.slot, next) ? `<div class="hero-actions">
       ${canConfirm(next.slot, next) ? `<button class="btn primary sm" data-action="confirm" data-res="${next.id}" data-slot="${next.slot.id}">Je suis là</button>` : ''}
-      <button class="btn ghost sm" data-action="goto-wod" data-day="${dayKey(d)}">${wod ? 'Voir le WOD' : 'Programme du jour'} ›</button>
-    </div>
+      ${wod ? `<button class="btn ghost sm" data-action="goto-wod" data-day="${dayKey(d)}">Voir le WOD ›</button>` : ''}
+      ${small}
+    </div>` : ''}
   </section>`;
+}
+
+// Avant le jour J : temps restant pour annuler, en petit sur la ligne des boutons.
+function heroCountdown(r) {
+  const deadline = cancelDeadline(r);
+  if (!deadline || deadline <= Date.now()) return '';
+  return `<span class="hero-cd-sm" title="Annulable jusqu'au ${esc(fmtDay(deadline))} à ${fmtTime(deadline)}">${ICONS.hourglass}Annulation ${countdown(deadline, 'fermée')}</span>`;
 }
 
 function heroTimer(r) {

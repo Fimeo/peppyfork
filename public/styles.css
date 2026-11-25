@@ -96,7 +96,10 @@ input, select { font: inherit; color: inherit; }
 .hero-cd svg { width: 13px; height: 13px; }
 .hero-cd .cd-v { font: 800 16px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
 .hero-cd.over { background: var(--ink); color: var(--volt); }
-.hero-actions { grid-column: 2 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.hero-actions { grid-column: 2 / -1; display: flex; align-items: center; gap: 6px 10px; flex-wrap: wrap; }
+.hero-cd-sm { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; opacity: .75; white-space: nowrap; }
+.hero-cd-sm svg { width: 12px; height: 12px; }
+.hero-cd-sm .cd-v { font-variant-numeric: tabular-nums; font-weight: 700; }
 .hero-actions .btn.sm { padding: 6px 10px; font-size: 13px; }
 .hero-actions .btn.ghost { background: var(--ink); color: var(--volt); box-shadow: none; }
 .hero-actions .btn.primary { background: var(--ink); color: var(--volt); }
