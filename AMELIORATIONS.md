@@ -6,7 +6,7 @@ Ce que Peppy+ ajoute à l'application Peppy, et les problèmes rencontrés en ro
 
 ### Navigation
 
-Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre depuis l'icône ticket de l'en-tête, avec une pastille indiquant le nombre de séances à venir. La cloche ouvre les messages de la salle, le logo de la salle sa fiche.
+Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre depuis l'icône ticket de l'en-tête, avec une pastille indiquant le nombre de séances à venir. Le logo de la salle ouvre sa fiche et ses messages ; un point rouge signale un message non lu.
 
 ### Planning (accueil)
 
@@ -41,8 +41,7 @@ Menu du bas : **Planning, Perfs, Stats, Abonnement**. « Mes résas » s'ouvre d
 
 ### Ta salle
 
-- **Fiche de la salle** au clic sur son logo, en haut à gauche : photos, adresse et boutons Itinéraire, Appeler et E-mail, horaires de la semaine (jour en cours mis en avant, « Ouvert » ou « Fermé » en ce moment), coachs avec leur photo, présentation de la salle et prix de la séance à l'unité.
-- **Messages de la salle** derrière la cloche de l'en-tête : annonces (fermetures, cours annulés…), du plus récent au plus ancien. Un badge rouge compte les messages non lus.
+- **Fiche de la salle** au clic sur son logo, en haut à gauche. En tête, les **messages de la salle** (fermetures, cours annulés…) : les deux plus récents et les non lus ouverts, les autres repliés. Un point rouge sur le logo signale un message non lu. Ensuite : photos, adresse et boutons Itinéraire, Appeler et E-mail, horaires de la semaine (jour en cours mis en avant, « Ouvert » ou « Fermé » en ce moment), coachs avec leur photo, présentation de la salle et prix de la séance à l'unité.
 
 ### Perfs
 

@@ -518,11 +518,15 @@ dialog#sheet::backdrop { background: rgb(0 0 0 / .65); backdrop-filter: blur(3px
 .field textarea:focus { outline: 2px solid var(--volt); outline-offset: -1px; }
 
 /* ---------- Logo cliquable, messages de la salle ---------- */
-button.logo { padding: 0; border: 0; cursor: pointer; }
-button.logo:has(img) { border: 1px solid var(--line); }
-.msg-btn { position: relative; }
-.msg-btn .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: #fff; border-radius: 9px; font: 700 10px/16px var(--body); padding: 0 5px; }
-.messages { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.logo-btn { position: relative; flex: none; padding: 0; border: 0; background: none; border-radius: 11px; }
+.logo-btn .dot { position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 2px var(--bg, #0b0b0c); }
+.older-msgs { margin-top: 10px; }
+.older-msgs summary { list-style: none; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 600; }
+.older-msgs summary::-webkit-details-marker { display: none; }
+.older-msgs[open] .chev svg { transform: rotate(180deg); }
+.box-info .messages + .older-msgs, .box-info .messages:last-of-type { margin-bottom: 0; }
+.box-info .photos:not(:first-child) { margin-top: 22px; }
+.messages { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .messages li { padding: 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); }
 .messages li.unread { border-color: var(--volt); }
 .msg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; }
@@ -538,8 +542,6 @@ button.logo:has(img) { border: 1px solid var(--line); }
 .box-info .photos img:only-child { width: 100%; max-width: none; }
 .contact { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .contact .btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
-/* Quatre boutons dans l'en-tête : on les resserre pour laisser de la place au nom de la salle. */
-.top-inner .icon-btn + .icon-btn { margin-left: -4px; }
 .contact svg { width: 16px; height: 16px; }
 .section-title .tag { margin-left: 6px; vertical-align: middle; }
 .hours { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 8px 0 0; font-size: 14px; }

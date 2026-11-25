@@ -3,7 +3,7 @@ import { computeStats, viewStats } from './stats.js';
 import { viewPerfs, viewExercise, viewWod as viewWodScores, viewEditScore, viewAdd, viewResults, calcGrid, groupRankings, roundKg, norm } from './perfs.js';
 
 // Affichée sous le formulaire de connexion : à augmenter à chaque mise en ligne.
-const VERSION = '1.2.1';
+const VERSION = '1.2.2';
 
 // ---------------------------------------------------------------- utils
 const $ = (s, el = document) => el.querySelector(s);
@@ -57,7 +57,6 @@ const ICONS = {
   doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
   spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></svg>',
   dumbbell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"/></svg>',
-  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 1 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9M10 20a2 2 0 0 0 4 0"/></svg>',
   phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2"/></svg>',
   mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>',
   pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12"/><circle cx="12" cy="9" r="2.5"/></svg>',
@@ -818,10 +817,9 @@ function viewHeader() {
   const upcoming = state.upcoming.filter((r) => new Date(r.slot.end) > new Date()).length;
   const unread = unreadMessages().length;
   return `<header class="top"><div class="top-inner">
-    <button class="logo" data-action="box-info" title="Infos de la salle" aria-label="Infos de ${esc(box?.name || 'la salle')}">${box?.logo ? `<img src="${esc(img(box.logo))}" alt="">` : 'P+'}</button>
+    <button class="logo-btn" data-action="box-info" title="Ta salle : messages et infos" aria-label="${esc(box?.name || 'Ta salle')} : messages et infos${unread ? ` (${unread} message${unread > 1 ? 's' : ''} non lu${unread > 1 ? 's' : ''})` : ''}"><span class="logo">${box?.logo ? `<img src="${esc(img(box.logo))}" alt="">` : 'P+'}</span>${unread ? '<span class="dot"></span>' : ''}</button>
     <div class="top-title">${boxName}<small>Salut ${esc(cap(state.user?.firstname?.trim()))} 👋</small></div>
     <button class="icon-btn resa-btn" data-action="tab" data-tab="resas" title="Mes réservations" aria-label="Mes réservations${upcoming ? ` (${upcoming} à venir)` : ''}">${ICONS.ticket}${upcoming ? `<span class="badge">${upcoming}</span>` : ''}</button>
-    <button class="icon-btn msg-btn" data-action="messages" title="Messages de la salle" aria-label="Messages de la salle${unread ? ` (${unread} non lu${unread > 1 ? 's' : ''})` : ''}">${ICONS.bell}${unread ? `<span class="badge">${unread}</span>` : ''}</button>
     <button class="icon-btn" data-action="refresh" title="Rafraîchir">${ICONS.refresh}</button>
     <button class="icon-btn" data-action="logout" title="Se déconnecter">${ICONS.logout}</button>
   </div></header>`;
@@ -1271,22 +1269,21 @@ function askCancel(resId, slotId) {
 }
 
 // ---------------------------------------------------------------- messages et fiche de la salle
-function openMessages() {
+// Messages de la salle, en tête de sa fiche : les deux plus récents ouverts, les autres repliés.
+function viewMessages() {
   const list = state.messages;
+  if (list == null) return '<div class="skeleton" style="height:80px;margin-bottom:18px"></div>';
+  if (!list.length) return '';
   const unread = new Set(unreadMessages().map((m) => m.id));
-  if (list?.length) store.set('peppy.msgSeen', list[0].createdAt);
-  showSheet(`<div class="sheet-body">
-    <h3>Messages</h3>
-    <div class="muted">De ${esc(state.boxes.find((b) => b.id === state.boxId)?.name || 'ta salle')}</div>
-    ${list == null ? '<div class="skeleton" style="height:120px;margin-top:16px"></div>'
-      : list.length ? `<ul class="messages">${list.map((m) => `<li class="${unread.has(m.id) ? 'unread' : ''}">
-        <div class="msg-head"><b>${esc(m.title.trim())}</b><small>${esc(cap(fmtDay(m.createdAt, { day: 'numeric', month: 'long', year: new Date(m.createdAt).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' })))}</small></div>
-        <div class="rich">${richText(m.content)}</div>
-      </li>`).join('')}</ul>`
-      : '<div class="empty"><b>Aucun message</b>Ta salle n\'a rien publié pour l\'instant.</div>'}
-    <div class="sheet-actions"><button class="btn block ghost" data-action="close" autofocus>Fermer</button></div>
-  </div>`);
-  render(); // retire le badge
+  const item = (m) => `<li class="${unread.has(m.id) ? 'unread' : ''}">
+      <div class="msg-head"><b>${esc(m.title.trim())}</b><small>${esc(fmtDay(m.createdAt, { day: 'numeric', month: 'long', year: new Date(m.createdAt).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }))}</small></div>
+      <div class="rich">${richText(m.content)}</div>
+    </li>`;
+  const shown = list.filter((m, i) => i < 2 || unread.has(m.id));
+  const older = list.filter((m) => !shown.includes(m));
+  return `<div class="section-title" style="margin-top:0">Messages${unread.size ? ` <span class="tag danger">${unread.size} nouveau${unread.size > 1 ? 'x' : ''}</span>` : ''}</div>
+    <ul class="messages">${shown.map(item).join('')}</ul>
+    ${older.length ? `<details class="older-msgs"><summary>Messages plus anciens · ${older.length}<span class="chev">${ICONS.chev}</span></summary><ul class="messages">${older.map(item).join('')}</ul></details>` : ''}`;
 }
 
 const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; // dayOfTheWeek : 0 = lundi
@@ -1309,6 +1306,7 @@ async function openBoxInfo() {
     const maps = b.latitude != null ? `https://www.google.com/maps/search/?api=1&query=${b.latitude},${b.longitude}` : b.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.address)}` : '';
     const coaches = b.coaches || [];
     return `<div class="sheet-body box-info">
+      ${msgs}
       ${b.images?.length ? `<div class="photos">${b.images.map((u) => `<img src="${esc(img(u))}" alt="" loading="lazy" onerror="this.remove()">`).join('')}</div>` : ''}
       <h3>${esc(b.name)}</h3>
       ${b.address ? `<div class="muted">${esc(b.address)}</div>` : ''}
@@ -1325,16 +1323,20 @@ async function openBoxInfo() {
       <div class="sheet-actions"><button class="btn block ghost" data-action="close" autofocus>Fermer</button></div>
     </div>`;
   };
+  // Les messages sont affichés avec leur état « non lu », puis marqués comme vus.
+  const msgs = viewMessages();
+  if (state.messages?.length) store.set('peppy.msgSeen', state.messages[0].createdAt);
+  render(); // retire le point rouge du logo
   const cached = state.boxInfo[id];
   const box = state.boxes.find((b) => b.id === id) || {};
-  showSheet(cached ? view(cached) : `<div class="sheet-body"><h3>${esc(box.name || 'Ta salle')}</h3><div class="skeleton" style="height:220px;margin-top:16px"></div></div>`);
+  showSheet(cached ? view(cached) : `<div class="sheet-body box-info">${msgs}<h3>${esc(box.name || 'Ta salle')}</h3><div class="skeleton" style="height:220px;margin-top:16px"></div></div>`);
   if (cached) return;
   try {
     const b = (await gql(Q.boxInfo, { where: id })).getRestrictedBox;
     state.boxInfo[id] = b;
     if (sheet.open && state.boxId === id) showSheet(view(b));
   } catch (e) {
-    if (sheet.open) showSheet(`<div class="sheet-body"><h3>${esc(box.name || 'Ta salle')}</h3><p class="muted">${esc(e.message)}</p><div class="sheet-actions"><button class="btn block ghost" data-action="close" autofocus>Fermer</button></div></div>`);
+    if (sheet.open) showSheet(`<div class="sheet-body box-info">${msgs}<h3>${esc(box.name || 'Ta salle')}</h3><p class="muted">${esc(e.message)}</p><div class="sheet-actions"><button class="btn block ghost" data-action="close" autofocus>Fermer</button></div></div>`);
   }
 }
 
@@ -1586,7 +1588,6 @@ document.addEventListener('click', (e) => {
     case 'open-slot': return openSlot(slot);
     case 'goto-slot': return gotoSlot(slot, new Date(el.dataset.start));
     case 'close': return closeSheet();
-    case 'messages': return openMessages();
     case 'box-info': return openBoxInfo();
     case 'refresh': if (state.tab === 'perfs' && !perfsLoading) { state.perfs = null; state.rankings = undefined; } state.history = null; state.enrollments = null; state.stats = undefined; Promise.all([loadWeek({ silent: true }), loadNextSlots().catch(() => {})]).then(() => toast('À jour')); if (state.tab !== 'planning') setTab(state.tab); return;
     case 'logout': return logout();
