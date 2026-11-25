@@ -64,12 +64,15 @@ const Q = {
   }`,
   refresh: `mutation refreshPeppyToken { refreshPeppyToken { accessToken expiresIn } }`,
   logout: `mutation logoutPeppy { logoutPeppy }`,
-  params: `query getBox($where: ID!) {
-    getBox(where: $where) { id parameters {
+  // getBox est réservé aux gérants : les règles de la salle se lisent via la salle d'un de ses cours
+  // (getSlot ; dans la liste getSlots, ces paramètres reviennent vides).
+  anySlot: `query anySlot($where: SlotSearchInput) { getSlots(where: $where, page: 1, pageSize: 1) { edges { node { id } } } }`,
+  params: `query boxParameters($where: ID!) {
+    getSlot(where: $where) { id box { id parameters {
       slotPublicationInterval slotClosingReservationInterval
       slotNoPenaltyCancellationInterval slotClosingConfirmationInterval slotClosingWaitingListUpdateInterval
       allowLateReservationCancelling maxPendingReservations allowNoShow automaticNoShowOnPendingReservations
-    } }
+    } } }
   }`,
   me: `query me { me { user { id firstname lastname avatar email } boxes { id name logo address } } }`,
   boxes: `query getMyBoxes($page: Int, $pageSize: Int) {
@@ -327,7 +330,13 @@ async function loadParams() {
   const id = state.boxId;
   if (!id || state.params[id]) return;
   try {
-    state.params[id] = (await gql(Q.params, { where: id })).getBox?.parameters || {};
+    const now = new Date();
+    const where = { boxId: [id], start: addDays(now, -30).toISOString(), end: addDays(now, 30).toISOString() };
+    const slotId = nodes((await gql(Q.anySlot, { where })).getSlots)[0]?.id;
+    if (!slotId) return; // aucun cours sur la période : on réessaiera plus tard
+    const box = (await gql(Q.params, { where: slotId })).getSlot?.box;
+    if (box?.id !== id || !box.parameters) return;
+    state.params[id] = box.parameters;
     render();
   } catch (e) { console.warn('params', e); }
 }
